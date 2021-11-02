@@ -1,0 +1,6 @@
+[submodule "include/bibliography"]
+	path = include/bibliography
+	url = ../bibliography
+[submodule "include/comments"]
+	path = include/comments
+	url = ../latex-style-comments
