@@ -6,4 +6,4 @@
 	url = git@github.com:krr-up/latex-style-comments.git
 [submodule "include/macros"]
 	path = include/macros
-	url = git@github.com:krr-up/macros.git
+	url = git@github.com:krr-up/asp-macros.git
