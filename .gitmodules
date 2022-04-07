@@ -1,6 +1,9 @@
 [submodule "include/bibliography"]
 	path = include/bibliography
-	url = ../bibliography
+	url = git@github.com:krr-up/bibliography.git
 [submodule "include/comments"]
 	path = include/comments
-	url = ../latex-style-comments
+	url = git@github.com:krr-up/latex-style-comments.git
+[submodule "include/macros"]
+	path = include/macros
+	url = git@github.com:krr-up/macros.git

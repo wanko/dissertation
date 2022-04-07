@@ -1,0 +1,31 @@
+\begin{figure}
+  \centering
+  \begin{tikzpicture}[
+      x=3cm,y=2.5cm,
+      >=stealth',
+      big box/.style={draw,minimum width=2cm,minimum height=1.3cm,inner sep=0},
+      small box/.style={draw,minimum width=2cm,minimum height=1cm,inner sep=0},
+      auto,
+    ]
+    \begin{scope}[every node/.style={big box}]
+      \node (a) at (0,1) {Problem};
+      \node (b) at (0,0) {\shortstack{Logic\\Program}};
+      \node (e) at (3,0) {\shortstack{Stable\\Models}};
+      \node (f) at (3,1) {Solution};
+    \end{scope}
+    \begin{scope}[every node/.style={small box}]
+      \node (c) at (1,0) {Grounder};
+      \node (d) at (2,0) {Solver};
+    \end{scope}
+    \node[above left, anchor=south west,inner sep=0,yshift=.1cm] (label) at (c.north west){\clingo};
+    \node[draw,fit=(c) (d) (label),inner sep=.2cm] {};
+    \path[->]
+      (a) edge node [yshift=.2cm] {Modeling} (b)
+      (b) edge (c)
+      (c) edge node [swap,yshift=-.75cm] {Solving} (d)
+      (d) edge (e)
+      (e) edge node [yshift=.2cm] {Interpreting} (f);
+  \end{tikzpicture}
+  \caption{ASP solving process}%
+  \label{fig:asp-in-a-nutshell}
+\end{figure}

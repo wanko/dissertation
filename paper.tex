@@ -1,32 +1,340 @@
-\documentclass[a4paper]{article}
+\documentclass[a4paper,11pt,oneside]{amsbook}
 
-\usepackage[utf8]{inputenc}
-\usepackage{amsmath}
-\usepackage{amssymb}
-\usepackage{microtype}
-\usepackage{biblatex}
-\usepackage{url}\urlstyle{tt}
+\usepackage[rgb]{xcolor}
 \usepackage{comments}
+\usepackage{booktabs}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{amssymb}
+\usepackage{amsrefs}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{pdfpages}
+\usepackage{hyperref}
+\usepackage[capitalise,noabbrev]{cleveref}
+\usepackage{etoolbox}
+\usepackage{pgfkeys}
+\usepackage{minted}
+\usepackage{tikz}
+\usepackage{newfloat}
+\usepackage[noend,noline,linesnumbered]{algorithm2e}
+\usepackage{xparse}
+\usepackage{chngcntr}
+\usepackage{lipsum}
 
-\bibliography{krr,procs}
+%\usepackage{showframe}
+
+% less aggressive hyperlinks
+\hypersetup{%
+  pdfborderstyle={/S/U/W 1}, % underline links instead of boxes
+  linkbordercolor=red,       % color of internal links
+  citebordercolor=green,     % color of links to bibliography
+  filebordercolor=magenta,   % color of file links
+  urlbordercolor=cyan        % color of external links
+}
+% since I refer to listings across sections
+\counterwithin{listing}{section}
+\counterwithin{figure}{section}
+
+% tikz setup
+\usetikzlibrary{arrows,fit,positioning,matrix,calc,scopes,chains,tikzmark}
+
+% example environment
+\newtheorem{example}{Example}[section]
+
+% temporal operators
+\makeatletter
+\input pdf-trans
+\newbox\qbox
+\def\usecolor#1{\csname\string\color@#1\endcsname\space}
+\newcommand\outline[1]{\leavevmode%
+  \def\maltext{#1}%
+  \setbox\qbox=\hbox{\maltext}%
+  \boxgs{Q q 2 Tr .3\space w \fillcol\space \bordercol\space}{}%
+  \copy\qbox%
+}
+\makeatother
+
+\newcommand\colsplit[2]{\colorlet{tmpcolor}{#2}\edef\tmp{\usecolor{tmpcolor}}%
+  \def\tmpB{}\expandafter\colsplithelp\tmp\relax%
+  \ifnum0=#1\relax\edef\fillcol{\tmpB}\else\edef\bordercol{\tmpC}\fi}
+\def\colsplithelp#1#2 #3\relax{%
+  \edef\tmpB{\tmpB#1#2 }%
+  \ifnum `#1>`9\relax\def\tmpC{#3}\else\colsplithelp#3\relax\fi
+}
+\colsplit{1}{black}
+\colsplit{0}{white}
+
+\DeclareFontFamily{U}{mathb}{\hyphenchar\font45}
+\DeclareFontShape{U}{mathb}{m}{n}{
+      <5> <6> <7> <8> <9> <10> gen * mathb
+      <10.95> mathb10 <12> <14.4> <17.28> <20.74> <24.88> mathb12
+      }{}
+\DeclareSymbolFont{mathb}{U}{mathb}{m}{n}
+
+\DeclareFontFamily{U}{matha}{\hyphenchar\font45}
+\DeclareFontShape{U}{matha}{m}{n}{
+      <5> <6> <7> <8> <9> <10> gen * matha
+      <10.95> matha10 <12> <14.4> <17.28> <20.74> <24.88> matha12
+      }{}
+\DeclareSymbolFont{matha}{U}{matha}{m}{n}
+
+\makeatletter
+\newcommand{\superimpose}[2]{%
+  {\ooalign{$#1\@firstoftwo#2$\cr\hfil$#1\@secondoftwo#2$\hfil\cr}}}
+\newcommand{\raisemath}[1]{\mathpalette{\raisem@th{#1}}}
+\makeatother
+
+\DeclareMathSymbol{\nextP}{\mathbin}{matha}{"0D}
+\DeclareMathSymbol{\nextF}{\mathbin}{matha}{"05}
+\newcommand{\nextWP}{\mathbin{\hat{\nextP}}}
+\newcommand{\nextWF}{\mathbin{\hat{\nextF}}}
+\DeclareMathSymbol{\alwaysPP}{\mathbin}{mathb}{"0D}
+\newcommand{\alwaysP}{\mathbin{\mathpalette\superimpose{{\alwaysPP}{\alwaysF}}}}
+\DeclareMathSymbol{\alwaysF}{\mathbin}{mathb}{"05}
+\DeclareMathSymbol{\eventuallyPP}{\mathbin}{mathb}{"0C}
+\newcommand{\eventuallyP}{\mathbin{\mathpalette\superimpose{{\eventuallyPP}{\eventuallyF}}}}
+\DeclareMathSymbol{\eventuallyF}{\mathbin}{matha}{"0C}
+\newcommand{\triggerP}{\mathbin{\mathpalette\superimpose{{\alwaysP}{\textcolor{white}{\cdot}}}}}
+\newcommand{\triggerF}{\mathbin{\mathpalette\superimpose{{\alwaysF}{\cdot}}}}
+\newcommand{\sinceF}{\mathbin{\mathpalette\superimpose{{\eventuallyF}{\cdot}}}}
+\newcommand{\sinceP}{\mathbin{\mathpalette\superimpose{{\eventuallyP}{\textcolor{white}{\cdot}}}}}
+\newcommand{\initialP}{\mbox{\bfseries\sffamily I}}
+\newcommand{\initialF}{\outline{\bfseries\sffamily F}}
+\newcommand\initiallyNP{{\hat{\eventuallyP}}}
+\newcommand\initiallyP[1]{{\hat{\eventuallyP} #1}}
+\newcommand\initiallyNF{{\hat{\eventuallyF}}}
+\newcommand\initiallyF[1]{{\hat{\eventuallyF} #1}}
+
+% breaks in align environment
+\newenvironment{alignbr*}{\allowdisplaybreaks\csname align*\endcsname}{\csname endalign*\endcsname}
+
+% operations on states in multi-shot section
+\newenvironment{StateOp}{%
+\newcommand\opitem[1]{%
+\renewcommand\makelabel[1]{####1}
+\item[##1]\leavevmode\\}
+\description[font=\normalfont,leftmargin=2em]}{%
+\enddescription}
+
+% restyle algorithm environment
+% (makes it look similar to the listings environment)
+\DontPrintSemicolon
+\SetStartEndCondition{ }{}{}%
+\SetKwComment{tcp}{\#~}{}
+\SetKwProg{Fn}{function}{:}{end}
+\SetKw{KwTo}{in}
+\SetKwFor{For}{for}{\string:}{}%
+\SetKwIF{If}{ElseIf}{Else}{if}{:}{else if}{else:}{}%
+\SetKwFor{While}{while}{:}{fintq}%
+\SetKwFor{ForEach}{for each}{:}{fintq}%
+\AlgoDontDisplayBlockMarkers\SetAlgoNoEnd\SetAlgoNoLine%
+\setlength{\algomargin}{\leftskip}
+\addtolength{\algomargin}{\parskip}
+\SetNlSkip{1em}
+\SetNlSty{}{}{}
+\let\savedalgorithm\algorithm
+\let\savedendalgorithm\endalgorithm
+\newenvironment{algorithm2e}{%
+\renewenvironment{algocf}[1][h]{}{}%
+\savedalgorithm}{%
+\savedendalgorithm}
+\DeclareFloatingEnvironment[name=Algorithm]{algorithmf}
+\renewenvironment{algorithm}{%
+\algorithmf\raggedright}{%
+\endalgorithmf}
+\Crefname{algorithmf}{Algorithm}{Algorithms}
+\Crefname{algocfline}{Line}{Lines}
+
+% support for nested listings
+\DeclareCaptionSubType{listing}
+\captionsetup[sublisting]{labelformat=parens}
+\Crefname{sublisting}{Listing}{Listings}
+
+\renewcommand{\thesection}{\thechapter.\arabic{section}}
+\makeatletter
+\def\@seccntformat#1{%
+  \protect\textup{\protect\@secnumfont
+    \csname the#1\endcsname\enspace
+  }%
+}
+\renewcommand{\tocsection}[3]{%
+  \indentlabel{\@ifnotempty{#2}{\ignorespaces#1 #2\quad}}#3}
+\makeatother
+
+\newsavebox{\mintedbox}
+\NewDocumentEnvironment{mintedsubcaptionbox}{O{#2}mO{}m}{%
+  \VerbatimEnvironment%
+  \RecustomVerbatimEnvironment{Verbatim}{BVerbatim}{}%
+  \begin{lrbox}{\mintedbox}%
+  \begin{minted}[escapeinside=||,#3]{#4}}{%
+  \end{minted}%
+  \end{lrbox}%
+  \subcaptionbox[#1]{#2}[.5\linewidth]{\usebox{\mintedbox}}}
+
+\newcommand\inputmintedsubcaptionbox[3]{%
+  \RecustomVerbatimEnvironment{Verbatim}{BVerbatim}{}%
+  \begin{lrbox}{\mintedbox}%
+  \inputminted[escapeinside=\%\#]{#2}{#3}%
+  \end{lrbox}%
+  \subcaptionbox{#1}[.49\linewidth]{\usebox{\mintedbox}}}
+
+% line refs with the minted package
+\newcommand\llabel[1]{\label[line]{#1}\hypertarget{#1}{}}
+\newcommand\Lref[1]{Line~\hyperlink{#1}{\ref*{#1}}}
+\newcommand\lref[1]{\Lref{#1}}
+\newcommand\Lrefrange[2]{Lines~\hyperlink{#1}{\ref*{#1}} to~\hyperlink{#2}{\ref*{#2}}}
+\newcommand\lrefrange[2]{\Lrefrange{#1}{#2}}
+
+\makeatletter
+\newcounter{lrefs@count}%
+\newcounter{lrefs@step}%
+\newcommand\lrefs[1]{{%
+  \def\lrefs@list{}%
+  \forcsvlist{\listadd\lrefs@list}{#1}%
+  \setcounter{lrefs@count}{0}%
+  \setcounter{lrefs@step}{0}%
+  \def\do##1{\stepcounter{lrefs@count}}%
+  \dolistloop{\lrefs@list}%
+  \def\do##1{%
+    \stepcounter{lrefs@step}%
+    \ifnum\value{lrefs@step}=1%
+      \def\lrefs@pre{Lines~}%
+    \else%
+      \ifnum\value{lrefs@step}=\value{lrefs@count}%
+        \ifnum\value{lrefs@count}=2%
+          \def\lrefs@pre{ and~}%
+        \else%
+          \def\lrefs@pre{, and~}%
+        \fi%
+      \else%
+        \def\lrefs@pre{,~}%
+      \fi%
+    \fi%
+    \lrefs@pre\hyperlink{##1}{\ref*{##1}}%
+  }%
+  \dolistloop{\lrefs@list}%
+}}
+\makeatother
+
+% shortcuts for inline Python and ASP code
+\newcommand\ASP{\mintinline[escapeinside=||]{clingo}}
+\newcommand\Python{\mintinline[breaklines]{python}}
+
+% wrap longer intertext in a parbox
+\makeatletter
+\newlength{\longintertext@parindent}
+\AtBeginDocument{\setlength{\longintertext@parindent}{\parindent}}
+\newcommand{\longintertext}[1]{%
+  \intertext{%
+    \parbox{\linewidth}{%
+      \setlength{\parindent}{\longintertext@parindent}
+      \noindent#1%
+    }%
+  }%
+}
+\makeatother
+
+% macros to include publications
+\makeatletter
+\pgfkeys{/includepub/.cd,
+  title/.initial=,
+  label/.initial=,
+  path/.initial=,
+  authors/.initial=,
+  published_in/.initial=,
+  bibentry/.initial=,
+  url/.code={\pgfkeyssetvalue{includepub@url}{#1}\pgfkeysgetvalue{includepub@url}{\includepub@url}},
+  doi/.code={\pgfkeyssetvalue{includepub@doi}{#1}\pgfkeysgetvalue{includepub@doi}{\includepub@doi}},
+  note/.code={\pgfkeyssetvalue{includepub@note}{#1}\pgfkeysgetvalue{includepub@note}{\includepub@note}}}
+
+\newcommand\includepub@get[1]{%
+  \pgfkeysvalueof{/includepub/#1}}
+
+\newcommand\includepub@include[1]{%
+  \ifdef{\Final}%
+    {\includepdf[pages=-]{#1}}%
+    {\includepdf[pages=1]{#1}}}
+
+\newcommand\includepub[1]{%
+  \bgroup%
+
+  \pgfkeys{/includepub/.cd,#1}
+  \clearpage
+  \section{\includepub@get{title}}\label{\includepub@get{label}}
+  \begin{description}
+    \item[Authors] \includepub@get{authors}
+    \item[Published in] \includepub@get{published_in}
+    \item[Bibliography entry] \includepub@get{bibentry}
+    \pgfkeysifdefined{includepub@url}
+      {\item[URL] \url{\includepub@url}}
+      {}
+    \pgfkeysifdefined{includepub@doi}
+      {\item[DOI] \href{https://doi.org/\includepub@doi}{\includepub@doi}}
+      {}
+    \pgfkeysifdefined{includepub@note}
+      {\item[Notes] \includepub@note}
+      {}
+  \end{description}
+  \includepub@include{\includepub@get{path}}
+  \egroup}
+\makeatother
+
+\input{aux/macro}
+\input{aux/asp-macros/systems}
 
 \begin{document}
 
-\title{Paper Template}
+\frontmatter
 
-\author{%
-  Author\\
-  University of Potsdam, Germany
-}
+\title[From Semantic Foundations to Applications of Hybrid Answer Set Programming]{From Semantic Foundations to Applications of Hybrid Answer Set Programming}
+
+\author{Philipp Wanko}
+\address{University of Potsdam}
+\curraddr{}
+\email{wanko@cs.uni-potsdam.de}
+\thanks{}
+
+\date{January 1, 2026}
+
+\input{sec/abstract}
 
 \maketitle
 
-\input{abstract}
-\input{introduction}
-\input{background}
-\input{approach}
-\input{discussion}
+% Dedication.  If the dedication is longer than a line or two,
+% remove the centering instructions and the line break.
+%\cleardoublepage
+%\thispagestyle{empty}
+%\vspace*{13.5pc}
+%\begin{center}
+%  Dedication text (use \\[2pt] for line break if necessary)
+%\end{center}
+%\cleardoublepage
 
-\printbibliography{}
+%    Change page number to 6 if a dedication is present.
+\setcounter{page}{4}
+
+\tableofcontents
+
+\mainmatter
+
+\input{sec/introduction}
+\input{sec/papers}
+\input{sec/discussion}
+\input{sec/summary}
+
+\appendix
+
+\input{sec/grammar}
+
+\backmatter
+\bibliography{local,krr,procs}
 
 \end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
