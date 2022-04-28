@@ -30,6 +30,54 @@
   \item
   \input{flt/asp}
   The ASP solving process can be summarized by the steps depicted in \cref{fig:asp-in-a-nutshell}.
+  \item \cite{cafascwa20a}
+  \begin{itemize}
+    \item Many real-world applications have a heterogeneous nature.
+    Let it be in
+    bio-informatics~\cite{frscscsiwa18a},
+    hardware synthesis~\cite{newascha18b},
+    or train scheduling~\cite{abjoossctowa19a},
+    all cited ones consist of genuine qualitative and quantitative constraints.
+    While the former often account for topological requirements, like reachability,
+    the latter usually address (fine-grained) time or resource requirements.
+    \item
+    The hybrid nature of such applications has led to mixed solving technology,
+    foremost in the area of Satisfiability modulo Theories (SMT;~\cite{niolti06a}).
+    \item
+    Meanwhile,
+the need for hybridization has also prompted similar approaches in neighboring areas such as Answer Set Programming (ASP;~\cite{lifschitz08b}).
+    \item
+    When it comes to extending ASP with foreign reasoning methods,
+the design often follows the algorithmic framework of SMT and leaves semantic aspects behind.
+For instance, a popular approach is to combine ASP with Constraint Processing (CP;~\cite{dechter03a}),
+also referred to as Constraint ASP (CASP;~\cite{lierler14a}).
+This blends non-monotonic aspects of ASP with monotonic ones of CP but
+fails to provide a homogeneous representational framework.
+In particular, the knowledge representation capabilities of ASP, like defaults and aggregates, remain inapplicable to constraint variables.
+    \item
+    We addressed this in~\cite{cakaossc16a} by integrating ASP and CP in the uniform semantic framework called \emph{Here-and-There with constraints}~(\HTC).
+    \item
+This relies upon the logic of Here-and-There (\HT;~\cite{heyting30a}) along with
+its non-monotonic extension, called Equilibrium Logic~\cite{pearce96a}.
+    \item
+    As an example,
+consider the hybrid ASP rule%
+\footnote{We put dots on top of braces, viz.~``$\agg{ \dotsc }$'', to indicate \emph{multisets}.}
+\begin{gather}\label{eq:tax.sum}
+  \mathit{total}(R) := \mathit{sum}\agg{ \, \mathit{tax}(P) : \mathit{lives}(P,R) \,  } \ \leftarrow \ \mathit{region}(R)
+  \quad
+\end{gather}
+gathering the total tax revenue of each region $R$ by summing up the tax liabilities of the region's residents, $P$.
+%
+As a matter of fact,
+the calculation of tax liability is highly complex, and relies on defaults and discounts to address incomplete information,
+which nicely underlines the need for non-monotonic constraint variables.
+  \end{itemize}
+  \item \cite{cafascwa20b}
+    \begin{itemize}
+      \item 
+      This integration is however often done in system-oriented ways that leave semantic aspects behind.
+    \end{itemize}
 \end{itemize}
 
 \section{Selected contributions}
