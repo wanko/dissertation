@@ -1,0 +1,21 @@
+\def\@maketitle#1{%
+  \newpage
+  \vspace*{-15\p@}%
+  {\centering \sloppy
+   \pe@rl{#1}%
+   {\normalfont\LARGE\itshape \@title\par}%
+   \vskip 16\p@
+   {\normalfont\normalsize\rmfamily
+    \let\authorbreak\auth@rbreak
+    \let\and\@nd
+    \b@at
+      \@author
+    \end{author@tabular}%
+   \par}%
+%   \ifprodtf
+     \vskip 10pt%
+%     {{\affilsize\it submitted \@submitted; revised \@revised; accepted \@accepted}}\par
+%   \fi
+  }%
+  \vskip 18\p@ \@plus 2\p@ \@minus 1\p@
+}

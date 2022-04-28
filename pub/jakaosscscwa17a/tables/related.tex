@@ -1,0 +1,34 @@
+\begin{table}[ht]
+\caption{Comparing related applications}
+\label{tab:related}
+\center\small
+\begin{threeparttable}
+\begin{tabular}{@{\!\!}l@{\!\!}@{}c@{}@{}c@{}@{\!}c@{\!}@{\!}c@{\!}@{}c@{}@{\!}c@{\!}@{\!}c@{\!}@{\!}c@{\!}@{\!}c@{\!}@{\!}c@{\!}@{\!}c@{\!}}
+\toprule
+ & \clingo{}     & \clingo{}     & \clingcon{} & \aspartame{} & \inca{} & \ezcsp{} & \ezsmt{} & \mingo{} & \dingo{} & \sysfont{aspmt} & \dlvhex{}\\
+ & [\textsc{dl}] & [\textsc{lp}] &             &              &         &          &          &          &          & \sysfont{2smt}  & [\textsc{cp}]\\\midrule
+translation  & \xmark{} & \xmark{} & \cmark{}\tnote{1} & \cmark{} & \xmark{} & \xmark{} & \cmark{} & \cmark{} & \cmark{} & \cmark{} & \xmark{} \\
+explicit     & \xmark{} & \xmark{} & \cmark{}\tnote{2} & \cmark{} & \cmark{} & \xmark{} & \xmark{} & \xmark{} & \xmark{} & \xmark{} & \xmark{} \\
+non-linear   & \xmark{}\tnote{3} & \xmark{} & \cmark{}\tnote{4} & \cmark{}\tnote{4} & \cmark{} & \cmark{} & \cmark{} & \xmark{} & \xmark{}\tnote{3} & \cmark{} & \cmark{} \\
+real numbers & \xmark{} & \cmark{} & \xmark{} & \xmark{} & \xmark{} & \cmark{} & \cmark{} & \cmark{}\tnote{5} & \xmark{} & \cmark{} & \xmark{}\\
+optimization & \xmark{} & \cmark{}\tnote{6} & \cmark{} & \cmark{} & \cmark{} & \xmark{} & \xmark{} & \xmark{} & \xmark{} & \xmark{} & \cmark{} \\
+non-tight    & \cmark{} & \cmark{} & \cmark{} & \cmark{} & \cmark{} & \cmark{} & \xmark{} & \cmark{} & \cmark{} & \xmark{} & \cmark{} 
+\end{tabular}
+\begin{tablenotes}\footnotesize
+\begin{minipage}{0.5\textwidth}
+\item[1] Allows for partial problem translations
+\item[2] Lazily created
+\item[3] Only difference constraints
+\end{minipage}%
+\begin{minipage}{0.45\textwidth}
+\item[4] Translation of distinct into linear constraints
+\item[5] Only for variables
+\item[6] Optimization relative to stable models
+\end{minipage}
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../paper"
+%%% End:

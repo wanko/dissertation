@@ -1,0 +1,91 @@
+ARCHIVE CONTENTS
+================
+
+- Subfolder "enc" containing repair encodings
+
+  * input.gringo              : automatic input detection      (basic program)
+  * repair_config.gringo      : repair type configuration      (basic program)
+  * repair_core.gringo        : candidate repair generation (extended program)
+  * repair_cardinality.gringo : cardinality minimization    (optimize program)
+  * repair_subset.gringo      : subset minimization      (disjunctive program)
+
+- Subfolder "gra" containing influence graph
+
+  * tf_sig_bnum.lp            : transcriptional network of Escherichia coli
+
+- Subfolder "obs" containing experimental data
+
+  * heatShock_WT/             : Heatshock samples
+  * Stat_vs_Exp/              : Exponential-Stationary growth shift samples
+
+
+REQUIRED/RECOMMENDED PROGRAMS
+=============================
+
+- gringo : version 2.0.2 (or later)
+- clasp  : version 1.2.0 (or later)
+- claspD : version 1.1.0 (or later)
+
+Sources (and binaries) are available at: http://potassco.sourceforge.net/.
+
+
+USAGE
+=====
+
+- Configuration of repair types
+
+  Admissible repair operations are specified by providing a value for the
+  constant "repair". Thereby, the following letters stand for repair types:
+
+  * 'a' : add edges                             (model repair)
+  * 'e' : flip signs of edges                   (model repair)
+  * 'g' : globally make vertices input          (model repair)
+  * 'i' : make vertices input for an experiment  (data repair)
+  * 'v' : flip signs of vertices                 (data repair)
+
+  Any string composed of these letters in alphabetic order, i.e., a substring
+  of 'aegiv', determines a collection of admissible repair operations. In the
+  example calls below, we denote any such configuration string by REPAIR.
+
+  For the influence graph coming along with this archive, including 'a' as
+  repair type leads to a (possibly too) huge ground instantiation.
+
+- Cardinality-minimal repair
+
+  Let GRAPH denote a file containing the description of an influence graph (in
+  terms of facts), and likewise let OBS_1,...,OBS_n contain experimental data.
+  Then, a cardinality-minimal repair along with the minimum number CARD_MIN of
+  repair operations to apply are computed using a call of the following form:
+
+  gringo -c repair=REPAIR input.gringo repair_config.gringo repair_core.gringo \
+  repair_cardinality.gringo GRAPH OBS_1 ... OBS_n | clasp 0
+
+  Note that further options, e.g., "--restart-on-model", can be set for clasp.
+
+- Prediction
+
+  Prediction w.r.t. cardinality-minimal repairs is accomplished via clasp's
+  cautious reasoning mode. A respective call is of the following form:
+
+  gringo -c repair=REPAIR input.gringo repair_config.gringo repair_core.gringo \
+  repair_cardinality.gringo GRAPH OBS_1 ... OBS_n | clasp 0 --opt-all \
+  --opt-value=CARD_MIN --cautious
+
+- Subset-minimal repair
+
+  Subset-minimal repairs can be computed using claspD instead of clasp. A
+  respective call, where NUM stands for the desired number of repairs and
+  witnessing vertex/edge labelings, is of the following form:
+
+  gringo -c repair=REPAIR input.gringo repair_config.gringo repair_core.gringo \
+  repair_subset.gringo GRAPH OBS_1 ... OBS_n | claspD NUM
+
+
+FURTHER INFORMATION
+===================
+
+For further details, especially on the logical background of repair and
+on encodings, see the KR'10 paper "Repair and Prediction (under Inconsistency)
+in Large Biological Networks with Answer Set Programming" or consult:
+http://www.cs.uni-potsdam.de/bioasp/.
+Requests by e-mail can be sent to authors of the aforementioned KR'10 paper.

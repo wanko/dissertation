@@ -1,0 +1,12 @@
+define(`mleq',`
+cnt(_mleq,$#)
+')
+define(`mlt',`
+cnt(_mlt,$#)
+')
+define(`mgeq',`
+cnt(_mgeq,$#)
+')
+define(`mgt',`
+cnt(_mgt,$#)
+')

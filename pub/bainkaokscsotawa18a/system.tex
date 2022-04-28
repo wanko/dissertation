@@ -1,0 +1,527 @@
+\section{The {\asap} System}\label{system}
+
+The {\asap} system accepts a standard input format,
+viz.\ \texttt{ectt}~\citep{DBLP:journals/anor/BonuttiCGS12}.
+For this, we implemented a simple converter that provides us with the
+resulting CB-CTT instance in \asap's fact format.
+In turn, these facts are combined with the \asap\ encoding,
+which is subsequently solved by the ASP system \clingo\ that returns
+an assignment representing a solution to the original CB-CTT instance.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Overview of Experiments}
+
+Our empirical analysis considers all instances in different formulations
+(UD1--UD5), which are publicly available from the CB-CTT portal.
+%
+The benchmark set
+\texttt{ITC-2007} consists of 21 instances denoted by \verb+comp*+,
+\texttt{DDS-2008} of 7 instances by \verb+DDS*+,
+\texttt{Test} of 5 instances by \verb+test*+,
+\texttt{Erlangen} of 6 instances by \verb+erlangen*+,
+% \footnote{%
+% Among 6 instances, 
+% \code{erlangen2011_2}, 
+% \code{erlangen2012_1}, 
+% \code{erlangen2012_2}, and
+% \code{erlangen2013_1} have been changed since 2014 due to the crush of
+% the CB-CTT portal.
+% We used new version of these instances in this paper.
+% Note that our previous works~\citep{basotainsc13a,bainkascsotawa16}
+% used old ones.
+% }
+\texttt{EasyAcademy} of 12 instances by \verb+EA*+,
+\texttt{Udine} of 9 instances by \verb+Udine*+, and
+the newest addition \texttt{UUMCAS\_A131}.
+% Among them, the instances of \texttt{Erlangen} are very large.
+% For example, 
+% the instance \verb|erlangen2012_2.ectt| consists of 
+% 850 courses, 
+% 132 rooms,
+% 3,691 curricula,
+% 7,780 unavailability constraints, and 
+% 78,628 room constraints.
+%
+We ran them on a cluster of Linux machines equipped with
+dual Xeon E5520 quad-core 2.26 GHz processors and 48 GB
+RAM.
+We imposed a limit of 3 hours and 20GB. We used {\clingo} 5~%
+\footnote{\scriptsize We used revision r10140 of the current
+  development branch available at \texttt{https://potassco.org/}.}
+for our experiments.
+
+Since {\clingo} utilizes a variety of techniques and parameters guiding the search, we explored several configurations. 
+We focused on parameters concerning optimization and configurations from {\clingo}'s portfolio.
+Preliminary benchmarks on the \texttt{ITC-2007} instances eliminated suboptimal configurations. 
+Furthermore, configurations were only considered if they had so-called ``unique solutions'' on the whole benchmark set. A solution for a configuration is called unique if there is no other configuration that has a better objective value or proven optimality for the same value.
+%
+One configuration was automatically determined by {\piclasp} 1.2.1,
+a configurator for {\clingo} based on \emph{smac}~\citep{huhole11b}. 
+The parameter space was restricted to optimization related parameters and portfolio configurations. 
+The \texttt{ITC-2007} instances served as training set\footnote{We are aware that the training set is included in the test set. The decision was made since no separate instance set was available and we wanted to record results for all instances and configurations.} and each solver run was limited to 600 seconds.
+
+We determined the following 15 configurations: \emph{BB0}, \emph{BB0-HEU3-RST}, \emph{BB2}, \emph{BB2-TR}, 
+\emph{Dom5}, \emph{USC1}, \emph{USC11}, \emph{USC11-CR}, \emph{USC11-JP}, \emph{USC13}, \emph{USC13-CR}, \emph{USC13-HEU3-RST-HD
+ (LRND)}, \emph{USC3-JP}, \emph{USC15}, \emph{USC15-CR} which consist of a variety of {\clingo}'s search options:
+\begin{itemize}
+ \item \emph{\textbf{BB$n$}}:
+    \emph{Model-guided} branch-and-bound approach traditionally used
+    for optimization in ASP. %~\citep{aldomari14a}. 
+    The idea is to iteratively produce models of descending cost until the optimal is found by establishing unsatisfiability of finding a model with lower cost.
+    Parameter $n$ controls how the cost is step-wise reduced, either strict lexicographically, hierarchically, exponentially increasing or exponentially decreasing.
+ \item \emph{\textbf{USC$n$}}:
+    \emph{Core-guided} optimization techniques originated in MaxSAT~\citep{SATHandbook}. 
+    Core-guided approaches rely on successively identifying and relaxing unsatisfiable cores until a model is obtained.
+    The parameter $n$ indicates what refinements and algorithms are used, e.g. algorithms \textit{oll}~\citep{ankamasc12a}, \textit{pmres}~\citep{narbac14a},
+    the combination of both with disjoint core preprocessing~\citep{marpla07} and whether the constraints used to relax an unsatisfiable core are 
+    added as implications or equivalences. For $n>8$, a technique called \emph{stratification}~\citep{anbole13a} is enabled. \emph{Stratification} refines lower bound improving algorithms on handling weighted
+    instances. The idea is to focus at each iteration on soft constraints with higher weights by properly restricting the set of rules added to the solving process. 
+    The goal is to faster obtain a better bound without having to prove optimality. 
+ \item \emph{\textbf{HEU3}}:
+    Enables optimization-oriented model and sign heuristic.
+ \item \emph{\textbf{RST}}:
+    The solver performs a restart after every intermediate model that was found.
+ \item \emph{\textbf{DOM5}}:
+    Atoms that are used in the optimization statement are preferred as decision variables in the solving algorithm and the sign heuristic tries to make those atoms true. The technique used to modify the variables is called \emph{domain-specific heuristic} and is presented in \citep{gekaotroscwa13a}.
+ \item \emph{\textbf{LRND}}:
+    Refers to the configuration automatically learned by \piclasp{}. For space reasons, the configuration is referred to as \emph{LRND} 
+    from here on out.
+ \item \emph{\textbf{CR}}:
+%    Refers to {\clingo}'s portfolio configuration \emph{crafty} that uses defaults geared towards crafted problems.
+   Refers to {\clingo}'s configuration \emph{crafty} that is geared towards crafted problems.
+ \item \emph{\textbf{HD}}:
+%    Refers to {\clingo}'s portfolio configuration \emph{handy} that is geared towards larger problems.
+   Refers to {\clingo}'s configuration \emph{handy} that is geared towards larger problems.
+ \item \emph{\textbf{JP}}:
+%    Refers to {\clingo}'s portfolio configuration \emph{jumpy} that uses more aggressive defaults.
+   Refers to {\clingo}'s configuration \emph{jumpy} that uses more aggressive defaults.
+ \item If neither \emph{\textbf{CR}}, \emph{\textbf{JP}} or \emph{\textbf{HD}} is specified, {\clingo}'s default configuration for ASP problems \emph{tweety} is taken. 
+       This configuration was determined by {\piclasp} and refined manually. For more information on {\clingo}'s search configurations, see ~\citep{gekakarosc15a}.
+\end{itemize}
+
+We introduce the notion of \emph{$k$-way configurations}.
+A $k$-way configuration is a set of $k$ configurations, chosen from the 15 aforementioned configurations. The result of a $k$-way configuration for each instance is the best result among the $k$ configurations in the set.
+For example, $\{\emph{USC1}, \emph{BB0}, \emph{USC11}\}$ is a 3-way configuration with the best results between \emph{USC1}, \emph{BB0} and \emph{USC11}.
+%
+Intuitively, 1-way configurations are equal to the 15  configurations listed above
+and the only 15-way configuration is equal to the virtual best solver, referred to as \emph{VBS-ASP}.
+  
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\begin{table}
+\scriptsize
+\centering
+\caption{Comparison between different {\clingo} configurations}
+\label{table:bench:configuration_comparisson}
+%\renewcommand{\arraystretch}{0.9}
+%\tabcolsep = 3mm
+%\begin{tabular}[t]{l|| l | l | l | l }\hline
+%\begin{tabular}[t]{l|| r | r | r | r }\hline
+\begin{tabular}[t]{l|rrrr }\hline
+Configuration & Mean rank& \#Optima & \#Unsolved & \#Unique\\\hline	
+\emph{VBS-ASP}				& 12288.25	& 125	& 7		& -  \\
+Best 14-way configuration & 12370.44  & 125	& 7		& -\\	
+Best 13-way configuration  & 12452.64  & 125	& 7		& -\\	
+Best 12-way configuration 	& 12596.48  & 125	& 7		& -\\	
+Best 11-way configuration 	& 12760.86  & 125	& 7		& -\\	
+Best 10-way configuration 	& 13004.02  & 125	& 7		& -\\	
+Best 9-way configuration 	& 13281.43  & 125	& 7		& -\\	
+Best 8-way configuration 	& 13589.65  & 125	& 7		& -\\	
+Best 7-way configuration 	& 13921.00	& 125	& 7		& -\\	
+Best 6-way configuration 	& 14510.06	& 125	& 7		& -\\	
+Best 5-way configuration 	& 15171.03	& 125	& 7		& -\\	
+Best 4-way configuration 	& 16354.07	& 122	& 7		& -\\	
+Best 3-way configuration 	& 17732.37	& 122	& 7		& -\\	
+Best 2-way configuration 	& 19606.93	& 122	& 7		& -\\	
+\emph{USC11-JP}		& 23321.47	& 122	& 8		& 20\\	
+\emph{USC11}	    & 23866.24	& 119	& 7		& 6 \\	
+\emph{BB0-HEU3-RST}	& 23960.18	& 77	& 7		& 23\\
+\emph{USC13}		& 24206.02	& 116	& 7		& 3 \\	
+\emph{USC15}		& 24250.30	& 117	& 7		& 2 \\	
+\emph{USC13-CR}		& 24324.16	& 116	& 23	& 5 \\	
+\emph{USC15-CR}		& 24343.91	& 118	& 22    & 4 \\	
+\emph{USC11-CR}		& 24377.86	& 116	& 23	& 3 \\
+\emph{USC13-HEU3-RST-HD}
+ (\emph{LRND})		& 24602.89	& 115	& 7		& 9\\	
+\emph{BB2-TR}		& 24896.40	& 79	& 8		& 28\\
+\emph{USC3-JP}		& 25179.12	& 125	& 127	& 6 \\	
+\emph{BB0}			& 25281.20	& 73	& 7		& 14\\	
+\emph{USC1}			& 25810.42	& 118	& 134	& 2 \\
+\emph{BB2}			& 26662.98	& 78	& 7		& 6 \\
+\emph{Dom5}			& 27310.77	& 76	& 160	& 7 \\\hline
+\end{tabular}
+\end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Evaluation of Basic Encoding}
+
+At first, we analyze the difference between the configurations using the basic encoding.
+To this end, 
+Table~\ref{table:bench:configuration_comparisson} contrasts the
+results obtained from {\clingo}'s different configurations, 
+the best $k$-way configurations where $2\leq k\leq 14$, 
+as well as the virtual best configuration \emph{VBS-ASP}.
+The configurations are ordered by the mean rank that was calculated as
+suggested in the ITC-2007~\footnote{\url{http://www.cs.qub.ac.uk/itc2007/index_files/ordering.htm}}. 
+Since there was no distance to feasibility available, 
+it was assumed to be the same for all configurations and instances.
+Table~\ref{table:bench:configuration_comparisson} also displays the
+number of optimal solutions, unsolved instances and unique solutions
+for each configuration. 
+
+The highest-ranked single (viz. 1-way) configuration was
+\emph{USC11-JP}, though 
+\emph{USC3-JP} obtained the highest number of optimal solutions among
+the single configurations.
+Overall, \emph{core-guided} strategies with \emph{stratification} 
+(\emph{USC$n$ with $n>8$}) seem to provide a good trade-off between
+providing intermediate solutions with good upper bounds and proving
+optimality. 
+The only \emph{model-driven} configuration among the top single
+configuration is \emph{BB0-HEU3-RST}. 
+The optimization-tailored heuristics and frequent restarts seem to
+improve convergence of the objective function value, but do not help
+in proving optimality, since, despite its high rank, the configuration
+found the third least optimal solutions.
+
+No smaller best $j$-way configuration was able to beat or be as good
+as a best $i$-way configuration where $j<i$.
+Adding more configurations continuously improves the mean rank and the
+total number of 125 optimal solutions is reached with combining five
+configurations.
+Since the mean rank takes into account the individual ranking of the
+objective value for each instance, the large distance in mean rank
+between the best single configuration (\emph{USC11-JP}) and the best
+virtual configuration (\emph{VBS-ASP}) indicates that the different
+instances are sensitive to different configurations.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\begin{table}
+\scriptsize
+\centering
+\caption{Best k-way configurations}
+\label{table:bench:best_kway}
+%\renewcommand{\arraystretch}{0.9}
+\tabcolsep = 1.8mm
+%\begin{tabular}[t]{l|| l | l | l | l | l | l | l | l | l | l | l | l | l || p{1.0cm} }\hline
+%\begin{tabular}[t]{l|lllllllllllll|r}\hline
+\begin{tabular}[t]{l|*{13}{c}|r}\hline
+\backslashbox{Configuration}{$k$} & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & \#Included in best\\\hline	
+\emph{BB0-HEU3-RST}  & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & 13\\
+\emph{USC11-JP}  & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & 13\\	
+\emph{BB2-TR} &  & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & 12\\	
+\emph{USC13-CR} &  &  & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & 11\\	
+\emph{USC11} &  &  &  & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & 10\\	
+\emph{BB0} &  &  &  &  & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & 9\\	
+\emph{LRND} &  &  &  &  &  & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & 8\\
+\emph{USC3-JP}  &  &  &  &  &  &  & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & 7\\	
+\emph{Dom5} &  &  &  &  &  & & & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & 6\\	
+\emph{BB2} & &  &  & & & & & & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & 5\\	
+\emph{USC15-CR} &  &  &  & & & & & & & $\times$ & $\times$ & $\times$ & $\times$ & 4\\	
+\emph{USC13} &  &  & & & & & & & & & $\times$ & $\times$ & $\times$ & 3\\	
+\emph{USC11-CR} & & & & & & & & & & & & $\times$ & $\times$ & 2\\		
+\emph{USC15} & & & & & & & & & & & & & $\times$ & 1\\\hline
+\end{tabular}
+\end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\comment{Mutsu2Wanko: please add some explanations for the 1st review's
+%  comment of ``It is not clear why N-way configuration sorts particular
+%  configurations in the given ordering as given at Table 3. Can you
+%  describe reasons for reordering in contrast to the ordering given by
+%  mean rank in Table 2?''. W2M :done}
+Table~\ref{table:bench:best_kway} shows which single configurations are included in the best $k$-way configurations. Each column represents one best $k$-way configuration and each row a single configuration. A $\times$ indicates that the configuration is included in the best $k$-way configuration in that row. The last column shows how many times the configuration in that row was in a best $k$-way configuration.
+The rows are ordered in descending order by the times the configuration in the row was included in a best $k$-way configuration.
+The only single configuration that is not contained in any $k$-way configuration is \emph{USC1}.
+For example, the best 5-way configuration is $\{\emph{BB0-HEU3-RST}, \emph{USC11-JP}, \emph{BB2-TR}, \emph{USC13-CR}, \emph{USC11}\}$.
+
+All best $k$-way configurations are contained in best $k+1$-way configurations for all $2\leq k \leq 13$ in the table.
+So increasing $k$ boils down to adding a configuration that provides upper bounds improving the ranking in an optimal way. 
+\emph{USC11-JP} and \emph{BB0-HEU3-RST} are included in all best $k$-way configurations.
+This correlates with the individual ranking of the single configurations, where \emph{USC11-JP} placed first and \emph{BB0-HEU3-RST} third respectively. 
+However, the next configuration added, viz. \emph{BB2-TR}, has the most unique solutions but is individually ranked 10th. Unique solutions provide a definite improvement of the mean rank, because it is guaranteed to improve the rank of at least a number of instances equal to the number of unique solutions. 
+Though, the correlation of the order of configurations added and number of unique solutions is not exact. A new configuration that adds upper bounds for an instance that tie for first place also improve the overall mean rank. Other examples of this observation are \emph{Dom5}, ranked last but included in 6 best $k$-way configurations, and \emph{USC15}, ranked 5th but only in one best $k$-way configuration. \emph{Dom5} has seven and \emph{USC15} two unique solutions.
+
+Information about the best $k$-way configurations can be used to optimally configure a
+multi-threaded portfolio configuration whenever $k$ threads are available. 
+The results show that each instance is configuration-sensitive, and combining configurations in an optimal way improves the results significantly.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table}
+  \caption{\emph{VBS-ASP} : the times of finding optimal solutions}
+  \label{table:bench:optimum_times}
+  \begin{tableB}
+    \input{data_optimum_times_ud1}
+  \end{tableB}
+  \begin{tableB}
+    \input{data_optimum_times_ud2}
+  \end{tableB}
+  \begin{tableB}
+    \input{data_optimum_times_ud3}
+  \end{tableB}
+  \scriptsize
+  \tabcolsep = 0.7mm
+%  \begin{tabular}[t]{|l|r|}\hline
+  \begin{tabular}[t]{cc}\hline
+  	\#Optimal solutions & Average time (sec.) \\\hline
+   \#125& 225.82\\\hline
+\end{tabular}
+\end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+The time in seconds of finding optimal solutions for each combination
+of instance and formulation with \emph{VBS-ASP} is shown 
+in Table~\ref{table:bench:optimum_times}. 
+After the individual times for each formulation,
+the next row shows the number of optimal solutions and the average
+time for the preceding formulation.
+The table below shows the overall number of optimal solution and the
+average time for all combinations.
+The overall average of 225.82 seconds is low compared to the time
+limit of 3 hours.
+% the highest time for a combination being approximately one hour and
+% 9 minutes. 
+With increasing formulation number, the number of optimal solutions
+decreases and, except for UD4, the average time increases. 
+
+We can observe from 
+Table~\ref{table:bench:configuration_comparisson} that 
+seven instances remained unsolved via the basic encoding for
+all configurations. 
+Among them, 
+the six \texttt{erlangen} instances in the UD5 formulation could not
+be grounded within a day and solving was therefore not possible.
+The new instances \texttt{UUMCAS\_A131} in UD5 exceeded the memory
+limit of 20GB while solving.
+
+\subsection{Evaluation of Optimized and Extended Encodings}
+\label{subsec:eval:ext}
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+% \newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+% \newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+% \begin{table}
+% \scriptsize
+% \centering
+% \caption{Comparison between different encodings for UD5}
+% \label{table:bench:optimized_encoding}
+% %\renewcommand{\arraystretch}{0.9}
+% %\tabcolsep = 3mm
+% %\begin{tabular}[t]{l|| l | l | l | l }\hline
+% %\begin{tabular}[t]{l|| r | r | r | r }\hline
+% \begin{tabular}[t]{l|rrrrrrr }\hline
+% Encoding             & Mean rank & \multicolumn{2}{r}{Grounding} &  \multicolumn{2}{r}{Solving} & \#Optima   & \#Unsolved\\
+%                      &           & \emph{T} (sec.)     & \emph{\#TO}      & \emph{T} (sec.)     & \emph{\#TO}    &            &           \\\hline	
+% optimized            & 	\textbf{1.43}     & \textbf{21}  & 0		 &  9314.34      &       52     & 9          & \textbf{0} \\
+% basic 	             & 	1.57              & 1121         & 6		 &  9376.93      &       52     & 9          & 11         \\\hline
+% \end{tabular}
+% \end{table}
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\begin{table}
+\scriptsize
+\centering
+\caption{Comparison between different encodings for UD5}
+\label{table:bench:optimized_encoding}
+%\renewcommand{\arraystretch}{0.9}
+%\tabcolsep = 3mm
+%\begin{tabular}[t]{l|| l | l | l | l }\hline
+%\begin{tabular}[t]{l|| r | r | r | r }\hline
+\begin{tabular}[t]{l|rrrrr }\hline
+Encoding      & Mean rank     & \multicolumn{2}{r}{Grounding}   & \#Optima   & \#Unsolved\\
+              &               & \emph{T} (sec.)  & \emph{\#TO}  &            &           \\\hline	
+optimized     & \textbf{1.43} & \textbf{21}  & \textbf{0}	& \textbf{9} & \textbf{0} \\
+basic 	      & 1.57          & 1121         & 6		& \textbf{9} & 11         \\\hline
+\end{tabular}
+\end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table}
+  \caption{The benchmark results of lexicographic optimization}
+  \label{table:bench:lexico}
+  \begin{tableL}
+    \input{data_lexico}
+  \end{tableL}
+\end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+We evaluate the optimized encoding from Section~\ref{subsec:ext:soft} 
+and the extended encoding using lexicographic optimization in Section~\ref{subsec:ext:lex}.
+%
+We utilize all 61 instances in the UD5 formulation as benchmark set.
+This is because UD5 is the hardest formulation and includes revised
+soft constraints: $S_2, S_4 ,S_6$ and $S_7$.
+%
+To showcase the usefulness of the best $k$-way configurations, 
+we use the {\clingo}'s parallel search via multi-threading~\citep{gekakarosc15a} 
+and configure 8 threads using the best 8-way configuration.
+Since 8 cores are available, every thread will be able to run the instance simultaneously. 
+Grounding and solving respectively were limited to 3 hours and 20GB
+memory usage\footnote{%
+As mentioned, modern ASP systems like {\clingo} first translate
+logic programs (with variables) into equivalent ground (that is,
+variable-free) programs, and then compute the answer sets of the
+ground programs. The former is called \emph{grounding}, and 
+the latter is called \emph{solving}.}.
+
+Table~\ref{table:bench:optimized_encoding} compares the basic encoding
+with the optimized encoding.
+The columns display in order 
+the mean rank to compare the quality of the solutions,
+the average grounding time in seconds (denoted by \emph{T}),
+the number of grounding timeouts (denoted by \emph{\#TO}),
+the number of optimal solutions, and 
+the number of unsolved instances.
+
+The optimized encoding is able to solve all 61 instances. 
+In contrast, the basic encoding cannot find any feasible solutions 
+for 11 instances due to the grounding timeouts for 6 and the solving
+timeouts for 5.
+%
+The optimized encoding drastically reduces the grounding time compared
+to the basic encoding.
+While the number of optima obtained is identical, 
+the lower mean rank shows that the optimized encoding improved upon
+the objective values obtained by the basic encoding.
+
+Next, we employ multi-criteria optimization based on lexicographic
+ordering of the soft constraints as described in
+Section~\ref{subsec:ext:lex}.
+In our experiment, the soft constraints of the UD5 formulation are
+ordered as seen in Listing~\ref{en:ud5_lex.lp}, 
+viz. $S_1 > S_4 > S_2 > S_7 > S_6 > S_3$.
+We use the optimized version of the soft constraints $S_2, S_4 ,S_6$ and $S_7$.
+
+Table~\ref{table:bench:lexico}
+% \comment{M2W: In the table, the lines
+% of \code{DDS1}, \code{DDS4}, and \code{toy} include strange values. Please check them out.}
+shows the benchmark results of
+lexicographic optimization.
+The columns display in order 
+the solving time in seconds, 
+the best utility vector of objective values which are ordered by priority levels,
+the sum of the vector constituting the single-objective point of view,
+and the best bounds obtained from the basic and optimized encodings
+with the single-objective weighted-sum optimization.
+The solving times of instances for which we were able to find the
+optimal vectors are highlighted in bold.
+The better bounds of the last two columns (viz. the single-objective
+case) are also highlighted.
+
+The results show that \asap\ is capable of efficiently solving the 
+multi-criteria optimization problem.
+It manages to find 15 optimal vectors.
+Furthermore, it obtains higher quality single-objective solutions for
+33 instances.
+Note that the optimality of lexicographic optimization
+does not always entail that of the single-objective case,
+as can be seen for the instance \code{comp04}.
+
+\subsection{Comparison with other approaches}
+\label{subsec:comp}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table}
+  \caption{Comparison of {\asap} with other approaches}
+  \label{table:bench:approaches}
+  \begin{tableC}
+    \input{data_comparison}
+  \end{tableC}
+\end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+We compare the performance of \asap\ with other approaches.
+Table~\ref{table:bench:approaches}~\footnote{%
+Among the six instances of \texttt{erlangen},
+\code{erlangen2011_2}, 
+\code{erlangen2012_1}, 
+\code{erlangen2012_2}, and
+\code{erlangen2013_1} have been changed since 2014 due to the crush of
+the CB-CTT portal.
+We used new version of these instances in Table~\ref{table:bench:approaches}.
+Note that our previous works~\citep{basotainsc13a,bainkascsotawa16} used old ones.}
+contrasts the best results of
+{\asap} including optimized encoding and lexicographic optimization,
+with the best known ones on the CB-CTT web 
+portal~\footnote{\url{http://tabu.diegm.uniud.it/ctt/} as of July 20 2017}
+%
+The symbols `$>$' and `$=$' indicate that
+\asap\ produced improved and the same bounds respectively,
+compared to the previous best known bounds.
+If followed by a superscript `$\ast$', these symbols indicate that 
+\asap\ proved the optimality of the obtained bounds.
+That is, the symbol ``$>^\ast$'' indicates that we found and proved a
+new optimal solution.
+The symbol `$n.a$' indicates that the result was not available
+on the web before.
+
+%\comment{M2W: please run experiments on new instance (\code{UUMCAS_A131}) in UD1--UD5,
+%and present the results here. W2M: I included the instance in the original experiments.}
+
+%\comment{M2W: please update the results W2M: I would move the comparison behind the extended encoding and include all results, what do you think?}
+%\comment{W: First comparison with basic encoding, then number of improvements contributed by the optimized and lexicographic encoding respectively and finally overall comparison using everything.}
+The basic encoding succeeded either in improving the bounds or 
+producing the same bounds for 172 combinations (56.4\% in the total), 
+%\comment{W: Here we have the issue of comparing `$n.a$' with `$n.a$', are those the same bounds? I currently included the new erlangen and UUMCAS\_A131 in UD5 since both did not provide any answer.}
+compared with the previous best known bounds.
+More precisely,
+the basic encoding was able to improve the bounds for 42 combinations 
+and to prove that 15 of them are optimal.
+That is, we found and proved new optimal solutions for 15 combinations.
+It was also able to produce the same bounds for 130 combinations
+and to prove for the first time that 35 of them are
+optimal.
+
+The optimized encoding produced one more new optimal solution,
+provided 7 better bounds,
+and produced the same bounds for 4 more instances.
+Furthermore,
+\asap\ was able to produce upper bounds for very large instances in the category
+\verb+erlangen+
+with every formulation, and 24 of them were unsolvable before.
+Additionally, \asap\ was able to improve the bounds of 4 instances
+and achieve the same bound for one instance via lexicographic optimization.
+
+Overall, \asap\ managed to either improve or reproduce the best known bounds for 182 combinations (59.7\% in the total).
+In detail, \asap\ provided 54 better bounds, 
+16 new optima,
+and 128 same bounds, 
+35 of which were proven optimal for the first time.
+
+%
+%\comment{M2W: please rewrite if \code{erlangen} in UD5 is $n.a$. W2M: It is indeed $n.a$ but only in the basic encoding, like mentioned above, I think we should produce the comparison table only once with all results, basic and extended included. }
+
+Finally, we briefly compare the new results with our previous
+work~\citep{basotainsc13a}. 
+The 185 benchmark combinations
+in~\citep{basotainsc13a} were a subset of ones in Table~\ref{table:bench:approaches},
+comprised of the 5 formulations for the categories 
+\verb+comp+, 
+\verb+DDS+, 
+\verb+test+ and 
+\verb+erlangen+ without 
+\verb+erlangen2013_2+ and \verb+erlangen2014_1+.
+Note that 
+we ignore 20 combinations of all \verb+erlangen+ instances for comparison, 
+since these instances are old and different from ones used in this paper.
+%
+The \asap\ system was able to obtain the same or better bounds for 153
+combinations (92.7\% in the total). 
+In detail, \asap\ improves bounds for 94 combinations and proves
+optimality for 31 of them. 
+For 59 combinations, the same bounds were produced and 6 of them were
+confirmed to be optimal.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End:

@@ -1,0 +1,38 @@
+#hide.
+#show put/3.
+
+%flip disks
+
+on0_true(X, Y) :- on0(Y, X).  
+ongoal_true(X, Y) :- ongoal(Y, X).
+
+% choose a disk to move
+1 { move(T,Y) : disk(Y) : Y > 3 } 1 :- time(T), not steps(T).
+ :- move(T,Y), blocked(T,Y).
+
+% choose a location
+1 { put(T,X) : disk(X;X+1) } 1 :- time(T), not steps(T).
+ :- put(T,X), blocked(T,X), not null(T).
+ :- put(T,X), move(T,Y), Y <= X.
+
+% place disks
+on(0,X,Y)   :- on0_true(X,Y).
+on(T+1,X,Y) :- on(T,X,Y), disk(X;Y), X < Y, time(T), not move(T,Y), not steps(T).
+on(T+1,X,Y) :- put(T,X,Y).
+
+% blocked disks
+blocked(T,X) :- disk(X;Y), on(T,X,Y), X < Y.
+
+% convert output
+put(T,X,Y) :- put(T,X), move(T,Y), X < Y.
+
+% check goal conditions
+goal(T) :- on(T,X,Y) : ongoal_true(X,Y), time(T).
+ :- steps(T), not goal(T).
+%  :- steps(T), not on(T,X,Y), ongoal_true(X,Y).
+
+% constrain redundant moves
+null(T) :- put(T,X,Y), on(T,X,Y), X < Y.
+ :- move(T-1;T,Y), not null(T).
+ :- null(T), not goal(T).
+%  :- move(T-1;T,Y).

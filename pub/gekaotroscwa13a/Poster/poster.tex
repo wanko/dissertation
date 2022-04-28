@@ -1,0 +1,246 @@
+\documentclass[final,hyperref={pdfpagelabels=false}]{beamer}
+\usepackage{grffile}
+
+%\mode<presentation>{\usetheme{I6td}}
+\mode<presentation>{\usetheme{Pittsburgh}}
+%\mode<presentation>{\usetheme{Warsaw}}
+
+\useinnertheme{rectangles}
+%\mode<beamer>{\usecolortheme{wolverine}}
+%\mode<beamer>{\usecolortheme{whale}}
+%\mode<beamer>{\usecolortheme{albatross}}
+%\mode<beamer>{\setbeamercolor{alerted text}{fg=blue!200}}%fg=MidnightBlue}}
+%\mode<handout>{\usecolortheme{seagull}}
+%\mode<beamer>{\setbeamercolor{alerted text}{fg=yellow}}
+\setbeamercolor{block title}{bg=blue!8}
+\setbeamercolor{block body}{bg=blue!2}
+%\setbeamertemplate{blocks}[rounded=true, shadow=true] 
+
+%\setbeamertemplate{footline}{}
+
+\useoutertheme{infolines}
+\setbeamertemplate{navigation symbols}{} 
+\setbeamercovered{dynamic}
+\setbeamertemplate{itemize items}[circle]
+\setbeamerfont{block title}{size=\Large}
+%\setbeamertemplate{enumerate items}[default]
+%\setbeamertemplate{footline}[frame number]
+
+%\mode<presentation>{\usetheme{I6pd2}}
+\usepackage[english]{babel}
+\usepackage[latin1]{inputenc}
+\usepackage{amsmath,amsthm, amssymb, latexsym}
+%\usepackage[listings,theorems]{tcolorbox}
+%\usepackage{times}\usefonttheme{professionalfonts}  % obsolete
+%\usefonttheme[onlymath]{serif}
+\boldmath
+%\usepackage[orientation=portrait,size=a0,scale=1.4,debug]{beamerposter}
+%\usepackage[orientation=landscape,size=custom,width=300,height=230,scale=2.5,debug]{beamerposter}
+\usepackage[orientation=landscape,size=a0,debug]{beamerposter} % change list indention level
+
+% \setdefaultleftmargin{3em}{}{}{}{}{}
+
+
+%\usepackage{snapshot} % will write a .dep file with all dependencies, allows for easy bundling
+
+\usepackage{array,booktabs,tabularx}
+%\newcolumntype{Z}{>{\centering\arraybackslash}X} % centered tabularx columns
+%\newcommand{\pphantom}{\textcolor{ta3aluminium}} % phantom introduces a vertical space in p formatted table columns??!!
+\newcommand{\pphantom}{}
+\listfiles
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\graphicspath{{figures/}}
+ 
+\title[Domain-specific Heuristics in ASP]{Domain-specific Heuristics in Answer Set Programming}
+\author[Gebser et al.]{%
+  Martin~Gebser,
+  Benjamin~Kaufmann,
+  Ramon~Otero,
+  Javier~Romero,
+  Torsten~Schaub,
+  and
+  Philipp~Wanko}
+\institute{University of Potsdam and University of Corunna}
+\date{}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newlength{\columnheight}
+\setlength{\columnheight}{105cm}
+
+\input{../macro}
+\renewcommand{\Tsigned}[1]{\ensuremath{{#1}\mapsto\true}} % {\ensuremath{\true{#1}}}
+\renewcommand{\Fsigned}[1]{\ensuremath{{#1}\mapsto\false}} % {\ensuremath{\false{#1}}}
+\renewcommand{\hpredicate}{\texttt{\_heuristic}}
+\newcommand{\hprex}[3]{\ensuremath{#1,{#2},#3}}
+\newcommand{\rvsids}[4]{\multicolumn{3}{c|}{#1$s$ (#2)}}
+\newcommand{\cvsids}[4]{\multicolumn{3}{c|}{#4}}
+\newcommand{\domheu}[3]{#1\%&(#2)&#3\%}
+\newcommand{\data}[2]{&\,\ignorespaces#1$s$&(\ignorespaces#2)\,}
+\newcommand{\pdata}[3]{&\,\ignorespaces#1$s$&(\ignorespaces#2/\ignorespaces#3)}
+\newcommand{\sdata}[3]{&\,\ignorespaces#1$s$&(\ignorespaces#3)}
+
+\newcommand{\dosubtitle}[1]{\bigskip \bigskip \textbf{#1} \bigskip }
+\newcommand{\dosubtitlesimple}[1]{\textbf{#1} \bigskip }
+\newcommand{\fourskip}[0]{ \bigskip \bigskip \bigskip \bigskip }
+
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+\begin{frame}
+
+\vskip50pt
+
+  \begin{beamercolorbox}[wd=\paperwidth]{headline}
+    \begin{columns}
+      \begin{column}{.90\paperwidth}
+	\begin{center}
+        \usebeamercolor{title in headline}{\textbf{\Huge{Domain-specific Heuristics in Answer Set Programming}}\\[1ex]}
+        \usebeamercolor{author in headline}{\large{ Martin~Gebser,Benjamin~Kaufmann, Ramon~Otero,Javier~Romero,
+                       Torsten~Schaub, and   Philipp~Wanko}\\[1ex]}
+        \usebeamercolor{institute in headline}{\color{fg}\large{University of Potsdam and University of Corunna}\\[1ex]}     
+      \end{center}
+      \end{column}
+    \end{columns}
+  \end{beamercolorbox}
+
+
+\vskip75pt
+\begin{columns}[t]
+
+  \begin{column}{.05\textwidth}\end{column}
+   
+  \begin{column}{.27\textwidth}
+    \input{firstcolumn}
+  \end{column}
+
+  \begin{column}{.05\textwidth}\end{column}
+   
+  \begin{column}{.266\textwidth}
+    \input{secondcolumn}
+  \end{column}
+
+  \begin{column}{.05\textwidth}\end{column}
+    
+  \begin{column}{.266\textwidth}
+    \input{thirdcolumn}
+  \end{column}
+
+  \begin{column}{.05\textwidth}\end{column}
+
+\end{columns}
+
+\vskip70pt
+\begin{columns}[t]
+
+  \begin{column}{.055\textwidth}\end{column}
+
+  \begin{column}{.582\textwidth}
+    
+    \begin{block}{Experiments in Abduction with Optimization and PDDL Planning} 
+
+    \begin{columns}[t]
+
+      \begin{column}{.50\textwidth}
+
+	\dosubtitlesimple{Abductive problems wih optimization}
+
+	\begin{itemize}
+	  \item Heuristic rules modify the abducibles, e.g., for the last row in Diagnosis we use:
+	\end{itemize}
+	
+	\begin{semiverbatim}
+	  \ \ \ \ \ \ \ \_heuristic(abnormal(C),level,1) :- component(C).
+	\end{semiverbatim}
+
+	\bigskip %\bigskip \bigskip \bigskip
+
+	\hspace{60pt}
+	\begin{small}%\small
+	  \begin{tabular}{|l|r@{\,}@{\,}r|r@{\,}@{\,}r|r@{\,}@{\,}rr@{\,}@{\,}r|}
+	    \hline
+	    \multicolumn{1}{|c|}{Setting} & \multicolumn{2}{c|}{\textit{Diagnosis}} & \multicolumn{2}{c|}{\textit{Expansion}} & \multicolumn{2}{c}{\textit{Repair (H)}} & \multicolumn{2}{c|}{\textit{Repair (S)}}\\
+	    \hline
+	    \textit{base configuration}         \data{        111.1}{        115}\data{        161.5}{      100}\data{       101.3}{       113}\data{        33.3}{        27}\\
+	    \hline
+	    \texttt{sign,-1}                    \data{        324.5}{        407}\data{         7.6}{         3}\data{         8.4}{         5}\data{         3.1}{\alert{0}}\\
+	    \texttt{sign,-1} \, \texttt{factor,2}    \data{        310.1}{        387}\data{         7.4}{\alert{2}}\data{         3.5}{\alert{0}}\data{         3.2}{         1}\\
+	    \texttt{sign,-1} \, \texttt{factor,8}    \data{        305.9}{        376}\data{         7.7}{\alert{2}}\data{         3.1}{\alert{0}}\data{         2.9}{\alert{0}}\\
+	    \texttt{sign,-1} \, \texttt{level,1}    \data{\alert{76.1}}{\alert{83}}\data{\alert{6.6}}{\alert{2}}\data{\alert{0.8}}{\alert{0}}\data{         2.2}{         1}\\
+	%\multicolumn{1}{|r@{\,}|}{\texttt{level,1 \! }}\data{         77.3}{         86}\data{        12.9}{         5}\data{         3.4}{\alert{0}}\data{\alert{2.1}}{\alert{0}}\\
+	\phantom{\texttt{sign,-1} \, }\texttt{level,1 \! } \data{         77.3}{         86}\data{        12.9}{         5}\data{         3.4}{\alert{0}}\data{\alert{2.1}}{\alert{0}}\\
+	    \hline
+	  \end{tabular}
+	\end{small}
+	\vskip5pt
+	\hspace{62pt} \small{Showing average times (timeouts)}
+
+
+      \end{column}
+
+      \begin{column}{.50\textwidth}
+
+	\dosubtitlesimple{Planning Competition Benchmarks}
+
+	\begin{itemize}
+	  \item Heuristic rules make the fluents persist backwards:
+	\end{itemize}
+	
+	\begin{semiverbatim}
+	  \ \ \ \ \ \ \_heuristic(holds(F,T-1),true, last-T+1) :- holds(F,T).
+
+	  \ \ \ \ \ \ \_heuristic(holds(F,T-1),false,last-T+1) :- not holds(F,T)
+
+	  \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \  \ \ \ \ \ \ \ fluent(F), time(T).
+	\end{semiverbatim}
+
+	\bigskip %\bigskip \bigskip \bigskip
+
+	\hspace{85pt}
+	\begin{small}
+	  \begin{tabular}{|@{\,}r@{\,}|r@{\,}@{\,}r|r@{\,}@{\,}r|r@{\,}@{\,}r|r@{\,}@{\,}r|}
+	    \hline
+	    \multicolumn{1}{|c|}{Problem} & \multicolumn{2}{c|}{\textit{base configuration}} &
+	    \multicolumn{2}{c|}{\hpredicate} & \multicolumn{2}{c|}{\textit{base c. (\alert{SAT})}} & \multicolumn{2}{c|}{\texttt{\_heur.} \textit{(\alert{SAT})}} \\
+	    \hline
+	    \textit{Blocks'00}    \pdata{134.4}{ 180}{  61}\pdata{  9.2}{ 239}{  3}\sdata{163.2}{180}{59}\sdata{ 2.6}{239}{0}\\
+	    \textit{Elevator'00}  \pdata{  3.1}{ 279}{   0}\pdata{  0.0}{ 279}{  0}\sdata{  3.4}{279}{ 0}\sdata{ 0.0}{279}{0}\\
+	    \textit{Freecell'00}  \pdata{288.7}{ 147}{ 115}\pdata{184.2}{ 194}{ 74}\sdata{226.4}{147}{47}\sdata{52.0}{194}{0}\\
+	    \textit{Logistics'00} \pdata{145.8}{ 148}{  61}\pdata{115.3}{ 168}{ 52}\sdata{113.9}{148}{23}\sdata{15.5}{168}{3}\\
+	    \hline
+	    \textit{Depots'02}    \pdata{400.3}{  51}{ 184}\pdata{297.4}{ 115}{135}\sdata{389.0}{ 51}{64}\sdata{61.6}{115}{0}\\
+	    \textit{Driverlog'02} \pdata{308.3}{ 108}{ 143}\pdata{189.6}{ 169}{ 92}\sdata{245.8}{108}{61}\sdata{ 6.1}{169}{0}\\
+	    \textit{Rovers'02}    \pdata{245.8}{ 138}{ 112}\pdata{165.7}{ 179}{ 79}\sdata{162.9}{138}{41}\sdata{ 5.7}{179}{0}\\
+	    \textit{Satellite'02} \pdata{398.4}{  73}{ 186}\pdata{229.9}{ 155}{106}\sdata{364.6}{ 73}{82}\sdata{30.8}{155}{0}\\
+	    \textit{Zenotravel'02}\pdata{350.7}{ 101}{ 169}\pdata{239.0}{ 154}{116}\sdata{224.5}{101}{53}\sdata{ 6.3}{154}{0}\\
+	    \hline
+	    \textit{Total}        \pdata{252.8}{\alert{1225}}{1031}\pdata{158.9}{\alert{1652}}{657}\sdata{\alert{187.2}}{1225}{\alert{430}}\sdata{\alert{17.1}}{1652}{\alert{3}}\\
+	    \hline
+	  \end{tabular}
+	\end{small}
+	\vskip5pt
+	\hspace{95pt} \small{Showing avg. times (plans/timeouts), and avg. times (timeouts) for satisfiable instances }
+      \end{column}
+ 
+    \end{columns}
+
+  \end{block}
+
+  \end{column}
+
+  \begin{column}{.06\textwidth}\end{column}
+
+  \begin{column}{.256\textwidth}
+    \input{downsecond}
+    \begin{center}
+      \vskip40pt
+      \includegraphics[width=.6\linewidth]{potassco_logo_blue.pdf}
+    \end{center}
+  \end{column}
+
+  \begin{column}{.05\textwidth}\end{column}
+
+\end{columns}
+
+\end{frame}
+\end{document}
+

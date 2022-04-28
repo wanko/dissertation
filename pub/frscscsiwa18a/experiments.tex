@@ -1,0 +1,335 @@
+%!TEX root = paper.tex
+\section{System and Experiments}\label{sec:experiments}
+\label{sec:sysandexp}
+
+In this section, we introduce \fluto, our new system for hybrid metabolic network completion, and empirically evaluate its performance.
+The system relies on the hybrid encoding described in Section~\ref{sec:approach}
+along with the hybrid solving capacities of \clingo~\citep{gekakaosscwa16a} for implementing the combination of ASP and LP.
+We use \clingo~5.2.0 %\footnote{To be precise, https://github.com/potassco/clingo/tree/wip commit 99a17f6}
+incorporating as LP solvers either \cplex~12.7.0.0 or \lpsolve~5.5.2.5 via their respective \python\ interfaces.
+We describe the details of the underlying solving techniques in a separate paper and focus below on application-specific aspects.
+
+The output of \fluto\ consists of two parts.
+First, the completion $R''$, given by instances of predicate \texttt{completion}, and
+second, an assignment of floats to (metabolic flux variables $v_r$ for) all $r\in R\cup R''$.
+In our example, we get
+\begin{align*}%*
+R''=\{\texttt{completion}(r_6), \texttt{completion}(r_8), \texttt{completion}(r_9)\}
+\\
+\text{ and } \{\SeedReaction=49999.5, r_9=49999.5, r_3=49999.5, r_2=49999.5, \\
+ \ExportReaction=99999.0, r_6=49999.5, r_5=49999.5, r_4=49999.5\}.
+\end{align*}%*
+
+Variables assigned $0$ are omitted.
+Note the flux value $r_8=0$ even though $r_8\in R''$.
+This is to avoid the self-activation of cycle $C$, $D$ and $E$.
+By choosing $r_8$, we ensure that the cycle has been externally initiated at some point
+but activation of $r_8$ is not necessary at the current steady state.
+
+We analyze
+(i)   the impact of different system configurations
+(ii)  the quality of \fluto's approach to metabolic network completion, and
+(iii) compare the quality of \fluto's solutions with other approaches.
+To have a realistic setting,
+we use degradations of a functioning metabolic network of \textit{Escherichia coli}~\citep{Reed2003} comprising 1075 reactions.
+The network was randomly degraded by 10, 20, 30 and 40 percent,
+creating 10 networks for each degradation
+by removing reactions until the target reactions were inactive according to \emph{Flux Variability Analysis}~\citep{Becker2007}.
+90 target reactions with varied reactants were randomly chosen for each network, yielding 3600 problem instances in total ~\citep{Prigent2017}.
+The reference network consists of reactions of the original metabolic network.
+
+We ran each benchmark on a Xeon E5520 2.4 GHz processor under Linux limiting RAM to 20~GB.
+At first,
+we investigate two alternative optimization strategies for computing completions of minimum size.
+The first one, \emph{branch-and-bound}~(\bb), iteratively produces solutions of better quality until the optimum is found and the other,
+\emph{unsatisfiable core}~(\usc), relies on successively identifying and relaxing unsatisfiable cores until an optimal solution is obtained.
+Note that we are not only interested in optimal solutions
+but if unavailable also solutions activating target reactions without trivially restoring the whole reference network.
+In \clingo, \bb\ naturally produces these solutions in contrast to \usc.
+Therefore, we use \usc\ with stratification~\citep{anbole13a}, which provides at least some suboptimal solutions.
+
+\subsection{System configurations}
+\label{sec:sysconf}
+\newcommand{\shade}[2]% #1 = cell, #2 = max
+{%
+    \cellcolor{black!\xinttheiexpr 80*#1/#2-30\relax}%
+       {#1}%
+}%
+
+
+    \begin{table}[t]
+        \begin{center}
+            \begin{tabular}{r|*{5}{c}}
+				\input{tables/optbb_heur0}
+            \end{tabular}
+        \end{center}
+        \caption{Comparision of propagation and core minimization heuristics for \bb. \label{tab:pchbb}}
+    \end{table}
+
+
+    \begin{table}[t]
+        \begin{center}
+            \begin{tabular}{r|*{5}{c}}
+				\input{tables/optusc_heur0}
+            \end{tabular}
+        \end{center}
+        \caption{Comparision of propagation and core minimization heuristics for \usc. \label{tab:pchusc}}
+    \end{table}
+
+The configuration space of \fluto\ is huge.
+In addition to its own parameters, the ones of \clingo\ and the respective LP solver amplify the number of options.
+We thus concentrate on distinguished features revealing an impact in our experiments.
+
+The first focus are two system options controlling the hybrid solving nature of \fluto.
+First, \prop{$n$} controls the frequency of LP propagation:
+the consistency of linear constraints is only checked if $n\%$ of atoms are decided.
+Second,
+the \fluto\ option \core{$n$} invokes the irreducible inconsistent set algorithm~\citep{ostsch12a} whenever $n\%$ of atoms are decided.
+This algorithm extracts a minimal set of conflicting linear constraints for a given conflict.
+Note that the second parameter depends on the first one,
+since conflict analysis may only be invoked if the LP solver found an inconsistency.
+
+The \default{} is to use \core{100}, \prop{0}, and use LP solver \cplex\footnote{We do not present results of \lpsolve\ since it produced inferior results.}.
+This allows us to detect conflicts among the linear constraints as soon as possible and only perform expensive conflict analysis on the full assignment.
+
+To get an overview, we conducted a preliminary experiment
+using \bb\ and \usc\ with \fluto's default configuration on the 10, 20, and 30 percent degraded networks,
+2700 instances in total,
+limiting execution time to 20 minutes.
+For our performance experiments,
+we selected at random three networks with at least one instance
+for which \bb\ and \usc\ could find the optimum in 100 to 600 seconds.
+With the resulting 270 medium to hard instances,
+we examined the cross product of values $n\in\{0,25,50,75,100\}$ for \core{n} and \prop{n}, respectively, limiting time to 600 seconds.
+
+Table~\ref{tab:pchbb} and Table~\ref{tab:pchusc} display the results using \bb\ and \usc\ respectively.
+The columns increase the value for \prop{n} and the rows for \core{n} in steps of 25,
+i.e., LP propagation becomes less frequent from left to right,
+and conflict minimization from top to bottom.
+The first value in each cell is the average runtime in seconds and the value in brackets shows the number of timeouts.
+The shade of the cells depends on the average runtime,
+i.e., the darker the cell, the less performant the combination of propagation and conflict minimization heuristics.
+
+Table~\ref{tab:pchbb} shows that propagation and conflict minimization heuristics have an overall small impact on the performance of \bb\ optimization.
+Since \bb\ relies on iterating solutions and learns weaker constraints,
+only pertaining to the best known bound, while optimizing,
+the improvement step is less constraint compared to \usc.
+Due to this, conflicts are more likely to appear later on in the optimization process allowing for less impact of frequent LP propagation and conflict minimization
+Nevertheless, we see a slight performance improvement of propagating and conflict minimizing for every partial assignment (\prop{0}, \core{0})
+compared to only on full assignments (\prop{100}, \core{100}).
+To prove the optimum, the solver is still required to cover the whole search space.
+For this purpose, early pruning and conflict minimization may be effective.
+Furthermore, we see the best average runtime in the area \prop{0-50} at \core{75}.
+That indicates a good tradeoff between the better quality conflicts which prune the search effectively
+and the overhead of the costly conflict minimization.
+There is no clear best configuration,
+ but \prop{25} and \core{75} shows the best tradeoff between average runtime and number of timeouts.
+
+\usc\ on the other hand (Table~\ref{tab:pchusc}), clearly benefits from early propagation and conflict minimization.
+The area \prop{0-75} and \core{0-50} has the lowest average runtime and number of timeouts,
+best among them \prop{25} and \core{25}
+with the lowest timeouts and average runtime that is not significantly different from the best value.
+\usc\ aims at quickly identifying unsatisfiable partial assignments
+and learning structural constraints building upon each other,
+which is enhanced by frequent conflict detection and minimization.
+Disabling LP propagation on partial assignments with \usc\ leads to the overall worst performance
+and we also see deterioration with \core{75} and \core{100} in the interval \prop{0-50}.
+Overall, \usc\ is more effective than \bb\ for the instances and we see a benefit in early LP propagation and conflict minimization as well as in fine-tuning the heuristics at which point both are applied.
+
+    \begin{table}[t]
+        \begin{center}
+            \begin{tabular}{r|cccccccccccc}
+            	 & \multicolumn{2}{c}{\textsc{FR}}& \multicolumn{2}{c}{\textsc{JP}}& \multicolumn{2}{c}{\textsc{TW}}& \multicolumn{2}{c}{\textsc{TR}}& \multicolumn{2}{c}{\textsc{CR}}& \multicolumn{2}{c}{\textsc{HD}}\\
+              & \T & \TO & \T & \TO & \T & \TO & \T & \TO & \T & \TO & \T & \TO\\\hline
+             \bb  & 400.41 & 154 & 389.68 & 147 & \textbf{360.54} & 127 & 409.33 & 141 & 362.74 & \textbf{120} & 434.54 & 160\\
+             \usc & 227.38 &  78 & 293.96 & 100 & 316.54 & 107 & 293.54 & 102 & \textbf{221.84} &  \textbf{74} & 297.32 & 104\\
+            \end{tabular}
+        \end{center}
+        \caption{Comparision of \clingo's portfolio configurations for \bb\ and \usc. \label{tab:search}}
+    \end{table}
+
+Now, we focus on the portfolio configurations of \clingo.
+Those configurations were crafted by experts to enhance the solving performance of problems with certain attributes.
+\review{To examine their impact, we take the best result for \bb\ (\prop{25} and \core{75}) and \usc\ (\prop{25} and \core{25}), }
+and employ the following \clingo\ options:
+\begin{description}
+	\item[\emph{\textsc{FR}}]
+      Refers to {\clingo}'s configuration \emph{frumpy} that uses more conservative defaults.
+    \item[\emph{\textsc{JP}}]
+      Refers to {\clingo}'s configuration \emph{jumpy} that uses more aggressive defaults.
+    \item[\emph{\textsc{TW}}]
+      Refers to {\clingo}'s configuration \emph{tweety} that is geared toward typical ASP problems.
+    \item[\emph{\textsc{TR}}]
+      Refers to {\clingo}'s configuration \emph{trendy} that is geared toward industrial problems.
+	\item[\emph{\textsc{CR}}]
+      Refers to {\clingo}'s configuration \emph{crafty} that is geared towards crafted problems.
+    \item[\emph{\textsc{HD}}]
+      Refers to {\clingo}'s configuration \emph{handy} that is geared towards larger problems.
+\end{description}
+For more information on {\clingo}'s configurations, see ~\citep{gekakarosc15a}.
+
+Table~\ref{tab:search} shows the average runtime in seconds (\T) and number of timeouts (\TO)
+for all six configurations using \bb\ and \usc\ on the same 270 instances.
+Even though \textsc{CR} has slightly higher average runtime for \bb\ compared to \textsc{TW},
+it is the overall best configuration.
+This configuration is geared towards problems with an inherent structure
+compared to randomly generated benchmarks
+which fits with the metabolic network completion problem at hand
+since the data is taken from an existing bacteria.
+Interestingly, \bb\ performs worse under more specific configurations
+and favors moderate once like \textsc{TW} and \textsc{CR}.
+This might be due to the changing nature of improvement steps as the optimization process goes on
+from finding any random solutions to an unsatisfiability proof in the end.
+\usc\ on the other hand, benefits from a more structural heuristics in \textsc{CR} and more conservative defaults in \textsc{FR}
+which allow the solver to explore and collect conflicts instead of frequently restarting and forgetting.
+
+\subsection{Solution quality}
+
+\begin{table}[t]%
+\newcommand{\mc}[3]{\multicolumn{#1}{#2}{#3}}
+\centering
+\begin{tabular}{r|rr|rr|rr||r} %||rrr
+ & \mc{2}{c|}{\f(\bb)}  & \mc{2}{c|}{\f(\usc)} & \mc{2}{c}{\f(\bb+\usc)} & \f(\bb+\usc) \\%& \mc{3}{c}{\verified}\\
+\degradation & \sols & \opts & \sols & \opts & \sols & \opts & \verified \\%& \f(\bb+\usc)\\\hline  & \m & \g
+10\% (900) & \textbf{900} & \textbf{900} & 892 & 892 & 900 & 900 & 900 \\ %& \textbf{900} & 660 & 56
+20\% (900) & \textbf{830} & 669 & 793 & \textbf{769} & 867 & 814 & 867 \\%& \textbf{867} \\ & 225 & 52
+30\% (900) & \textbf{718} & 88 & 461 & \textbf{344} & 780 & 382 & 780 \\\hline%& \textbf{780} \\\hline & 61 & 0
+all (2700) & \textbf{2448} & 1657 & 2146 & \textbf{2005} & 2547 & 2096 & 2547 \\%& \textbf{2547} & 946 & 108
+\end{tabular}
+\caption{Comparison of qualitative results.\label{tab:quality}}
+\end{table}
+
+\begin{table}[t]%
+\newcommand{\mc}[3]{\multicolumn{#1}{#2}{#3}}
+\centering
+\begin{tabular}{r|rr||rrr}
+ & \mc{2}{c||}{\f(\vbs)} & \mc{3}{c}{\verified}\\
+\degradation & \sols & \opts & \f(\vbs)\\\hline
+10\% (900) & 900 & 900 & 900\\
+20\% (900) & 896 & 855 & 896\\
+30\% (900) & 848 & 575 & 848\\
+40\% (900) & 681 & 68  & 681\\\hline
+all (3600) & 3325 & 2398 & 3325
+\end{tabular}
+\caption{Results using best system options.\label{tab:final}}
+\end{table}
+
+Now, we examine the quality of the solutions provided by \fluto.
+Table~\ref{tab:quality} gives the number of solutions~(\sols) and optima~(\opts) obtained by \fluto{}~(\f) in its default setting
+within 20 minutes
+for \bb, \usc\ and the best of both~(\bb+\usc),
+individually for each \textsc{degradation} and over\textbf{all}.
+\review{The default setting for \fluto\ includes the default configurations for \clingo\ and \cplex.}
+The data was obtained in our preliminary experiment using networks with 10, 20, and 30 percent degradation.
+%
+For 94.3\% of the instances \fluto(\bb+\usc) found a solution within the time limit and 82.3\% of them were optimal.
+We observe that \bb\ provides overall more useful solutions but \usc\ acquires more optima,
+which was to be expected by the nature of the optimization techniques.
+Additionally, each technique finds solutions to problem instances where the other exceeds the time limit,
+underlining the merit of using both in tandem.
+%
+Column~\verified\ shows the quality of solutions provided by \fluto.
+Each obtained best solution was checked with \cobrapy~0.3.2~\citep{Ebrahim2013},
+a renowned system implementing an FBA-based gold standard (for verification only).
+All solutions found by \fluto\ could be verified by \cobrapy.
+In detail, \fluto\ found a smallest set of reactions completing the draft network for 77.6\%,
+a suboptimal solution for 16.7\%,
+and no solution for 5.6\% of the problem instances.
+
+Finally, we change the system configuration and examine how \fluto\ scales on harder instances.
+To this end, we use the best configurations from Section~\ref{sec:sysconf},
+\prop{25}, \core{75} and \textsc{CR} for \bb, and \prop{25}, \core{25} and \textsc{CR} for \usc,
+and rerun the experiment on all 3600 instances.
+The results are shown in (Table~\ref{tab:final}).
+\f(\vbs) denotes the virtual best results, meaning for each problem instance the best known solution among the two configurations was verified.
+For 20\% and 30\% degradation, we obtain additional 29 and 68 solutions and 41 and 193 optima, respectively.
+Overall, we find solutions for 92.4\% out of the 3600 instances and 72.1\% of them are optimal.
+The number of solutions decreases slightly and the number of optima more drastically with higher degradation.
+The results show that \fluto\ is capable of finding correct completions for even highly degraded networks for most of the instances in reasonable time.
+
+\subsection{Comparison to other approaches}
+
+\begin{table}[t]%
+\newcommand{\mc}[3]{\multicolumn{#1}{#2}{#3}}
+\centering
+\begin{tabular}{r|rrr|rrr}
+                        & \mc{3}{c|}{\fluto} & \mc{3}{c}{\meneco} \\ %\cline{2-7}
+                        & min & average & max & min & average & max \\ \hline
+solutions per instance  & 1   & 2.24    & 12  & 1   & 1.88    & 6 \\
+reactions per solution  & 1   & 6.66    & 9   & 1   & 6.24    & 9 \\ \hline
+verified solutions     & \mc{3}{r|}{100\%} & \mc{3}{r}{73.39\%} \\
+instances with only verified solutions & \mc{3}{r|}{100\%} & \mc{3}{r}{72.94\%} \\
+instances without verified solutions   & \mc{3}{r|}{0\%}   & \mc{3}{r}{26.61\%} \\
+instance with some verified solutions & \mc{3}{r|}{0\%}   & \mc{3}{r}{0.45\%} \\
+\end{tabular}
+\caption{Comparison of \fluto\ and \meneco\ solutions for 10 percent degraded networks.\label{tab:enumeration}}
+\end{table}
+
+\begin{table}[t]%
+\newcommand{\mc}[3]{\multicolumn{#1}{#2}{#3}}
+\centering
+\begin{tabular}{r|r|r|r}
+& \fluto & \meneco & \gapfill \\ \hline
+verified union                                 & 100\% & 73.39\% & 6.20\% \\
+verified union of verified solutions           & 100\% & 72.94\% & NA \\
+verified union of unverified solutions         & 0\%   & 0.00\%  & NA\\
+verified union of partially verified solutions & 0\%   & 0.45\%  & NA \\
+\end{tabular}
+\caption{Comparison of \fluto, \meneco\ and \gapfill\ unions for 10 percent degraded networks.\label{tab:union}}
+\end{table}
+
+We compare the quality of \fluto\ with \meneco~1.4.3~\citep{Prigent2017} and \gapfill%
+\footnote{Update of 2011-09-23 see http://www.maranasgroup.com/software.htm }~\citep{SatishKumar2007}.
+\footnote{The results for \meneco\ and \gapfill\ are taken from previous work~\citep{Prigent2017},
+where they were run to completion with \emph{no} time limit.}
+Both \meneco\ and \gapfill\ are systems for metabolic network completion.
+While \meneco\ pursues the topological approach,
+\gapfill\ applies the relaxed stoichiometric variant using Inequation~\eqref{eq:stoichiometric:equation:relaxed}.
+We performed an enumeration of all minimal solutions to the completion problem
+under the topological (\meneco), the relaxed stoichiometric (\gapfill),
+and hybrid (\fluto) activation semantics for the 10 percent degraded networks of the benchmark set (900 instances to be completed).
+
+First, we compare the quality of individual solutions of \fluto\ and \meneco.
+\footnote{There was no data available for the individual solutions of \gapfill.}
+Results are displayed in Table~\ref{tab:enumeration}.
+The first two rows give the minimum, average and maximum number of solutions per instance,
+and reactions per solution, respectively, for \fluto\ and \meneco.
+While \fluto\ finds 19\% more solutions on average and twice as many maximum solutions per instance compared to \meneco,
+the numbers of reactions in minimal solutions of both tools are similar.
+The next four rows pertain to the solution quality as established by \cobrapy.
+First, what percent solutions over all instances could be verified,
+second, what percent of instances had verified solutions exclusively,
+third, how many instances had no verified solutions at all,
+and finally, percent of instances where only a portion of solutions could be verified.
+All of \fluto's solutions could be verified,
+compared to the 72.04\% of \meneco\ across all solutions and 72.94\% of instances that were correctly solved.
+Interestingly, \meneco\ achieves hybrid activation in some but not all solutions for 0.45\% (4) of the instances.
+\fluto\ does not only improve upon the quality of \meneco,
+but also provides more solution per instances without increasing the number of relevant reactions significantly.
+
+To empirically evaluate the properties established in Section~\ref{sec:union},
+and be able to compare to \gapfill, for which only the union of reactions was available,
+we examine the union of minimal solutions provided by all three systems
+and present the results in Table~\ref{tab:union}.
+The four rows show,
+first, for what percent of instances the union of solutions could be verified,
+second, how many instances had only verified solutions and their union was also verified,
+third, the percentage of instances where the union of solutions displayed activation of the target reactions even though all individual solutions did not provide that,
+and forth, instances where the solutions were partly verifiable and their union could also be verified.
+While again 100\% of \fluto's solutions could be verified, only 73.3\% and 6.2\% are obtained for \meneco\ and \gapfill, respectively, for 10 percent degraded networks.
+As reflected by the results, the ignorance of \meneco\ regarding stoichiometry leads to possibly unbalanced networks.
+Still, the union of solutions provided a useful set of reactions in almost three quarters of the instances, showing merit in the topological approximation of the metabolic network completion problem.
+On the other hand, the simplified view of \gapfill\ in terms of stoichiometry misguides the search for possible completions and eventually leads to unbalanced networks even in the union.
+Moreover, \gapfill's ignorance of network topology results in self-activated cycles.
+By exploiting both topology and stoichiometry,
+\fluto\ avoids such cycles while still satisfying the stoichiometric activation criteria.
+The results support the observations made in Section~\ref{sec:union}.
+For both \fluto\ and \meneco\, all instances, for which the complete solution set could be verified,
+the union is also verifiable,
+as well as all unions for instances where \meneco\ established hybrid activation for a fraction of solutions.
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End:

@@ -1,0 +1,299 @@
+\section{Extensions}\label{sec:ext}
+
+We here extend the basic {\asap} encoding presented in
+Section~\ref{sec:approach} in view of enhancing the scalability and
+flexibility of solving (multi-criteria) CB-CTT problems.
+For scalability, we describe a collection of optimized {\asap}
+encodings for soft constraints in Section~\ref{subsec:ext:soft}.
+For flexibility, we present significant extensions for 
+easy composition of different
+formulations in Section~\ref{subsec:ext:formulations} as well as for
+multi-criteria optimization based on lexicographic ordering in
+Section~\ref{subsec:ext:lex}.
+And finally, 
+we discuss the possibility of multi-shot ASP solving with
+{\asap} and illustrate a neighborhood search using (a part of) legacy
+timetables in Section~\ref{subsec:ext:multishot}.
+
+\subsection{Optimized encodings for soft constraints}
+\label{subsec:ext:soft}
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\lstinputlisting[float=t,caption={A collection of optimized encodings for $S_2$, $S_4$, $S_6$, and $S_7$},%
+captionpos=b,frame=single,label=en:roland_soft.lp4,%
+%numbers=none,%
+breaklines=true,%
+columns=fullflexible,keepspaces=true,%
+basicstyle=\ttfamily\scriptsize]{code_roland_soft_lp.tex}
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
+The basic encoding in Section~\ref{sec:approach} precisely reflects
+the definition of CB-CTT constraints, 
+but fails to scale to large instances in complex formulations like
+UD5 due to expensive grounding.
+To solve this practical issue, we present optimized encodings for the soft constraints
+$S_2$.~MinWorkingDays, 
+$S_4$.~Windows, 
+$S_6$.~StudentMinMaxLoad, and 
+$S_7$.~TravelDistance.
+
+%
+For $S_7$,
+the rule in Line 35--37 of Listing~\ref{en:ctt_soft.lp4}
+generates a penalty atom with the constant cost of \code{weight_of_s7}
+if both
+\code{assigned(C1,R1,D,P)} and \code{assigned(C2,R2,D,P+1)} hold 
+for 
+two courses \code{C1} and \code{C2} that belong to the same curriculum \code{Cu}, 
+day \code{D}, and period \code{P},
+and
+rooms \code{R1} and \code{R2} located in different buildings.
+This rule is very expensive when grounding due to its combinatorial blow-up
+caused by many variables.
+This issue can be improved by taking into account that
+for every curriculum \code{Cu}, room \code{R}, day \code{D}, and period \code{P},
+there is at most one course \code{C} that belongs to \code{Cu}
+such that \code{assigned(C,R,D,P)} holds. 
+
+In view of this,
+an optimized encoding of $S_7$ is shown in Line 2--4 of
+Listing~\ref{en:roland_soft.lp4}.
+The difference from the basic one is that a new predicate
+\code{scheduled_curricula/4} is introduced.
+The atom \code{scheduled_curricula(Cu,B,D,P)} is intended to express that 
+a curriculum \code{Cu} is scheduled in a building \code{B} at a period
+\code{P} on a day \code{D}.
+The rule in Line 2
+generates an atom \code{scheduled_curricula(Cu,B,D,P)} if \code{assigned(C,R,D,P)} holds
+for every curriculum \code{Cu}, course \code{C} that belongs to
+\code{Cu}, room \code{R} located in a building \code{B}, day \code{D}, and period \code{P}.
+%
+The rule in Line 3--4
+produces a penalty atom with the constant cost of \code{weight_of_s7}
+for every curriculum \code{Cu}, day \code{D}, and period \code{P},
+if a curriculum \code{Cu} is scheduled in different buildings at
+period \code{P} and \code{P+1} within the same day \code{D}.
+%
+Another optimized encoding of $S_7$ is shown in Line~7--9 of
+Listing~\ref{en:roland_soft.lp4}.
+The difference from the other two is that it utilizes cardinality constraints for 
+counting the number of buildings which are used by 
+two lectures belonging the same curriculum
+in two adjacent periods within the same day.
+
+An optimized encoding of $S_4$ is shown in Line 12--19 of
+Listing~\ref{en:roland_soft.lp4}.
+The newly introduced atom \code{scheduled_curricula_chain(Cu,D,P,DP)} 
+is intended to express that 
+there is a course in curriculum \code{Cu} scheduled before a period
+\code{P} in a day \code{D} if \code{DP = -1}, or else if \code{DP = 1}
+the course in \code{Cu} is scheduled after \code{P}.
+The rule in Line 16--19
+generates a penalty atom with the constant cost of \code{weight_of_s4}
+for every curriculum \code{Cu}, day \code{D}, and period \code{P},
+if there is a time window \code{P} for \code{Cu} in a day \code{D}.
+
+In the basic encoding, the soft constraints $S_2$ and $S_6$ are
+expressed by using ASP's cardinality constraints.
+These rules can be optimized by using state-of-the-art SAT encoding
+techniques for Boolean cardinality constraints.
+We used Sinz's sequential counter encoding~\citep{sinz05a},
+and the resulting encodings are shown in 
+Line 22--27 for $S_2$ and Line 30--45 for $S_6$.
+For $S_2$,
+the atom \texttt{wd\_counter($C$,$M$,$D$,$N$)}
+is intended to express that 
+the number of lectures scheduled from day 0 to $D$ for a course $C$
+whose lectures must be spread into $M$ days is greater than or equal to $N$.
+The rule in Line 26--27
+generates a penalty atom with the constant cost of \code{weight_of_s2}
+for every course \code{C} whose lectures must be spread into \code{M} days,
+if the number of lectures for \code{C} scheduled in the whole days is
+less than \code{M}.
+The basic rules of $S_6$ is optimized in a similar way.
+
+\subsection{Easy composition of different formulations}
+\label{subsec:ext:formulations}
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\lstinputlisting[float=t,caption={Extended encoding of $S_8$ and $H_4$},%
+captionpos=b,frame=single,label=en:ctt_ext_room_suitability.lp,%
+%numbers=none,%
+breaklines=true,%
+columns=fullflexible,keepspaces=true,%
+basicstyle=\ttfamily\scriptsize]{code_s8_h4_lp.tex}
+%
+\lstinputlisting[float=t,caption={The UD4 formulation},%
+captionpos=b,frame=single,label=en:ctt_ext_ud4.lp4,%
+numbers=none,%
+basicstyle=\ttfamily\scriptsize]{code_ud4_lp.tex}
+%
+\lstinputlisting[float=t,caption={Formulation consisting of %
+all soft constraints ($S_1$--$S_9$) with the weights of all 1s},%
+captionpos=b,frame=single,label=en:ctt_ext_ud0.lp4,%
+numbers=none,%
+basicstyle=\ttfamily\scriptsize]{code_udall_soft_lp.tex}
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Problem modeling is particularly challenging in the real-world
+course timetabling, since 
+different institutions have their own needs and policies, and
+formulations (sets of constraints) may change from institution to
+institution and from time to time~\citep{DBLP:conf/patat/McCollum06}.
+In this view, we present a design for easy composition of different
+formulations.
+
+In order to easily activate or deactivate each soft constraint and
+switch it from soft to hard, we introduce new predicates 
+\code{soft_constraint/3} and
+\code{hard_constraint/1}.
+The atom \texttt{soft\_constraint($S_i$,$W_i$,$L_i$)} is intended to
+express that $S_i$ is a soft constraint to be activated.
+$W_i$ and $L_i$ respectively represent the weight and the priority
+level associated with $S_i$.
+The priority level $L_i$ is used for lexicographic optimization explained later.
+%
+The atom \texttt{hard\_constraint($S_i$)} is intended to express that
+$S_i$ is activated as a hard constraint.
+We refer to these atoms as \textit{constraint atoms}.
+
+Listing~\ref{en:ctt_ext_room_suitability.lp} shows
+extended encodings of 
+$S_8$.RoomSuitability and 
+$H_4$.Availability with constraint atoms.
+For $S_8$, the rule in Line 2--3 is the same as before
+except that an instance of \code{soft_constraint/3} is added.
+Note that the penalty atom in its head is extended to
+\code{penalty/4} with a priority level $L_i$.
+The integrity constraint in Line 6 expresses $S_8$ as a hard
+constraint by dropping the penalty atom in the head in Line 2--3.
+%
+% Alternatively, 
+% switching from soft to hard can be done by enforcing a
+% cardinality constraint like 
+% `\lstinline|:- not #sum { P,C,L : penalty("RoomSuitability",C,P,L) } 0.|'.
+% In this case, we don't need 
+% the rule in Line 6 that expresses $S_8$ as a hard constraint.
+On the other hand,
+it is also possible to switch constraints in the opposite direction,
+that is, from hard to soft.
+For example, to define $H_4$ as a soft constraint, we only have to add
+a penalty atom to the head of the rule in Line 17 of
+Listing~\ref{en:ctt_hard2.lp4}.
+An extended encoding of $H_4$ with constraint atoms is shown in 
+Line 8--14 of Listing~\ref{en:ctt_ext_room_suitability.lp}.
+The other constraints can be extended in a similar way.
+
+The idea of constraint atoms allows for easy composition of different
+formulations, since any combination of constraints can be represented
+as a set of ASP facts. 
+Consequently, it enables a timetable keeper to experiment with
+different formulations at a purely declarative level.
+For example, ASP facts representing the UD4 formulation
+are shown in Listing~\ref{en:ctt_ext_ud4.lp4}.
+And also, we show exhaustive formulation consisting of all soft constraints
+($S_1$--$S_9$) with the weights of all set to 1 
+in Listing~\ref{en:ctt_ext_ud0.lp4}\footnote{%
+Surprisingly, the {\asap} system was able to find an optimal %
+solution of \code{comp11} in this formulation.}.
+These two examples represent single-objective weighted-sum
+formulations, since the priority levels are all 0.
+
+\subsection{Multi-criteria optimization based on lexicographic ordering}
+\label{subsec:ext:lex}
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\lstinputlisting[float=t,caption={Objective function with priority levels for lexicographic optimization},%
+captionpos=b,frame=single,label=en:ctt_minimize_mo.lp4,%
+numbers=none,%
+basicstyle=\ttfamily\scriptsize]{code_obj_lp.tex}
+%
+\lstinputlisting[float=t,caption={The UD5 formulation with different priority levels},%
+captionpos=b,frame=single,label=en:ud5_lex.lp,%
+numbers=none,%
+basicstyle=\ttfamily\scriptsize]{code_ud5_lex_lp.tex}
+%%%%%%%%%%%%%%%%%%%%%%%%%
+A well-known multi-criteria optimization strategy called lexicographic
+ordering~\citep{Marler2004} has been implemented in {\clingo}. 
+It enables us to optimize criteria in a lexicographic order based on
+their priorities.
+We here extend the {\asap} encoding for supporting such multi-criteria optimization.
+
+This extension can be done by adding priority levels to the \code{#minimize}
+function, as can be seen in Listing~\ref{en:ctt_minimize_mo.lp4}.
+The variable \code{L} on the right-hand side of \code{@} stands for 
+a priority level, where greater levels are more significant than
+smaller ones.
+Usually, solutions can be represented in the form of a utility vector
+$(p_1,p_2,\dots,p_n)$, where each $p_i$ is a value 
+representing the penalty of a soft constraint.
+
+Such lexicographic optimization is quite useful, since 
+it enables a timetable keeper to experiment with different
+(pre-defined) priority levels of soft constraints.
+%
+On the other hand,
+the optimality of multi-criteria optimization 
+with lexicographic ordering does not always
+coincide with that of single-objective 
+weighted-sum one.
+However, 
+optimal solutions 
+as well as better vectors
+obtained by lexicographic optimization
+can often correspond to feasible ones with smaller penalty
+in the original single-objective setting.
+
+For illustration, Listing~\ref{en:ud5_lex.lp} shows an UD5 formulation
+with lexicographic optimization in which 
+the priority levels of soft constraints are ordered as 
+$S_1 > S_4 > S_2 > S_7 > S_6 > S_3$.
+In this case, the optimal solution of 
+the ITC-2007 instance \code{comp13}
+is $(S_1,S_4,S_2,S_7,S_6,S_3) = (0,0,0,0,112,35)$.
+This optimum corresponds to a smaller bound
+$112+35=147$ than the best known one 
+in the CB-CTT portal 
+obtained by single-objective weighted-sum optimization.
+A more detailed analysis of lexicographic optimization is shown in 
+Section~\ref{subsec:eval:ext}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Discussion towards multi-shot ASP solving with {\asap}}
+\label{subsec:ext:multishot}
+
+Suppose that a (part of) legacy timetable is represented as a set of
+ASP facts of predicate \code{legacy/1}.
+ASP-based neighborhood search is implemented by only one rule:
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\lstinputlisting[numbers=none,basicstyle=\ttfamily\small]{code_heu_lp.tex}
+%%%%%%%%%%%%%%%%%%%%%%%%%
+The special statement \code{#heuristic} is used to express
+various modifications to {\clingo}'s heuristic treatment of atoms.
+This rule
+expresses a preference for both making a decision on 
+\code{assigned(C,R,D,P)} and assigning it to true if 
+\code{legacy(assigned(C,R,D,P))} holds
+for every course \code{C}, room \code{R}, day \code{D}, and period \code{P}.
+
+Incremental SAT solving has recently been recognized as an important
+technique for many problems such as model checking and
+planning~\citep{DBLP:journals/entcs/EenS03}.
+From an ASP perspective,
+such multi-shot ASP solving is also available in {\clingo}~\citep{gekaobsc15a}.
+It enables us to handle problem specifications which evolve during the
+reasoning process,  because either data or constraints are added,
+deleted, or replaced.
+
+For (multi-criteria) CB-CTT solving, multi-shot ASP solving with
+\asap\ can be promising.
+This is because it provides an incremental solving framework
+for finding optimal
+solutions as well as better bounds, 
+while varying a set of constraints, 
+switching them from hard to soft, 
+varying the priority level of objectives, and 
+searching neighborhoods by using a (part of) legacy timetables.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End:
+

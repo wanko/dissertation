@@ -1,0 +1,31 @@
+
+We thank all reviewers for their very fair and instructive assessment of our paper.
+
+We agree with most of the criticism but we had to make compromises on what to detail 
+in view of space limitations and the "ground breaking" nature of the work giving rise
+to many new research questions.
+
+We are grateful for the indicated literature and will take it into account when revising the paper.
+
+The systematic study of the capacity of the proposed heuristic language is subject
+to ongoing research.  
+A primary role of the language is to offer a means for expressing heuristics.
+The invention of a heuristics is similar to algorithm configuration.
+Accordingly, we currently obtain the best results either by good domain knowledge 
+or using automatic configurators, like ParamILS or SMAC.
+
+We agree with R2 on the overly bold claim on making special-purpose implementations obsolete 
+and will relativize it when revising the paper.
+
+We have refrained from exploring the highly sophisticated language fragments mentioned by R3 
+in favor of a more pragmatic fragment, for which we can provide (obvious) guarantees.
+
+clasp supports lookahead but we have not explored its usage in this context.
+
+GOLOG provides domain knowledge eliminating undesirable solutions.
+This can be combined but not expressed by domain heuristics.
+
+Columns 2 and 3 of Table 3 cover SAT and UNSAT instances; columns 4 and 5 show
+only successful, ie SAT instances.
+
+Again, thank you for the constructive reviews.

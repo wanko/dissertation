@@ -1,0 +1,1660 @@
+%
+%
+\documentclass[a4paper,UKenglish]{oasics}
+
+\usepackage{microtype} 
+\bibliographystyle{plain}  
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{newtxtext,newtxmath} %
+\usepackage{url}
+\usepackage{listings}
+\usepackage{microtype}
+\DisableLigatures{encoding = T1, family = tt*}
+
+\lstset{basicstyle=\ttfamily\small}
+\usepackage[boxruled,vlined,linesnumbered]{algorithm2e}
+\SetKwInOut{Input}{Input}
+\SetKwInOut{Output}{Output}
+\SetKwInOut{Internal}{Internal}
+\SetKwFor{Loop}{loop}{}{}
+\SetKwRepeat{Repeat}{repeat}{until}
+\usepackage{enumitem}
+\usepackage{hhline}
+\usepackage{graphicx} 
+
+%
+%
+
+%
+\makeatletter{}%
+%
+%
+\newcommand{\argmin}{\mathop{\mathrm{arg\,min}}}
+%
+\newcommand{\naf}[1]{\ensuremath{\ not \ #1}}
+\newcommand{\lm}[1]{\lstinline[mathescape=true]!#1!}
+\newcommand{\gc}[0]{G{\&}C}
+
+\newcommand{\Holds}[1]{\ensuremath{{H}_{#1}}} %
+\newcommand{\Holdsp}[1]{\ensuremath{{H}_{#1}'}} %
+\newcommand{\Holdstwo}[2]{\ensuremath{\mathcal{H}_{#1,#2}}}
+\newcommand{\Holdstwon}[2]{\ensuremath{\mathcal{\neg H}_{#1,#2}}}
+\newcommand{\Holdstwop}[2]{\ensuremath{\mathcal{H'}_{#1,#2}}}
+\newcommand{\Holdstwonp}[2]{\ensuremath{\mathcal{\neg H'}_{#1,#2}}}
+
+%
+%
+\newcommand{\sysfont}{\textit}
+\newcommand{\metasp}{\sysfont{metasp}}
+\newcommand{\aspic}{\sysfont{aspic}}
+\newcommand{\asprin}{\sysfont{asprin}}
+\newcommand{\assat}{\sysfont{assat}}
+\newcommand{\berkmin}{\sysfont{berkmin}}
+\newcommand{\claspD}{\sysfont{claspD}}
+\newcommand{\claspar}{\sysfont{claspar}}
+\newcommand{\claspfolio}{\sysfont{claspfolio}}
+\newcommand{\clasp}{\sysfont{clasp}}
+\newcommand{\clingcon}{\sysfont{clingcon}}
+\newcommand{\clingo}{\sysfont{clingo}}
+\newcommand{\cmodels}{\sysfont{cmodels}}
+\newcommand{\coala}{\sysfont{coala}}
+\newcommand{\dlv}{\sysfont{dlv}}
+\newcommand{\jdlv}{\sysfont{jdlv}}
+\newcommand{\dlvhex}{\sysfont{dlvhex}}
+\newcommand{\acthex}{\sysfont{acthex}}
+\newcommand{\gecode}{\sysfont{gecode}}
+\newcommand{\gnt}{\sysfont{gnt}}
+\newcommand{\gringo}{\sysfont{gringo}}
+\newcommand{\iclingo}{\sysfont{iclingo}}
+\newcommand{\idp}{\sysfont{idp}}
+\newcommand{\lparse}{\sysfont{lparse}}
+\newcommand{\lptodiff}{\sysfont{lp2diff}}
+\newcommand{\lptosat}{\sysfont{lp2sat}}
+\newcommand{\mchaff}{\sysfont{mchaff}}
+\newcommand{\minisat}{\sysfont{minisat}}
+\newcommand{\nomorepp}{\sysfont{nomore++}}
+\newcommand{\oclingo}{\sysfont{oclingo}}
+\newcommand{\piclasp}{\sysfont{piclasp}}
+\newcommand{\picosat}{\sysfont{picosat}}
+\newcommand{\plasp}{\sysfont{plasp}}
+\newcommand{\quontroller}{\sysfont{quontroller}}
+\newcommand{\sag}{\sysfont{sag}}
+\newcommand{\satz}{\sysfont{satz}}
+\newcommand{\siege}{\sysfont{siege}}
+\newcommand{\smodelscc}{\sysfont{smodels$_{\!cc}$}}
+\newcommand{\smodelsr}{\sysfont{smodels}$_r$}
+\newcommand{\smodels}{\sysfont{smodels}}
+\newcommand{\wasp}{\sysfont{wasp}}
+\newcommand{\zchaff}{\sysfont{zchaff}}
+\newcommand{\zzz}{\sysfont{z3}}
+
+\newcommand{\python}{Python}
+\newcommand{\lua}{Lua}
+\newcommand{\cpp}{C++}
+\newcommand{\java}{Java}
+
+%
+%
+%
+%
+ %
+ 
+%
+%
+\newcommand{\mysubsection}[2]{\smallskip\noindent\textbf{#1.}}
+\newcommand{\myparagraph}[1]{\smallskip\noindent\textit{#1.}}
+\newcommand{\mysubparagraph}[1]{\par\textit{#1}}
+\newcommand{\Qlabel}[1]{\textcolor{darkgray}{\small\sffamily\bfseries\mathversion{bold}{Q-#1}}}
+\newcommand{\Alabel}[1]{\textcolor{darkgray}{\small\sffamily\bfseries\mathversion{bold}{A-#1}}}
+
+%
+%
+
+\sloppy
+
+\title{Computing Diverse Optimal Stable Models\footnote{This work was partially supported by DFG-SCHA-550/9}}
+\titlerunning{Computing Diverse Optimal Stable Models}
+
+\author[1]{Javier Romero}
+\author[1,2]{Torsten Schaub}
+\author[1]{Philipp Wanko}
+
+\affil[1]{University of Potsdam, Germany}
+\affil[2]{INRIA, Rennes}
+
+\authorrunning{J. Romero, T. Schaub, and P. Wanko}
+
+\subjclass{%
+D.1.6 Logic Programming,
+F.4.1 Mathematical Logic,
+I.2.3 Deduction and Theorem Proving
+}
+\keywords{Answer Set Programming, Diversity, Similarity, Preferences, Maxmin optimization}
+
+\pdfinfo{
+/Title (Computing Diverse Optimal Stable Models)
+/Author (Javier Romero, Torsten Schaub, Philipp Wanko) }
+
+%
+%
+
+%
+\serieslogo{}
+
+\volumeinfo  %
+    {Manuel Carro, Andy King, Marina De Vos, and Neda Saeedloei} %
+    {4}  %
+    {Technical Communications of the 32nd Int'l Conference on Logic
+      Programming (ICLP'16)}  %
+    {52} %
+    {1} %
+    {1}  %
+
+%
+\EventShortName{ICLP'16 TC}
+\DOI{10.4230/OASIcs.ICLP.2016.first-page-number}
+
+\serieslogo{}
+%
+
+\begin{document}
+
+\maketitle
+%
+%
+\makeatletter{}%
+\begin{abstract}
+We introduce a comprehensive framework for computing diverse (or similar) solutions to logic programs with preferences.
+Our framework provides a wide spectrum of complete and incomplete methods for solving this task.
+Apart from proposing several new methods, it also accommodates existing ones and generalizes them to programs with preferences.
+Interestingly, this is accomplished by integrating and automating several basic ASP techniques --- being of general interest even beyond diversification.
+The enabling factor of this lies in the recent advance of multi-shot ASP solving that provides us with fine-grained control over reasoning
+processes and abolishes the need for solver modifications and wrappers that were indispensable in previous approaches.
+Our framework is implemented as an extension to the ASP-based preference handling system \asprin.
+We use the resulting system \asprin~2 for an exhausting empirical evaluation of the
+whole spectrum of diversification methods comprised in our framework.
+\end{abstract}
+
+%
+%
+%
+%
+ %
+
+%
+%
+\makeatletter{}%
+
+\section{Introduction}\label{sec:introduction}
+ 
+Answer Set Programming (ASP; \cite{baral02a}) has become a prime paradigm for solving combinatorial problems in Knowledge Representation and Reasoning. 
+As a matter of fact,
+such problems have an exponential number of solutions in the worst-case.
+A first means to counterbalance this is to impose preference relations among solutions
+to filter out optimal ones.
+Often enough, this still leaves us with a large number of optimal models.
+%
+A typical example is the computation of Pareto frontiers for multi-objective optimization problems~\cite{pareto64a},
+as we encounter in design space exploration~\cite{angeglharesc13a} or timetabling~\cite{basotainsc13a}.
+%
+Other examples include configuration, planning, and phylogeny, as discussed in~\cite{eiererfi13a}.
+%
+This calls for computational support that allows for identifying small subsets of diverse solutions.
+%
+The computation of diverse stable models was first considered in ASP by \cite{eiererfi13a}.
+The analogous problem regarding optimal stable models is addressed in \cite{zhutru13a} in the case of answer set optimization~\cite{brnitr03a}.
+Beyond ASP, the computation of diverse solutions is also studied in CP~\cite{hehnocwa05a} and SAT~\cite{nadel11a}.
+
+In this paper,
+we introduce a comprehensive framework for computing diverse (or similar) solutions to logic programs with preferences.
+One of its distinguishing factors is that it allows for dealing with aggregated (or plain) qualitative and quantitative preferences among stable models of logic programs.
+This is accomplished by building on the preference handling capacities of \asprin~\cite{brderosc15a}.
+The other appealing factor of our framework is that it covers a wide spectrum of methods for diversification.
+Apart from new techniques, it also accommodates and generalizes existing approaches by lifting them to programs with preferences.
+Interestingly, this is done by taking advantage of several existing basic ASP techniques that we automate and integrate in our framework.
+The enabling factor of this is the recent advance of multi-shot ASP solving that allows for an easy yet fine-grained control of
+ASP-based reasoning processes (cf.~\cite{gekakasc14b}).
+In particular, this abolishes the need for internal solver modifications or singular solver wrappers that were often unavoidable in previous approaches.
+We have implemented our approach as an extension to the preference handling framework \asprin.
+The resulting system \asprin~2 is then used for an empirical evaluation contrasting several alternative approaches to
+computing diverse solutions.
+%
+Last but not least,
+note that although we concentrate on diversity,
+our approach applies just as well to the dual concept of \emph{similarity}.
+This is also reflected by its implementation supporting both settings.
+
+%
+%
+%
+%
+ %
+
+%
+\makeatletter{}%
+
+\section{Background}\label{sec:background}
+ 
+In ASP, problems are described as (disjunctive) \emph{logic programs}, 
+being sets of \emph{rules} of the form
+\begin{lstlisting}[mathescape=true,numbers=none]
+   a$_1$;...;a$_m$ :- a$_{m+1}$,...,a$_n$,not a$_{n+1}$,...,not a$_o$
+\end{lstlisting}
+where each \lstinline[mathescape=true]{a$_i$} is a propositional atom %
+and
+\lstinline[mathescape=true]{not} stands for \emph{default negation}.
+%
+We call a rule a \emph{fact} if $m=o=1$, 
+\emph{normal} if $m=1$, and 
+an \emph{integrity constraint} if $m=0$.
+%
+We may reify a rule $r$ with the set of facts 
+\lm{
+$R(r) = 
+\{ $rule($r$)$ \} \cup 
+\{ $head($r$,a$_i$)$ \mid 1 \leq i \leq m \} \cup
+\{ $body($r$,pos,a$_i$)$ \mid m+1 \leq i \leq n \} \cup$}
+\lm{$\{ $body($r$,neg,a$_i$)$ \mid n+1 \leq i \leq o \}$
+}, and we reify 
+a program by joining its reified rules.
+%
+Semantically, a logic program induces a collection of \emph{stable models},
+which are distinguished models of the program determined by stable models semantics;
+see \cite{gellif91a} for details.
+ 
+To ease the use of ASP in practice, 
+several extensions have been developed. 
+First of all, rules with variables are viewed as shorthands for the set of their ground instances.
+Further language constructs include
+\emph{conditional literals} and \emph{cardinality constraints} \cite{siniso02a}.
+The former are of the form
+\lstinline[mathescape=true]{a:b$_1$,...,b$_m$},
+the latter can be written as
+\lstinline[mathescape=true]+s{c$_1$,...,c$_n$}t+,
+where \lstinline{a} and \lstinline[mathescape=true]{b$_i$} are possibly default-negated literals  %
+and each \lstinline[mathescape=true]{c$_j$} is a conditional literal; %
+\lstinline{s} and \lstinline{t} provide lower and upper bounds on the number of satisfied literals in the cardinality constraint.
+We refer to \lstinline[mathescape=true]{b$_1$,...,b$_m$} as a \emph{condition}.
+%
+The practical value of both constructs becomes apparent when used with variables.
+For instance, a conditional literal like
+\lstinline[mathescape=true]{a(X):b(X)}
+in a rule's antecedent expands to the conjunction of all instances of \lstinline{a(X)} for which the corresponding instance of \lstinline{b(X)} holds.
+%
+Similarly,
+\lstinline[mathescape=true]+2{a(X):b(X)}4+
+is true whenever at least two and at most four instances of \lstinline{a(X)} (subject to \lstinline{b(X)}) are true.
+%
+%
+%
+%
+Specifically, 
+we rely in the sequel
+on the input language of the ASP system \clingo~\cite{gekakasc14b};
+further language constructs are explained on the fly.
+ 
+In what follows, we go beyond plain ASP and deal with \emph{logic programs with preferences}.
+%
+More precisely,
+we consider programs $P$ over some set $\mathcal{A}$ of atoms
+along with a strict partial order ${\succ}\subseteq{\mathcal{A}\times\mathcal{A}} $ among their stable models. 
+%
+Given two stable models $X,Y$ of $P$,
+$X\succ Y$ means that $X$ is preferred to $Y$.
+%
+Then, a stable model $X$ of $P$ is \emph{optimal} wrt $\succ$,
+if there is no other stable model $Y$ such that $Y\succ X$.
+%
+In what follows,
+we often leave the concrete order implicit and simply refer to a program with preferences and its optimal stable models.
+%
+%
+%
+%
+We restrict ourselves to partial orders and distance measures (among pairs of stable models) that can be computed in polynomial time.
+%
+For simplicity, we focus on the Hamming distance, 
+defined for two stable models $X,Y$ of a program $P$ over $\mathcal{A}$ as
+\(
+d(X,Y)
+=
+|\mathcal{A} - X - Y| + | X \cap Y |
+\).
+%
+Given a logic program $P$ with preferences and a positive integer $n$,
+we define %
+a set $\mathcal{X}$ of optimal stable models of $P$ as \emph{most diverse},
+if
+\(
+\min \{\, d(X,Y) \mid X, Y \in \mathcal{X},  X \neq Y \} 
+> 
+\min \{\, d(X,Y) \mid X, Y \in \mathcal{X}', X \neq Y \}
+\)
+for every other set $\mathcal{X}'$ of optimal stable models of $P$.
+%
+We are thus interested, following \cite{eiererfi13a}, in the problem \emph{n Most Diverse Optimal Models}:
+%
+Given a logic program $P$ with preferences and a positive integer $n$, 
+find $n$ most diverse optimal stable models of $P$.
+
+For representing logic programs with complex preferences and computing their optimal models,
+we built upon the preference framework of \asprin~\cite{brderosc15a},
+a system for dealing with aggregated qualitative and quantitative preferences.
+%
+In \asprin, the above mentioned \emph{preference relations} are represented by declarations of the form
+\lstinline[mathescape]!#preference($\mathtt{p}$,$\mathtt{t}$){$\mathtt{t_1}$:$\mathtt{b_1}$,$\dots$,$\mathtt{t_n}$:$\mathtt{b_n}$}!
+where $\mathtt{p}$ and $\mathtt{t}$ are the name and type of the preference relation, %
+and $\mathtt{t_i}$ and $\mathtt{b_i}$ are tuples of terms and conditions, respectively,\footnote{
+See~\cite{brderosc15a} %
+for more general preference elements.}
+%
+serving as arguments of $\mathtt{p}$.
+%
+The directive \lstinline[mathescape]!#optimize($\mathtt{p}$)! instructs \asprin\ to search for stable models that are optimal wrt the strict partial order
+$\succ_{\mathtt{p}}$ associated with $\mathtt{p}$.
+%
+While \asprin\ already comes with a library of predefined primitive and aggregate preference types, like \texttt{subset} or \texttt{pareto},
+respectively,
+it also allows for adding customized preferences.
+%
+We illustrate how this works by implementing preference type \texttt{maxmin} in Section~\ref{sec:basic}.
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+
+Finally,
+we investigate whether the heuristic capacities of \clingo\ allow for boosting our approach.
+%
+In fact, \clingo~5 features heuristic directives of the form
+`\lstinline[mathescape]!#heuristic c. [$k$,$m$]!'
+where $c$ is a conditional atom,
+$k$ is a term evaluating to an integer, and 
+$m$ is a heuristic modifier among
+\lstinline{init}, \lstinline{factor}, \lstinline{level},  or \lstinline{sign}. %
+%
+The effect of the heuristic modifiers is to bias the score of \clasp's heuristic by
+initially adding or multiplying the score,
+prioritizing variables, or
+preferably assigning a truth value, respectively.
+%
+The value of $k$ serves as argument to the respective modification.
+%
+%
+%
+A more detailed description can be found in~\cite{gekaotroscwa13a}.
+
+%
+%
+%
+%
+ %
+
+%
+\makeatletter{}%
+
+\section{Our diversification framework at a glance}\label{sec:overview}
+
+We begin with an overview over the various techniques integrated in our framework.
+
+\mysubsection{Basic solving techniques}
+%
+We first summarize several basic solving techniques that provide essential pillars of our framework
+and that are also of interest for other application areas.
+
+\mysubparagraph{Maxmin optimization}
+%
+is a popular strategy in game theory and beyond that is not supported by existing ASP systems.
+%
+We address this issue and consider \emph{maxmin} (and \textit{minmax}) optimization that,
+given a set of sums, aims at maximizing the value of the minimum sum.
+%
+We have implemented both preference types and made them available via \asprin~2's library.
+
+\mysubparagraph{Guess and Check automation}.
+%
+\cite{eitpol06a} defined a framework for representing and solving $\Sigma^p_2$ problems in ASP.
+%
+Given two normal logic programs $P$ and $Q$ capturing a guess-and-check (\gc) problem, 
+%
+%
+$X$ is a solution to $\langle P,Q \rangle$ if $X$ is a stable model of $P$ and $Q \cup X$ is unsatisfiable.
+%
+We \emph{automatize} this by using reification along with the meta-encoding methodology of \metasp~\cite{gekasc11b}.
+In this way, the two normal programs $P$ and $Q$ are transformed into a single disjunctive logic program.
+The resulting mini-system \textit{metagnc} is implemented in \python\ and available at~\cite{asprin}.
+%
+%
+We build upon this approach for dealing with logic programs with preferences.
+To this end,
+\asprin\ translates a logic program with preferences into a \gc\ problem,
+which is then translated by \textit{metagnc} into a disjunctive logic program
+and solved by an ASP system.
+
+\mysubparagraph{Querying programs with preferences}
+%
+consists of 
+deciding whether there is an optimal stable model of a program $P$ with preferences that contains a given query atom $q$.
+%
+To this end,
+we elaborate upon four alternatives:%
+\begin{enumerate}[label={\textcolor{darkgray}{\sffamily\bfseries\mathversion{bold}{Q-\arabic*}}}.]
+\item Enumerate \emph{models} of $P \cup \{ \bot \leftarrow not \ q \}$ until one is an optimal model of $P$.
+\item Enumerate \emph{optimal models} of $P$ until one contains $q$.
+\item Enumerate \emph{optimal models} of $P \cup \{ \bot \leftarrow not \ q \}$ until one is an optimal model of $P$.
+\item Enumerate \emph{optimal models} of $P$ until one contains $q$\\
+  while alternately adding $\{ \bot \leftarrow not \ q \}$ or $\{ \bot \leftarrow q \}$ during model-driven optimization.
+\end{enumerate}
+%
+The first two methods were implemented by~\cite{zhutru13a} in the case of programs with \emph{aso} preferences~\cite{brnitr03a}.
+We generalize both to arbitrary preferences, propose two novel ones, and provide all four methods in \asprin~2.
+%
+Applications of querying programs with preferences are clearly of greater interest and go well beyond diversification.
+
+\mysubparagraph{Preferences over optimal models}
+%
+allow for further narrowing down the stable models of interest by imposing a selection criterion among the optimal models of a logic program with preferences.
+%
+For one thing, this is different from a lexicographic preference, since the secondary preference takes into account all optimal models wrt the first
+preference, no matter whether they are equal or incomparable.
+For another, it aims at preference combinations whose complexity goes beyond the expressiveness of ASP and thus cannot be addressed via an encoding
+in \asprin.
+Rather we conceived a nested variant of \asprin's optimization algorithm that computes the preferred optimal models.
+Interestingly, this makes use of our querying capacities in posing the ``improvement constraint'' as a query.
+
+\mysubsection{Advanced diversification techniques}
+We elaborate upon three ways of diversification, viz.\ enumeration, replication, and approximation,
+for solving the \emph{n Most Diverse Optimal Models} problem. 
+%
+While the two former are complete the latter is not.
+
+%
+\mysubparagraph{Enumeration} consists of two steps:
+\begin{enumerate}
+\item Enumerate all optimal models of the logic program $P$ with preferences. 
+\item Find among all computed optimal models, the $n$ most diverse ones.
+\end{enumerate}
+While we carry out the first step by means of \asprin's enumeration mode,
+we cast the second one as an optimization problem and express it as a logic program with preferences.
+%
+This method was first used by~\cite{eiererfi13a} for addressing diversity in the context of logic programs without preferences;
+we lift it here to programs with preferences.
+
+\mysubparagraph{Replication} consists of three steps:
+\begin{enumerate}
+\item Translate a normal logic program $P$ with preferences into a disjunctive logic program $D$
+  by applying the aforementioned guess-and-check method.
+\item Reify $D$ into $\mathcal{R}(D)$, and add a meta-encoding $M$ replicating $D$ 
+  such that each stable model of $M \cup \mathcal{R}(D)$ 
+  corresponds to $n$ optimal models of the original logic program $P$.
+\item Turn the disjunctive logic program $M \cup \mathcal{R}(D)$ into a \emph{maxmin} optimization problem
+  by applying the aforementioned method such that its optimal stable models
+  correspond to $n$ most diverse optimal stable models of the original program $P$ with preferences.
+\end{enumerate}
+%
+This method was outlined for logic programs without preferences in~\cite{eiererfi13a} but not automated.
+We generalize this approach to normal programs with preferences and provide a fully automated approach.
+
+
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+
+\mysubparagraph{Approximation}.
+%
+Our approximation techniques can be understood as instances of the following algorithm,
+whose input is a logic program with preferences $P$:
+%
+%
+%
+\begin{enumerate}%
+\item
+Find an optimal model of  $P$. If $P$ is unsatisfiable then return $\{\bot\}$, else add the solution to $\mathcal{X}$.
+\item
+While $\mathit{test}(\mathcal{X})$ is true, call $\mathit{solve}(P,\mathcal{X})$ and add the solution to $\mathcal{X}$.
+\item
+Return $\mathit{solution}(\mathcal{X})$.
+\end{enumerate}
+%
+In the basic case,
+$\mathit{test}(\mathcal{X})$ returns $\mathit{true}$ until there are $n$ solutions in $\mathcal{X}$, 
+$\mathit{solution}(\mathcal{X})$ returns the set $\mathcal{X}$,
+and the algorithm simply computes $n$ solutions by successively calling $\mathit{solve}(P,\mathcal{X})$.
+More elaborate approaches are obtained, for example, computing $n+k$ solutions 
+and returning the $n$ most distant among them in $\mathit{solution(\mathcal{X})}$.
+
+%
+The implementation of $\mathit{solve}(P,\mathcal{X})$ leads to different approaches:
+%
+\begin{enumerate}[label={\textcolor{darkgray}{\sffamily\bfseries\mathversion{bold}{A-\arabic*}}}.]
+\item $\mathit{solve}(P,\mathcal{X})$ returns an optimal model of $P$ most diverse to those in $\mathcal{X}$.
+%
+  We accomplish this by defining a \textit{maxmin} preference maximizing the minimal distance to any of the solutions in $\mathcal{X}$,
+  and impose this on top of the optimal models of $P$ 
+  by applying the two aforementioned approaches to \emph{maxmin} optimization and preferences over optimal models.
+  %
+  This method was first used by~\cite{eiererfi13a} for addressing diversity in the context of logic programs without preferences;
+  we lift it here to programs with preferences.
+  
+\item $\mathit{solve}(P,\mathcal{X})$ first computes a partial interpretation $I$ distant to $\mathcal{X}$, 
+  and then returns an optimal model of $P$ closest to $I$:
+  \begin{enumerate}
+  \item Select a partial interpretation $I$ in one of the following ways:
+%
+(i) %
+    a random one,
+(ii) %
+    a heuristically chosen one, %
+(iii) %
+    one most diverse wrt the solutions in $\mathcal{X}$, or 
+(iv) %
+    one complementary to the last computed optimal model.%
+      %
+%
+  \item Use a cardinality-based preference minimizing the distance to $I$, and
+    apply the aforementioned approach to preferences over optimal models to enforce this preference among the optimal models of $P$.
+  \end{enumerate}
+  
+\item $\mathit{solve}(P,\mathcal{X})$ approximates \emph{A-2} using heuristics. %
+  To this end, we select a partial interpretation $I$ as in \emph{A-2}, 
+  and then guide the computation of the optimal model fixing the sign of the atoms to their value in $I$. 
+  The approach is further developed prioritizing the variables in $I$.
+  A similar method was used by \cite{nadel11a} for SAT.
+\end{enumerate}
+
+%
+%
+%
+%
+ %
+
+\section{Basic solving techniques}\label{sec:basic}
+%
+\makeatletter{}%
+%
+%
+%
+%
+%
+%
+%
+%
+
+We first show how the \emph{Most Distant (Optimal) Model} problem can be represented in \asprin\ 
+using the new preference type \textit{maxmin}: %
+Given a logic program $P$ (with preferences) over $\mathcal{A}$, 
+and a set $\mathcal{X}=\{ X_1, \ldots, X_m \}$ of (optimal) stable models of $P$, 
+find an (optimal) stable model of $P$ that 
+maximizes the minimal distance to the (optimal) stable models in $\mathcal{X}$.
+%
+%
+The \emph{Most Distant Optimal Model} is used by our approximation algorithms in Section~\ref{sec:advanced}.
+
+\mysubsection{Maxmin optimization in \asprin}{sec:maxmin}
+%
+%
+Let $H_\mathcal{X}$ be the set of facts \lstinline[mathescape=true]!$\{$holds($a$,$i$).$\mid a \in X_i, X_i\in\mathcal{X} \}$!
+reifying the stable models in $\mathcal{X}$,  
+and let \lstinline!distance! be the following preference statement:
+%
+\begin{lstlisting}[mathescape=true]
+#preference(distance,maxmin){
+  I,1,X : holds(X,0), not holds(X,I), I=1..$m$;
+  I,1,X : not holds(X,0), holds(X,I), I=1..$m$ }.
+\end{lstlisting}
+%
+Then, the \emph{Distant Model} problem is solved by the following program with preferences:
+\lstinline[mathescape=true]!$P \cup \{ $holds($a$,0) :- $a$. $\mid a \in \mathcal{A}\} \cup H_\mathcal{X} \cup \; \{$distance$\} \; \cup \{$#optimize(distance).$\}$!.
+%
+$P$ generates stable models that are reified with \lm{holds($a$,0)} for $a \in \mathcal{A}$. 
+%
+The preference statement \lstinline!distance! represents a \lstinline!maxmin! preference 
+over \lstinline!I! sums, with \lstinline[mathescape=true]!I=1..$m$!,
+and the value of each sum amounts to the distance between %
+the generated stable model and $X_\mathtt{I}$.
+%
+Finally, the optimize statement selects the optimal stable models wrt $\succ_\mathtt{distance}$.
+
+Formally, the preference elements of preference type \textit{maxmin} have the restricted form
+`\lm{s,w,t:B}'
+%
+where \lm{s}, \lm{w}, \lm{t} are terms, and \lm{B} is a condition.
+%
+Term \lm{s} names different sums,
+whose value is specified by the rest of the element `\lm{w,t:B}'
+(similar to aggregate elements).
+%
+%
+%
+For defining the semantics of \textit{maxmin}, 
+preference elements stand for their ground instantiations, 
+and we consider a set $E$ of such ground preference elements.
+%
+We say that \lm{s} is a sum of $E$ if it is the first term of some preference element.
+Given a stable model $X$ and a sum \lm{s} of $E$, the value of \lm{s} in $X$ is:
+\[\textstyle
+v(\mathtt{s},X)=\sum_{(\mathtt{w},\mathtt{t})\in\{\mathtt{w},\mathtt{t}\mid \mathtt{s,w,t:B}\in E, X\models \mathtt{B}\}}\mathtt{w}
+\]
+For a set $E$ of ground preference elements for preference statement \lm{p}, 
+\textit{maxmin} defines the following preference relation:%
+\footnote{For defining \textit{minmax}, we simply switch $\min$ by $\max$, and $>$ by $<$.}
+\[
+X \succ_\mathtt{p} Y \text{ if } \min \{ v(\mathtt{s},X) \mid \mathtt{s} \ \text{is a sum of } E \} > \min \{ v(\mathtt{s},Y) \mid \mathtt{s} \ \text{is a sum of } E \} 
+\]
+Applying this definition to the preference statement \lm{distance} gives the partial order $\succ_\mathtt{distance}$.
+%
+%
+
+%
+%
+%
+%
+In \asprin, partial orders $\succ$ are implemented by so-called \emph{preference programs}. 
+%
+For our example, we say that $Q$ is a \emph{preference program} for $\succ_\mathtt{distance}$ if it holds that
+$X \succ_\mathtt{distance} Y$ iff $Q \cup \Holds{X} \cup \Holdsp{Y}$ is satisfiable, 
+where \lm{$\Holds{X}=\{ $holds($a$). $\mid a \in X\}$}
+and   $\Holdsp{Y}$\lm{$=\{ $holds'($a$). $\mid a \in Y\}$}.
+%
+In practice, the preference program $Q$ consists of three parts.
+
+%
+First, %
+each preference statement is translated into a set of facts, and added to $Q$.
+Our example preference statement \lm{distance} results in
+\lm{preference(distance,maxmin)} 
+and the instantiations of 
+\lm{preference(distance,1,(I,X),for(t$_\mathtt{1}$),(I,1,X))} 
+and 
+\lm{preference(distance,2,(I,X),for(t$_\mathtt{2}$),(I,1,X))}
+where \lm{t$_\mathtt{1}$} and \lm{t$_\mathtt{2}$} are terms 
+standing for the conditions of the two non-ground preference elements.
+
+Second, %
+$Q$ contains the implementation of the preference type $\mathtt{p}$,
+consisting of rules defining an atom \lstinline[mathescape]!better($\mathtt{p}$)! 
+that indicates whether $X\succ_{\mathtt{p}}Y$ holds for two stable models $X,Y$.
+The sets $X$ and $Y$ are provided by \asprin\ in reified form via unary predicates \lstinline!holds! and \lstinline!holds'!\!.%
+\footnote{That is, \lstinline[mathescape]!holds($\mathtt{a}$)!\! (or \lstinline!holds'!\!\!\lstinline[mathescape]!($\mathtt{a}$)!\!) is true iff $\mathtt{a}\!\in\!X$ (or $\mathtt{a}\!\in\!Y$).}
+%
+Further rules are added by \asprin\ to define \lstinline!holds! and \lstinline!holds'! for
+the conditions appearing in the preference statement (\lm{t$_\mathtt{1}$} and \lm{t$_\mathtt{2}$} in our example).
+%
+The definition of \lstinline[mathescape]!better($\mathtt{p}$)! then draws upon the instances of both predicates for deciding $X\succ_{\mathtt{p}}Y$.
+%
+For the new preference type $\mathtt{maxmin}$ (being now part of \asprin\ 2's library),
+we get the following rules:
+%
+\begin{lstlisting}
+#program preference(maxmin).
+sum(P,S) :- preference(P,maxmin), preference(P,_,_,_,(S,_,_)).
+
+value(P,S,V) :- preference(P,maxmin), sum(P,S), 
+  V = #sum { W,T : holds'(X), preference(P,_,_,for(X),(S,W,T)).
+
+minvalue(P,V) :- preference(P,maxmin), V = #min { W : value(P,S,W) }.
+
+better(P,S) :- preference(P,maxmin), sum(P,S), minvalue(P,V),
+  V < #sum { W,T : holds(X), preference(P,_,_,for(X),(S,W,T)).
+
+better(P) :- preference(P,maxmin), better(P,S) : sum(P,S).
+\end{lstlisting}
+Predicate \lm{sum/2} stores the sums \lm{S} of the preference statement \lm{P},  
+while \lstinline!value/3! collects the value \lm{V} of every sum for the stable model $Y$, 
+and \lstinline!minvalue/2! stores the minimum of them.
+In the end, \lstinline{better(P)} is obtained if \lstinline{better(P,S)} holds for all sums \lm{S}, 
+and this is the case whenever the value of the sums for the stable model $X$ 
+is greater than the minimum value for the stable model $Y$.
+
+Third, %
+the constraint
+`\lm{:- not better(distance).}'
+%
+%
+%
+is added to $Q$, %
+enforcing that 
+the set of rules is satisfiable iff \lm{better(p)} is obtained, 
+which is the case whenever $X \succ_\mathtt{distance} Y$. 
+%
+
+We can show that for any preference statement \lm{p} of type \lm{maxmin}, 
+the union of the above three sets of rules constitutes a preference program for $\succ_\mathtt{p}$.
+
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+
+%
+%
+%
+%
+ %
+
+%
+\makeatletter{}%
+
+\mysubsection{Automatic Guess and Check in \clingo}{sec:generate}
+%
+Given a logic program $P$ over $\mathcal{A}$, and a preference statement $s$ with preference program $Q_s$, 
+the optimal models of $P$ wrt $\succ_s$ correspond to the solutions of the \gc\ problem
+$\langle P \cup R_\mathcal{A}',P \cup R_\mathcal{A} \cup Q_s\rangle$, 
+where (given a set $X$) $R_X'$ stands for \lm{$\{$ holds'($a$) :- $\ a$. ${}\mid a \in X \}$}, 
+$R_X$ for \lm{$\{$ holds($a$) :- $\ a$. ${}\mid a \in X \}$}, 
+and only the atoms of predicate \lm{holds'/1} are passed to the checker.%
+\footnote{In the system $\mathit{metagnc}$ this is declared via directive `\lstinline!#guess holds'/1.!'}
+%
+The guess program generates stable models $X$ of $P$ reified with \lstinline!holds'/1!,
+while the check program looks for models better than $X$ wrt $s$ reified with \lstinline!holds/1!,
+so that $X$ is optimal whenever the checker along with the \lstinline!holds'/1! atoms of $X$ becomes unsatisfiable.
+%
+This correspondence is the basis of a method for computing optimal models in \asprin, 
+where the logic program with preferences is translated into a \gc\ problem, 
+that $\mathit{metagnc}$ translates into a disjunctive logic program,
+which is then solved by \clingo.
+%
+This allows, for example, for solving the \emph{Distant Model} problem using the logic program 
+\lstinline[mathescape=true]!$P \cup \{ $holds($a$,0) :- $a$. $\mid a \in \mathcal{A}\} \cup H_\mathcal{X}$! 
+and the preference statement \lstinline!distance!,
+with the corresponding preference program comprising the three sets of rules described before.
+
+%
+In general, the G{\&}C framework \cite{eitpol06a} 
+allows for representing $\Sigma^p_2$ problems in ASP, 
+and solving them using the \textit{saturation} technique by Eiter and Gottlob in~\cite{eitgot95a}.
+%
+The idea is to re-express the problem as a positive disjunctive logic program, containing a special-purpose atom \lm{bot}.
+%
+Whenever \lm{bot} is obtained, saturation derives all atoms (belonging to a ``guessed'' model).
+%
+Intuitively, this is a way to materialize unsatisfiability.
+%
+We automatize this process in $\mathit{metagnc}$ by building on the meta-interpretation-based approach of~\cite{gekasc11b}.
+%
+For a \gc\ problem $\langle G, C \rangle$ over $\langle \mathcal{A}_G,\mathcal{A}_C\rangle$,
+the idea is to reify the program
+\lstinline[mathescape=true]!$C \cup \{ ${$a$}.$ \mid a \in \mathcal{A}_G \}$!
+into the set of facts
+\lstinline[mathescape=true]!$\mathcal{R}(C \cup \{ ${$a$}.$ \mid a \in \mathcal{A}_G \})$!.
+%
+%
+%
+The latter are combined with the meta-encoding $\mathcal{M}$ from~\cite{gekasc11b} implementing saturation.
+%
+%
+This leads to the positive disjunctive logic program:
+\begin{lstlisting}[mathescape=true]
+$\phantom{G \cup {}}$$\mathcal{R}\big(C \cup \{ ${$a$}.$ \mid a \in \mathcal{A}_G \} \big) \cup\mathcal{M}$
+\end{lstlisting}
+%
+%
+%
+This program has a stable model (excluding \lm{bot}) for each $X \subseteq \mathcal{A}_G$ such that $C \cup X$ is satisfiable, 
+and it has a saturated stable model (including \lm{bot}) if there is no such $X$.
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+Next, we just have to add the generator program $G$, 
+map the true and false atoms of $G$ to their counterparts in the positive disjunctive logic program 
+(represented by predicates \lm{true/1} and \lm{false/1}, respectively),
+and enforce the atom \lm{bot} to hold:
+\begin{lstlisting}[mathescape=true]
+$\phantom{G \cup {}}$$\mathcal{R}\big(C \cup \{ ${$a$}.$ \mid a \in \mathcal{A}_G \} \big) \cup\mathcal{M} \; \cup $
+$\phantom{G \cup {} \mathcal{R}\big( }$$G \cup \{ $true($a$) :- $a$.$ \mid a \in \mathcal{A}_G \} \cup \{ $false($a$) :- not $a$.$ \mid a \in \mathcal{A}_G \} \cup \{ $:- not bot.$\}$
+\end{lstlisting}
+%
+%
+%
+%
+%
+%
+%
+The stable models of the resulting program correspond to the solutions of the \gc\ problem.
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+
+%
+%
+%
+%
+%
+%
+%
+%
+
+%
+%
+%
+%
+%
+%
+
+
+%
+%
+%
+%
+%
+%
+%
+%
+
+%
+%
+%
+%
+%
+%
+%
+%
+
+%
+%
+%
+%
+ %
+
+%
+\makeatletter{}%
+
+\mysubsection{Solving queries in \asprin}{sec:queries}
+%
+Given a logic program with preferences $P$ and a query atom \lm{q}, 
+the query problem is to decide whether there is an optimal stable model of $P$ that contains \lm{q}.
+%
+From the point of view of complexity theory, the problem is $\Sigma^p_2$-complete when $P$ is normal.
+%
+Membership holds because for solving this problem, 
+we can use the \gc\ method by
+translating the logic program with preferences into a disjunctive logic program
+and adding the query as a constraint `\lm{:- not q.}'.
+%
+Hardness can be proved by a reduction of the problem of deciding 
+the existence of a stable model of a disjunctive logic program $P$ (see~\cite{roscwa16a}). %
+
+%
+Alternatively to the \gc\ approach, we propose four enumeration-based algorithms for solving this problem.
+%
+%
+All of them search for an optimal model containing the query, 
+and their worst case occurs when there is none 
+and they have to enumerate all solutions.
+
+Algorithm \Qlabel{1} enumerates stable models of \lm{$P \cup \{$:- not q.$\}$} and 
+tests them for optimality, until one test succeeds.
+%
+In the worst case, \Qlabel{1} enumerates all stable models of the program, 
+but still it runs in polynomial space given that it enumerates normal stable models.
+
+Algorithm \Qlabel{2} enumerates optimal models of $P$, until one contains $q$.
+%
+In the worst case, \Qlabel{2} enumerates all optimal models of $P$, 
+and this enumeration may need exponential space (see~\cite{brderosc15a}).
+%
+Note that this exponential blow-up may also occur with the other algorithms \Qlabel{3} and \Qlabel{4}.
+%
+In addition, even when \Qlabel{2} succeeds in finding an optimal model containing the query, 
+it may have to enumerate many optimal models without the query before reaching the right one.
+
+Trying to alleviate this problem, algorithm \Qlabel{3} enumerates optimal models of \lm{$P \cup \{$:- not q.$\}$}, 
+and tests whether they are also optimal for $P$, until one test succeeds.
+%
+However, \Qlabel{3} may have to enumerate many non optimal models of $P$ containing the query
+before finding a truly optimal one.
+
+Algorithm \Qlabel{4} follows a different approach, enumerating optimal models of $P$ (as \Qlabel{2}) 
+but modifying the algorithm of \asprin\ for computing optimal models.
+%
+The input of \asprin's algorithm is a logic program $P$ and a preference statement $s$ with preference program $Q_s$.
+%
+It follows these steps:
+\begin{enumerate}
+\item
+Solve program $P$ and assign the result to $Y$. Return $Y$ if it is $\bot$.
+\item
+Assign $Y$ to $X$, and solve program $P \cup Q_s \cup R_\mathcal{A} \cup H_{X}'$ assigning the result to $Y$.
+\par
+If $Y$ is $\bot$, return $X$, else repeat this step.
+\end{enumerate}
+%
+Step~2 searches iteratively for better models of $P$ wrt s.
+%
+With Algorithm \Qlabel{3}, it may be the case that many iterations are performed 
+only to find out afterwards that there was a model better than all of them but without the query.
+%
+Then, the idea of \Qlabel{4} is to alternatively add \lm{$\{$:- not q.$\}$} and \lm{$\{$:- q.$\}$} 
+at Step~2 trying to avoid those cases.
+%
+When a solve call at Step~2 with \lm{$\{$:- q.$\}$} fails, 
+we know that the query is true in an optimal model, 
+and we keep iterating with  \lm{$\{$:- not q.$\}$} until we find such a model.%
+\footnote{If we are only interested in \emph{deciding} the query problem, 
+          we can stop without iterating any more and return true.}
+%
+%
+
+
+%
+%
+%
+%
+ %
+
+%
+\makeatletter{}%
+%
+\mysubsection{Preferences over optimal models in \asprin}{sec:preferences}
+%
+%
+%
+%
+Formally, this extension of \asprin\ is defined as follows.
+%
+Let $P$ be a logic program over $\mathcal{A}$, 
+and let $s$ and $t$ be two preference statements.
+%
+A stable model $X$ of $P$ is optimal wrt $s$ \emph{and then} $t$ if
+it is optimal wrt $s$, 
+and there is no optimal model $Y$ of $P$ wrt $s$ such that $Y \succ_t X$.
+%
+From the point of view of complexity theory, when $P$ is normal, 
+finding a stable model optimal wrt $s$ and then $t$ is $F\Delta^p_3$-hard.
+We prove this by reducing the problem of finding an optimal stable model of a 
+disjunctive logic program with weight minimization (see~\cite{roscwa16a}). %
+%
+We note that finding a stable model of a normal logic program $P$ with preferences 
+is in $F\Sigma^p_2$, given the translation to disjunctive logic programs using the \gc\ method.
+%
+Therefore, it is believed that we cannot find a polynomial translation to a normal program with preferences.
+%
+%
+
+It turns out that the \emph{Most Distant Optimal Model} problem can be easily formulated within this approach.
+%
+Given a logic program $P$ with a preference statement $s$, 
+and a set $\mathcal{X}=\{ X_1, \ldots, X_m \}$ of optimal stable models of $P$, 
+the most distant optimal models for this problem correspond to the stable models of the logic program
+\lstinline[mathescape=true]!$P \cup \{\; $holds($a$,0) :- $a$. $\mid a \in \mathcal{A}\} \cup H_\mathcal{X}$!
+that are optimal wrt $s$ and then \lm{distance}.
+%
+In \asprin, this is represented simply by adding to the resulting logic program 
+the preference statements $s$ and \lm{distance}, 
+along with the declarations `\lm{#optimize($s$).}' and `\lm{#reoptimize(distance).}'.
+
+For computing optimal models of a logic program $P$ over $\mathcal{A}$ wrt preference statements $s$ and then $t$, 
+we propose a variant of \asprin's iterative algorithm.
+%
+Let $\mathit{solveOpt}(P,s)$ be the \asprin\ procedure for computing one optimal model of $P$ wrt $s$, 
+and let $\mathit{solveQuery}(P,s,q)$ be any of our algorithms for solving the query problem  
+given a logic program $P$ with preference statement $s$ and query atom $q$.
+%
+The algorithm follows these steps:
+\begin{enumerate}
+\item
+Call $\mathit{solveOpt}(P,s)$ and assign the result to $Y$. Return $Y$ if it is $\bot$.
+\item
+Assign $Y$ to $X$, and call $\mathit{solveQuery}(P \cup Q_t^* \cup R_\mathcal{A} \cup H_{X}',s,\mathtt{better(}t\mathtt{)})$ assigning the result to $Y$.
+If $Y$ is $\bot$, return $X$, else repeat this step.
+\end{enumerate}
+where $Q_t^*$ is the result of deleting the constraint `\lm{:- not better($t$).}' 
+from a preference program $Q_t$ for $t$.
+%
+The first step of the algorithm computes an optimal model of $P$ wrt $s$.
+%
+Then Step~2, like in \asprin's basic algorithm, searches iteratively for better models. 
+%
+Specifically, it searches for optimal models of $P$ wrt $s$ that are better than $X$ wrt $t$.
+%
+Note that by construction of $Q_t^*$, 
+the stable models $Y$ of $P \cup Q_t^* \cup R_\mathcal{A} \cup H_{X}'$ 
+are better than $X$ wrt $t$ iff \lm{better($t$) $\in Y$}. 
+%
+Then if $\mathit{solveQuery}$ returns a model $Y$, it contains \lm{better($t$)},
+and therefore it is better than $X$ wrt $t$.
+%
+On the other hand, if $\mathit{solveQuery}$ returns $\bot$, there is no optimal model of $P$ wrt $s$ that is better than $X$ wrt $t$, 
+and this implies that $X$ is an optimal model wrt $s$ and then $t$.
+
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+ %
+
+\section{Advanced diversification techniques}\label{sec:advanced}
+%
+\makeatletter{}%
+
+%
+%
+\mysubsection{Enumeration}{sec:enumeration}
+%
+With this technique, we first enumerate all optimal stable models of $P$ with \asprin\
+and afterwards we find, among all those stable models, the $n$ most diverse.
+%
+%
+%
+For the initial step, we use \asprin{}'s enumeration algorithm (see~\cite{brderosc15a}).
+For the second, let $\mathcal{X}=\{ X_1, \ldots, X_m \}$ be the set of $m$ optimal stable models of $P$.
+Then, the following encoding along with the facts $H_\mathcal{X}$ reifying $\mathcal{X}$ 
+provides a correct and complete solution to the \emph{n Most Diverse Optimal Models} problem:
+\begin{lstlisting}[mathescape=true,numbers=none]
+$n$ { sol(1..$m$) } $n$.
+#preference(enumeration,maxmin) { 
+  (I,J),1,X : holds(X,I), not holds(X,J), sol(I), sol(J), I < J; 
+  (I,J),1,X : not holds(X,I), holds(X,J), sol(I), sol(J), I < J;
+  (I,J),#sup,0 : sol(I), not sol(J), I < J ;
+  (I,J),#sup,0 : not sol(I), sol(J), I < J }.
+#optimize(enumeration).  
+\end{lstlisting}
+The choice rule guesses \lstinline!n! solutions among \lstinline!m! in $\mathcal{X}$, 
+and the \lstinline!enumeration! preference statement selects the optimal ones.
+In \lstinline!enumeration!, there is a sum for every pair \lstinline!(I,J)! with \lstinline!I < J!.
+If both \lstinline!I! and \lstinline!J! are chosen (first two preference elements) 
+then the sum represents their actual distance.
+In the other case (last two elements) the sum has the maximum possible value in \asprin\ (represented by \lstinline!#sup!).
+This allows for comparing only sums of pairs \lstinline!(I,J)! of selected solutions.
+
+\mysubsection{Replication}{sec:replication}
+%
+With this technique  \asprin\ begins translating a normal logic program with preferences $P$ 
+into a disjunctive logic program $D$ applying the \gc\ method.
+%
+Next, $D$ is reified onto $\mathcal{R}(D)$ and combined with a meta-encoding $\mathcal{M}_n$ 
+replicating $D$:%
+\footnote{The actual encoding handles the whole \clingo\ language~\cite{gekakasc14b} and is more involved.}
+\begin{lstlisting}[mathescape=true]
+sol(1..$n$).
+holds(A,S) : head(R,A) :- rule(R); sol(S); holds(A,S) : body(R,pos,A);
+                                       not holds(A,S) : body(R,neg,A).
+\end{lstlisting}
+%
+The stable models of $\mathcal{M}_n \cup \mathcal{R}(D)$ correspond one to one 
+to the elements of $\mathit{Opt}(P)^n$, 
+where $\mathit{Opt}(P)$ stands for the set of all optimal models of $P$.
+%
+Further rules are added for having exactly one stable model for every set of $n$ optimal stable models, 
+but we do not detail them here for space reasons.
+%
+Finally, adding the following preference and optimize statements results  
+in a correct and complete solution to the \emph{n Most Diverse Optimal Models} problem:
+\begin{lstlisting}
+#preference(replication,maxmin) { 
+  (I,J),1,X : hold(A,I), not hold(A,J), sol(I), sol(J), I < J ; 
+  (I,J),1,X : not hold(A,I), hold(A,J), sol(I), sol(J), I < J }.
+#optimize(replication).
+\end{lstlisting}
+The preference statement is similar to the one for Enumeration, 
+but now the $n$ solutions are generated by the meta-encoding, 
+and all of them are taken into account for calculating the sums.
+
+%
+%
+%
+%
+ %
+
+%
+\makeatletter{}%
+
+\mysubsection{Approximation}{sec:approximate:methods}
+%
+We describe the different implementations of the procedure 
+$\mathit{solve}(P,\mathcal{X})$ outlined in Section \ref{sec:overview}. 
+
+%
+In Algorithm~\Alabel{1}, $\mathit{solve}(P,\mathcal{X})$ solves the
+\emph{Most Distant Optimal Model} problem given the optimal stable models in $\mathcal{X}$
+using the method described in Section \ref{sec:basic}. %
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+
+In Algorithm~\Alabel{2}, $\mathit{solve}(P,\mathcal{X})$ first computes a partial interpretation $I$ 
+distant to $\mathcal{X}$ in one of the following ways:
+\begin{enumerate}
+\item 
+A random one (named $\mathit{rd}$).
+\item 
+A heuristically chosen one, following the $\mathit{pguide}$ heuristic from \cite{nadel11a} ($pg$):
+for an atom $a$, $a$ is added to $I$ if it is true in $\mathcal{X}$ more often than false, 
+$\neg a$ is added in the opposite case, and nothing happens if there is a tie.
+%
+%
+\item 
+One most distant to the solutions in $\mathcal{X}$ ($\mathit{dist}$), 
+computed applying the solution to the \emph{Most Distant Model} problem described in Section \ref{sec:basic}, %
+where the program $P$ is `\lstinline[mathescape=true]!$\{${holds($a$)}.$ \mid a \in \mathcal{A}\}$!'.
+\item 
+One complementary to the last computed optimal model $L$ 
+taking into account either 
+true ($\{ \neg a \ | \ a \in L\}$), 
+false ($\{ a \ | \ a \notin L\}$), 
+or both types of atoms ($\{ \neg a \ | \ a \in L\} \cup \{ a \ | \ a \notin L\}$). 
+They are named $\mathit{true}$, $\mathit{false}$ and $\mathit{all}$, respectively.
+\end{enumerate}
+%
+For selecting an optimal model closest to $I$, 
+the technique is similar to the one for the \emph{Most Distant Optimal Model} problem:
+we add to $P$ the rules 
+\lm{$\{\;$holds($a$,0) :- $a$.${}\mid a \in \mathcal{A}\}$} reifying the atoms of $P$, 
+the facts 
+\lm{$\{\;$holds($a$,1).${}\mid a \in I\cap\mathcal{A}\}\cup\{\;$nholds($a$,1).${}\mid \neg a \in I, a \in \mathcal{A} \}$} reifying $I$,  
+and the following preference statement: 
+\begin{lstlisting}
+#preference(partial,less(cardinality)) {
+  holds(X,0), nholds(X,1); not holds(X,0), holds(X,1) }.
+\end{lstlisting}
+Finally, we compute the optimal models of this program wrt $s$ and \lm{partial}
+using the method for preferences over optimal models described in Section \ref{sec:basic}. %
+
+In Algorithm~\Alabel{3},
+we select a distant solution $I$ as we do for \Alabel{2}, 
+we add the same reifying rules, 
+and we add the following heuristic rules for approximating an optimal model of $P$ close to $I$:
+\begin{lstlisting}
+#heuristic hold(X,0) :  holds(X,1). [  1, sign ]
+#heuristic hold(X,0) : nholds(X,1). [ -1, sign ]
+\end{lstlisting}
+For prioritizing the variables in $I$, we add another two heuristic rules like the previous ones, 
+but replace both \lm{[ 1, sign ]} and \lm{[ -1, sign ]} by \lm{[ 1, level ]}, respectively.
+%
+%
+%
+%
+%
+%
+%
+
+%
+%
+%
+%
+ %
+
+%
+%
+\makeatletter{}%
+\section{Experiments}\label{sec:experiments}
+%
+\begin{table}[t]
+\parbox{.32\linewidth}{\centering
+\begin{tabular}{|l||r|r|}
+
+\hline
+Class & T & TO  \\ 
+\hline
+\Alabel{3} & \textbf{165} & \textbf{70} \\
+\Alabel{3}-true & 200 & 113 \\ 
+\Alabel{3}-all & 202 & 118 \\ 
+\Alabel{3}-rd & 277 & 280 \\ 
+%
+\Alabel{3}-pg & 317 & 351\\
+\Alabel{3}-pg-l-rd & 354 & 442\\
+\Alabel{3}-false & 351 & 443 \\ 
+\Alabel{3}-pg-l & 351 & 443\\
+\Alabel{2}-true & 482 & 618\\
+\Alabel{2}-rd & 474 & 648\\
+\Alabel{1} & 482 & 672\\
+\Alabel{2}-dist-to & 528 & 689\\
+\Alabel{2}-all & 515 & 696\\
+\Alabel{2}-false & 532 & 696\\
+\Alabel{2}-pg & 542 & 708\\
+\Alabel{2}-dist & 572 & 773\\
+\hline
+\end{tabular} 
+}
+\parbox{.32\linewidth}{\centering
+\begin{tabular}{|l||r|r|}
+
+\hline
+Class & S & avg\\ 
+\hline
+\Alabel{1} & \textbf{15} & 0.13\\
+\Alabel{2}-dist-to & 14 & 0.14\\ 
+\Alabel{2}-pg & 13 & \textbf{0.18}\\ 
+\Alabel{3}-pg-l & 11 & 0.17\\
+\Alabel{3}-pg-l-rd & 10 & 0.16\\
+\Alabel{2}-all & 10 & 0.15\\
+\Alabel{2}-dist & 8 & 0.07\\ 
+\Alabel{2}-false & 8 & 0.15\\ 
+\Alabel{2}-true & 7 & 0.12\\ 
+\Alabel{3}-false & 6 & 0.16\\ 
+\Alabel{2}-rd & 5 & 0.12\\ 
+\Alabel{3}-all & 5 & 0.08 \\ 
+\Alabel{3}-true & 4 & 0.08 \\ 
+\Alabel{3}-rd & 2 & 0.09 \\ 
+\Alabel{3}-pg & 1 & 0.09\\
+%
+\Alabel{3} & 0 & 0.06\\
+
+\hline
+\end{tabular} 
+}
+\parbox{.32\linewidth}{\centering
+\begin{tabular}{|l||r|r|}
+
+\hline
+Class & S & avg\\ 
+\hline
+\Alabel{1} & \textbf{15} & 12.25\\
+\Alabel{2}-dist-to & 13 & 10.38\\
+\Alabel{3}-pg-l-rd & 13 & 11.82 \\
+\Alabel{2}-dist & 12 & 5.31\\
+\Alabel{3}-pg-l & 12 & 11.10\\
+\Alabel{2}-pg & 10 & \textbf{12.86}\\
+\Alabel{2}-rd & 9 & 8.77 \\
+\Alabel{3}-all & 7 & 3.99 \\ 
+\Alabel{3}-true & 6 & 4.00 \\ 
+\Alabel{3}-false & 6 & 7.07 \\ 
+\Alabel{2}-false & 6 & 6.80\\
+\Alabel{2}-all & 4 & 6.98\\
+\Alabel{2}-true & 3 & 5.31\\
+\Alabel{3}-rd & 2 & 6.43\\
+\Alabel{3} & 2 & 4.28\\
+%
+\Alabel{3}-pg & 0 & 2.79\\
+\hline
+\end{tabular} 
+}
+\caption{Comparison of approximation techniques by 
+(a) runtime and timeouts,
+(b) diversification quality, and
+(c) minimal distance}
+\label{tab:time_comparison_small}
+\label{tab:diverse_comparison_small}
+\label{tab:min_dist_comparison_small}
+\end{table}
+%
+In this section, we present experiments focusing on the \emph{approximation} techniques of the \asprin\ system for obtaining most dissimilar optimal
+solutions. 
+%
+While \emph{enumeration} and \emph{replication} provide exact results, they need to calculate and store a possibly exponential number of optimal
+models or deal with a large search space, respectively.
+%
+Those techniques are therefore not tractable for most practical applications.
+%
+For Algorithm~\Alabel{2}, we considered the variations rd, pg, dist, dist-to, true, false, and all.
+%
+In dist, we issued no timeout for the computation of the partial interpretation, 
+while in dist-to, we set a timeout for this computation of half the total possible runtime.
+%
+For Algorithm~\Alabel{3}, we consider the variations that include no extra ASP computation, namely, 
+rd, pg, dist, dist-to, true, false, and all.
+%
+We also evaluated a version without any heuristic modification (named simply \Alabel{3}).
+%
+Furthermore, following \cite{nadel11a}, 
+we considered a variation of pg, viz.~pg-l, 
+where the atoms of the selected partial interpretation are given a higher priority, 
+and pg-l-rd, extending pg-l by fixing initially a random sign to all atoms not appearing in the partial interpretation.
+
+We gathered 186 instances from six different classes: \emph{Design Space exploration (DSE)} from~\cite{angeglharesc13a}, \emph{Timetabling (CTT)}
+from~\cite{basotainsc13a}, \emph{Crossing minimization} from ASP competition 2013, \emph{Metabolic network expansion} from \cite{schthi09a},
+\emph{Biological network repair} from \cite{geguivscsithve10a} and \emph{Circuit Diagnosis} from~\cite{sidiqqi11a}.
+Since we required instances with multiple optimal solutions, we exclusively focus on Pareto optimality. 
+DSE and CTT are inherently multi-objective and therefore we could naturally define a Pareto preference for them. 
+For the other classes, we turned single-objective into multi-objective optimization problems by distributing their optimization statements.
+First, we split the atoms in the optimization statements into four or eight groups evenly. 
+We chose for each group the same preference type, either cardinality or subset minimization, and defined a Pareto preference that incorporates all cardinality or the subset preferences respectively.
+We calculated optimal solutions of that regarding those Pareto preference statements.
+The same was done for CTT and DSE.
+An instance was selected if for some Pareto preference ten optimal solutions could be obtained within 600 seconds by \asprin. 
+This method generated 816 instances in total. 
+We ran the benchmarks on a cluster of Linux machines with dual Xeon E5520 quad-core 2.26 GHz processors and 48 GB RAM. 
+We restricted the runtime to 600 seconds and the memory usage to 20 GB RAM.
+
+Since algorithms~\Alabel{1} and \Alabel{2} involve querying programs over preferences, 
+we started by evaluating the different query techniques. 
+%
+For that, we executed \Alabel{1} with query methods \Qlabel{1} to \Qlabel{4} on all selected instances,
+stopping after the first $\mathit{solveQuery}$ call was finished.
+%
+%
+The performance of query techniques \Qlabel{2}, \Qlabel{3}, and \Qlabel{4} was similar regarding runtime and only \Qlabel{1} was clearly worse.
+We selected \Qlabel{4} for the remaining experiments due to its slightly lower runtime. 
+For more detailed tables, we refer to~\cite{roscwa16a}. %
+
+Next, we approximated four most diverse optimal models with methods \Alabel{1} to \Alabel{3}. 
+%
+We measured runtime and two quality measures.
+The first, called diversification quality~\cite{nadel11a},
+gives the sum of the Hamming distances among all pairs of solutions normalized to values between zero and one.
+The second is the minimal distance among all pairs of solutions of a set in percent.
+%
+The solution set size of four was chosen because~\cite{shimazu01a} 
+claims that three solutions is the optimal amount for a user,
+and considering one additional solution provides further insight into the different quality measures. 
+%
+For all algorithms that do not use heuristics for diversification, 
+we instead enabled heuristics preferring a negative sign for the atoms appearing in preference statements, 
+since it was observed in~\cite{brderosc15b} that this improved the performance of the system.
+
+Table~\ref{tab:time_comparison_small}(a) provides in column T the average runtime and in column TO the sum of timeouts. 
+The different methods are ordered by the number of timeouts. 
+The best results in a column are shown in bold. 
+We see that \Alabel{3} is by far the fastest with 70 timeouts, solving 91\% of the instances. 
+Heuristic variations of \Alabel{3} perform the best after that. 
+Less invasive heuristics achieve similar runtimes with 113-118 timeouts.
+More sophisticated heuristics perform worse at 349-443 timeouts.
+In a range from 618 to 773 timeouts, non-heuristic methods solve the least instances by a significant margin.
+The results are in tune with the nature of the methods. 
+Heuristics modifying the solving process for diversity decrease the performance 
+in comparison with solving heuristics aimed at performance, 
+but not as much as more complex methods involving preferences over optimal models. 
+
+In particular, non-heuristic methods show many timeouts. 
+If we tried to analyze the quality of the solutions by assuming worst possible values for the instances that timed out,
+the results would be dominated by these instances. 
+To avoid that, we calculated a score independent of the runtime.
+We considered all possible parings of the different methods. 
+For each pair, we compared only instances where both found a solution set.
+The method with better quality value for the majority of instances receives a point. 
+Finally, we ordered the subsequent tables according to that score. 
+ 
+In Table~\ref{tab:diverse_comparison_small}(b), for each method we see the score in column S, and 
+the average of the diversification quality (over the instances solved by the method) in column avg. 
+This way, we can examine the quality a method has achieved compared to other methods, and also the individual average quality.
+\Alabel{1} has the best quality with a score of 15, followed by \Alabel{2}-dist-to, \Alabel{2}-pg, \Alabel{3}-pg-l and \Alabel{3}-pg-l-rd.
+All of those techniques regard the whole previous solution set to calculate the next solution
+and guide the solving strictly to diversity.
+\Alabel{2}-pg, \Alabel{3}-pg-l and \Alabel{3}-pg-l-rd are also the first, second and third place, respectively, for average diversification quality. 
+Next, with scores ranging from 10-7, we see \Alabel{2} methods 
+that do not take into account the whole previous set, 
+or that were simply unable to find many solutions at all, as in the case of \Alabel{2}-dist. 
+Finally, we observe that \Alabel{3} variations only regarding the last solution or no previous information 
+perform worst in score and average. 
+In these cases, the heuristic does not seem to be strong enough to steer the solving to high quality solution sets, 
+and \Alabel{3} uses no heuristic or optimization techniques to ensure diverse solutions.
+
+Table~\ref{tab:min_dist_comparison_small}(c) 
+provides information in analogy to Table~\ref{tab:diverse_comparison_small}(b) for the minimal distance among the solutions. 
+%
+The overall grouping of the methods is similar to Table~\ref{tab:diverse_comparison_small}(b). 
+%
+The best methods considering score and average minimal distance, 
+viz.\ \Alabel{1}, \Alabel{2}-dist-to, \Alabel{3}-pg-l-rd, \Alabel{3}-pg-l, \Alabel{2}-pg, utilize information from the whole
+previous solution set and have strict diversification techniques. 
+%
+
+Overall, plain heuristic methods perform better as regards runtime 
+while more complex methods, depending on all previous solutions, lead to better quality. 
+%
+Furthermore, \Alabel{3}-pg-l-rd and \Alabel{3}-pg-l provide the best trade-off between performance and quality. 
+%
+While \Alabel{1}, \Alabel{2}-dist-to and \Alabel{2}-pg achieve higher quality, they could solve only 18\%, 16\% and 13\% of the instances. 
+%
+On the other hand, \Alabel{3}-pg-l-rd and \Alabel{3}-pg-l provide good diversification quality and minimal distance while solving 46\% of the instances. 
+%
+%
+
+
+%
+%
+%
+%
+ %
+
+%
+\makeatletter{}%
+
+\section{Discussion}\label{sec:discussion}
+
+We presented a comprehensive framework for computing diverse (or similar) solutions to logic programs with generic preferences
+and implemented it in \asprin~2 available at~\cite{asprin}. %
+To this end, we introduced a spectrum of different methods, among them, generalizations of existing work to the case of
+programs with general preferences.
+Hence, certain fragments of our framework provide implementations of the proposals in \cite{eiererfi13a,zhutru13a}.
+While the latter had to resort to solver wrappers or even internal solver modifications,
+\asprin\ heavily relies upon multi-shot solving that allows for an easy yet fine-grained control of reasoning processes.
+Moreover, we provided several generic building blocks, such as 
+\textit{maxmin} (and \textit{minmax}) preferences,
+query-answering for programs with preferences,
+preferences among optimal models,
+and an automated approach for the generate and test methodology of~\cite{eitpol06a},
+all of which are also of interest beyond diversification.
+%
+Finally, we took advantage of the uniform setting offered by \asprin~2 to conduct a 
+comparative empirical analysis of the various methods for diversification.
+Generally speaking,
+there is a clear trade-off between performance and diversification quality, 
+which allows for selecting the most appropriate method 
+depending on the hardness of the application at hand.
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+
+
+
+%
+%
+%
+%
+ %
+
+
+\bibliography{paper} %
+%
+%
+%
+%
+\end{document}

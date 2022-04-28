@@ -1,0 +1,111 @@
+%\documentclass{svjour3}                     % onecolumn (standard format)
+\documentclass[smallcondensed]{svjour3}    % onecolumn (ditto)
+%\documentclass[smallextended]{svjour3}     % onecolumn (second format)
+%\documentclass[twocolumn]{svjour3}         % twocolumn
+%
+%\smartqed  % flush right qed marks, e.g. at end of proof
+%
+%\usepackage{graphicx}
+\usepackage{bm}
+\usepackage{mathptmx}
+\usepackage{amsmath,amssymb}
+%\usepackage{comments}
+\usepackage{listings}
+\usepackage{array}
+\lstset{numbers=left,numberblanklines=false,basicstyle=\ttfamily\footnotesize,%
+numberbychapter=false,columns=fullflexible,keepspaces=true}
+\usepackage{slashbox}
+\usepackage{natbib}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{tikz}
+\usetikzlibrary{arrows,chains,positioning,automata,decorations,shapes,calc,matrix,fit,backgrounds} % CHECK!!
+\input{macro}
+%
+% Insert the name of "your journal" with
+%\journalname{myjournal}
+%
+
+\begin{document}
+
+\title{{\asap}: Solving the Curriculum-Based Course Timetabling
+  Problems with Answer Set Programming}
+% \thanks{%
+%   This paper is an extended version of the conference paper~\citep{bainkascsotawa16}. 
+%   Especially, we present a more detailed evaluation of {\asap} encodings in
+%   Section~\ref{system} and 
+%   extend {\asap} system to multi-objective course
+%   timetabling in Section~\ref{mpp}.}
+\subtitle{}
+%
+\titlerunning{{\asap}: Solving the Curriculum-Based Course Timetabling Problems with ASP}
+%
+\author{%
+  Mutsunori Banbara \and
+  Katsumi Inoue \and 
+  Benjamin Kaufmann \and
+  Tenda Okimoto \and
+  Torsten Schaub \and
+  Takehide Soh \and
+  Naoyuki Tamura \and
+  Philipp Wanko
+}
+%
+%\authorrunning{Short form of author list} % if too long for running head
+%
+\institute{M.~Banbara \and T.~Soh \and N.~ Tamura \and T.~Okimoto \at
+  Kobe University,
+  1-1 Rokko-dai Nada-ku Kobe Hyogo, 657-8501, Japan\\
+% Tel.: +81-78-803-5365\\
+  \email{\{banbara@, soh@lion., tamura@, tenda@maritime.\}kobe-u.ac.jp}
+  \and
+  K.~Inoue \at
+  National Institute of Informatics,
+  2-1-2 Hitotsubashi Chiyoda-ku Tokyo, 101-8430, Japan\\
+  \email{inoue@nii.ac.jp}
+  \and
+  B.~Kaufmann \and P.~Wanko \at
+  Universit{\"a}t Potsdam,
+  August-Bebel-Strasse 89, D-14482 Potsdam, Germany\\
+  \email{\{kaufmann, wanko\}@cs.uni-potsdam.de}
+  \and
+  T.~Schaub \at
+  Universit{\"a}t Potsdam,
+  August-Bebel-Strasse 89, D-14482 Potsdam, Germany\\
+  Inria -- Centre de Rennes Bretagne Atlantique, France\\
+  \email{torsten@cs.uni-potsdam.de}
+}
+%
+\date{} % The correct dates will be entered by the editor
+\def\makeheadbox{}
+%
+\maketitle
+
+\input{abstract}
+\input{introduction}
+\input{background}
+\input{asp}
+\input{approach}
+\input{extensions}
+\input{system}
+\input{mpp}
+\input{conclusion}
+
+% \begin{acknowledgements}
+% The work was partially funded by JSPS KAKENHI 15K00099, JSPS KAKENHI
+% 16H02803, and DFG grants SCHA 550/9-2 and SCHA 550/11-1.
+% \end{acknowledgements}
+
+\bibliographystyle{spbasic}        % basic style, author-year citations
+%\bibliographystyle{spmpsci}         % mathematics and physical sciences
+%\bibliographystyle{spphys}         % APS-like style for physics
+
+%\bibliography{lit,akku,procs,local} % >>> ADD new bibentries to './local.bib' <<<
+\input{bib}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

@@ -1,0 +1,54 @@
+\section{Summary}\label{sec:summary}
+
+We presented several truly hybrid ASP systems incorporating difference and linear constraints.
+Previous approaches addressed this by resorting to translations into foreign solving paradigms like MILP or SMT.
+This difference is analogous to the one between genuine ASP solvers like \clasp{} and \wasp{}
+and earlier ones like \assat\ and \cmodels\ that translate ASP to SAT.
+%
+The resulting systems \clingod{dl} and \clingod{lp} comprise several complementary aspects.
+For instance, \clingod{dl} relies upon customized propagators, one variant using a \python{} API, the other a \cpp{} API.
+This is similar to the approach of \inca{} and \clingcon~3 for Constraint ASP.
+Unlike this, \clingod{lp} builds upon the \python{} API to incorporate off-the-shelf LP solvers for propagation, optionally \cplex{} or \lpsolve.
+This is similar to the approach of \dlvhex[\textsc{cp}] and \clingcon~2 integrating \gecode{} for constraint processing.
+Both \clingod{dl} and \clingod{lp} allow for dealing with integer as well as real variables.
+The former admits two, the latter an arbitrary number of such variables per linear constraint.
+%
+This is complemented by \clingcon~3 adding constraint processing to \clingo{} by using a low level API.
+
+We accomplished this by instantiating the generic framework of ASP modulo theories described in~\cite{gekakaosscwa16a}.
+%
+We defined lc-stable models and elaborated upon different types of lc-atoms,
+ultimately settling on the combinations \lcatype{defined}{non-strict} and \lcatype{external}{strict}
+for \clingod{dl} and \clingod{lp}.%
+\footnote{This is our recommendation in view of our analysis in Section~\ref{sec:background};
+  both systems actually support all four combinations of strict/non-strict and defined/external lc-atoms.}
+%
+Our underlying formal analysis on the interaction of strict- and definedness has actually a much broader impact
+given that other systems follow similar principles.
+Although we lack a deeper analysis,
+\inca{} and \dlvhex[\textsc{cp}] appear to adhere to an \lcatype{external}{strict} treatment of constraint atoms,
+just as our previous systems \clingcon, \dingo, and \mingo, 
+while \ezsmt{} and \ezcsp{} seem to follow an \lcatype{external}{non-strict} approach.
+Moreover, the results in Proposition~\ref{thm:settings} are of a general nature and apply well beyond ASP systems dealing with linear constraints.
+
+We provided a conceptual and empirical comparison of \clingod{dl} and \clingod{lp} with related systems 
+for dealing with different forms of linear constraints in ASP.
+%
+Our experiments focused on,
+first, examining different types of lc-atoms and APIs for both \clingo{} derivatives,
+and, second, comparing them with related systems.
+In the first case, \clingod{dl} using \lcatype{defined}{non-strict} lc-atoms along with the \cpp\ API 
+yields the best results,
+and in the second one, 
+the aforementioned \clingod{dl} configuration outperforms the other systems for the set of benchmarks only involving difference constraints,
+and \clingcon\ has an edge over all other systems regarding the set of benchmarks featuring arbitrary (integer-based) linear constraints.
+
+Finally, % Last but not least,
+we showed how easily our machinery can be applied to online reasoning scenarios
+by using \clingo's multi-shot and theory reasoning capabilities in tandem.
+% and illustrated this by encoding the spoiled Yale shooting.
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End: 

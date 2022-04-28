@@ -1,0 +1,87 @@
+%!TEX root = paper.tex
+
+\section{Introduction}\label{sec:introduction}
+\newcommand\blfootnote[1]{%
+  \begingroup
+  \renewcommand\thefootnote{}\footnote{#1}%
+  \addtocounter{footnote}{-1}%
+  \endgroup
+}
+\blfootnote{This is an extended version of a paper presented at LPNMR-17, invited as a rapid publication in TPLP. The authors acknowledge the assistance of the conference chairs Tomi Janhunen and Marco Balduccini.}
+Among all biological processes occurring in a cell, metabolic networks are in charge of transforming
+input nutrients into both energy and output nutrients necessary for the functioning of other cells.
+In other words, they capture all chemical reactions occurring in an organism.
+In biology,
+such networks are crucial from a fundamental and technological point of view
+to estimate and control the capability of organisms to produce certain products.
+%
+Metabolic networks of high quality exist for many model organisms.
+In addition,
+recent technological advances enable their semi-automatic generation for many less studied organisms, also described as non-model organisms.
+However,
+the resulting metabolic networks are usually of poor quality,
+due to error-prone, genome-based construction processes and a lack of (human) resources.
+As a consequence, they usually suffer from substantial incompleteness.
+The common fix is to fill the gaps by completing a draft network by borrowing chemical pathways
+from reference networks of well studied organisms until the augmented network provides the measured functionality.
+
+In previous work~\citep{schthi09a}, we introduced a logical approach to \emph{metabolic network completion}
+by drawing on the work in~\citep{haebhe05a}. % ebhahe04a,
+We formulated the problem as a qualitative combinatorial (optimization) problem and solved it with Answer Set Programming (ASP~\citep{baral02a}).
+%
+The basic idea is that reactions apply only if all their reactants are available,
+either as nutrients or provided by other metabolic reactions.
+Starting from given nutrients, referred to as \emph{seeds},
+this allows for extending a metabolic network by successively adding operable
+reactions and their products.
+The set of compounds in the resulting network is called the \emph{scope} of the
+seeds and represents all compounds that can principally be synthesized from the seeds.
+In metabolic network completion, we query a database of metabolic reactions
+looking for (minimal) sets of reactions that can restore an observed bio-synthetic behavior.
+This is usually expressed by requiring that certain \emph{target} compounds are in the scope of some given seeds.
+%
+For instance, in the follow-up work in~\citep{coevgeprscsith13a,prcodideetdaevthcabosito14a},
+we successfully applied our ASP-based approach to the reconstruction of the metabolic network of the macro-algae \emph{Ectocarpus siliculosus},
+using the collection of \review{reference networks Metacyc \citep{Caspi2016}.}
+
+We evidenced in~\citep{Prigent2017}
+that our ASP-based method partly restores the bio-synthetic capabilities of a large proportion of moderately degraded networks: it fails to restore the ones of both some moderately degraded and most of highly degraded metabolic networks.
+%
+The main reason for this is that our purely qualitative approach misses quantitative constraints
+accounting for the law of mass conservation,
+a major hypothesis about metabolic networks.
+%
+This law stipulates that
+each internal metabolite of a network must balance its production rate with its consumption rate at the steady state of the system.
+Such rates are given by the weighted sums of all reaction rates consuming or producing a metabolite, respectively.
+This calculation is captured by the \emph{stoichiometry}\footnote{See also \url{https://en.wikipedia.org/wiki/Stoichiometry}.} of the involved reactions.
+%
+Hence,
+the qualitative ASP-based approach fails to tell apart solution candidates with correct and incorrect stoichiometry
+and therefore reports inaccurate results for some degraded networks.
+
+We address this by proposing a hybrid approach to metabolic network completion that integrates our qualitative ASP approach
+with quantitative techniques from
+\emph{Flux Balance Analysis} (FBA\footnote{See also \url{https://en.wikipedia.org/wiki/Flux_balance_analysis}.}~\citep{marzom16a}), % orthpa10a,
+the state-of-the-art quantitative approach for capturing reaction rates in metabolic networks.
+%
+We accomplish this by taking advantage of recently developed theory reasoning capacities for the ASP system \clingo~\citep{gekakaosscwa16a}.
+More precisely,
+we use an extension of \clingo\ with linear constraints over reals, as dealt with in Linear Programming (LP~\citep{dantzig63a}).
+%
+This extension provides us with an extended ASP modeling language as well as a generic interface to alternative LP solvers, viz.\ \cplex\ and \lpsolve,
+for dealing with linear constraints.
+%
+We empirically evaluate our approach by means of the metabolic network of \emph{Escherichia coli}.
+Our analysis shows that our novel approach yields superior results than obtainable from purely qualitative or quantitative approaches.
+%
+Moreover, our hybrid application provides a first evaluation of the theory extensions of the ASP system \clingo\
+with linear constraints over reals in a non-trivial setting.
+%
+% In what follows,
+% we presuppose some basic familiarity with ASP and concentrate below on concepts relevant to our application.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End:

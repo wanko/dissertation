@@ -1,0 +1,44 @@
+
+\section{Introduction}\label{sec:introduction}
+ 
+Answer Set Programming (ASP; \cite{baral02a}) has become a prime paradigm for solving combinatorial problems in Knowledge Representation and Reasoning. 
+As a matter of fact,
+such problems have an exponential number of solutions in the worst-case.
+A first means to counterbalance this is to impose preference relations among solutions
+to filter out optimal ones.
+Often enough, this still leaves us with a large number of optimal models.
+%
+A typical example is the computation of Pareto frontiers for multi-objective optimization problems~\cite{pareto64a},
+as we encounter in design space exploration~\cite{angeglharesc13a} or timetabling~\cite{basotainsc13a}.
+%
+Other examples include configuration, planning, and phylogeny, as discussed in~\cite{eiererfi13a}.
+% 
+This calls for computational support that allows for identifying small subsets of diverse solutions.
+%
+The computation of diverse stable models was first considered in ASP by \cite{eiererfi13a}.
+The analogous problem regarding optimal stable models is addressed in \cite{zhutru13a} in the case of answer set optimization~\cite{brnitr03a}.
+Beyond ASP, the computation of diverse solutions is also studied in CP~\cite{hehnocwa05a} and SAT~\cite{nadel11a}.
+
+In this paper,
+we introduce a comprehensive framework for computing diverse (or similar) solutions to logic programs with preferences.
+One of its distinguishing factors is that it allows for dealing with aggregated (or plain) qualitative and quantitative preferences among stable models of logic programs.
+This is accomplished by building on the preference handling capacities of \asprin~\cite{brderosc15a}.
+The other appealing factor of our framework is that it covers a wide spectrum of methods for diversification.
+Apart from new techniques, it also accommodates and generalizes existing approaches by lifting them to programs with preferences.
+Interestingly, this is done by taking advantage of several existing basic ASP techniques that we automate and integrate in our framework.
+The enabling factor of this is the recent advance of multi-shot ASP solving that allows for an easy yet fine-grained control of
+ASP-based reasoning processes (cf.~\cite{gekakasc14b}).
+In particular, this abolishes the need for internal solver modifications or singular solver wrappers that were often unavoidable in previous approaches.
+We have implemented our approach as an extension to the preference handling framework \asprin.
+The resulting system \asprin~2 is then used for an empirical evaluation contrasting several alternative approaches to
+computing diverse solutions.
+%
+Last but not least,
+note that although we concentrate on diversity,
+our approach applies just as well to the dual concept of \emph{similarity}.
+This is also reflected by its implementation supporting both settings.
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End: 

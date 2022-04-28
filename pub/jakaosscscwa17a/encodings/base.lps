@@ -1,0 +1,8 @@
+#include "incmode_lc.lp".
+
+#program base.
+  action(load).       action(shoot).      action(wait).
+duration(load,25).  duration(shoot,5).  duration(wait,36).
+unloaded(0).
+&sum { at(0) } = 0.
+&sum { armed(0) } = 0.

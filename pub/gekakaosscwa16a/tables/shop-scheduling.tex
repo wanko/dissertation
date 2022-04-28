@@ -1,0 +1,30 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb}
+\usepackage{times,helvet,courier}
+\usepackage[graphics,tightpage,active]{preview}
+\PreviewEnvironment{tabular}
+\newlength{\imagewidth}
+\newlength{\imagescale}
+\pagestyle{empty}
+\thispagestyle{empty}
+
+\begin{document}
+
+\newcommand{\TO}{\multicolumn{1}{r|}{TO}}
+\newcommand{\TI}{\multicolumn{1}{r|}{T}}
+\newcommand{\DL}{\ensuremath{\mathit{DL}}}
+
+\begin{tabular}{|l|r||r|r|r|r|r|r|r|r|r|r|}
+\cline{1-12}
+&  & \multicolumn{2}{c|}{ASP} & \multicolumn{4}{c|}{ASP modulo \DL\ (stateless)}&  \multicolumn{4}{c|}{ASP modulo \DL\ (stateful)}\\
+&  & \multicolumn{2}{c|}{} & \multicolumn{2}{c|}{defined} & \multicolumn{2}{c|}{external} & \multicolumn{2}{c|}{defined} & \multicolumn{2}{c|}{external}\\
+\multicolumn{1}{|l|}{Problem} & \multicolumn{1}{r||}{\#} & \TI & \TO & \TI & \TO & \TI & \TO & \TI & \TO & \TI & \TO\\\hline
+Flow shop & 120 & 569 & 110 & 283 & 40 & 382  & 70 & \textbf{177} & \textbf{30} & 281 & 50\\
+Job shop & 80 & 600 & 80 & 600 & 80 & 600& 80 & \textbf{37} & \textbf{0} & 43 & \textbf{0}\\
+Open shop & 60 & 405 & 40 & 214 & 20 & 213 & 20 & \textbf{2} & \textbf{0} &\textbf{2} & \textbf{0}\\\hline\hline
+Total& 260 & 525 & 230 & 366 & 140 & 398 & 170 & \textbf{72} & \textbf{30} & 109  & 50 \\\hline
+\end{tabular}
+
+\end{document}

@@ -1,0 +1,41 @@
+\begin{tikzpicture}[>=stealth,icon/.style={path picture={ 
+				\draw[black,thick]
+				($(path picture bounding box.south east)+(-0.05,0.05)$) -- ($(path picture bounding box.south east)+(-0.1,+0.05)$) -- ($(path picture bounding box.north west)+(0.1,-0.05)$) -- ($(path picture bounding box.north west)+(0.05,-0.05)$) ($(path picture bounding box.south west)+(0.05,0.05)$) -- ($(path picture bounding box.south west)+(0.1,0.05)$) -- ($(path picture bounding box.north east)+(-0.1,-0.05)$) -- ($(path picture bounding box.north east)+(-0.05,-0.05)$);
+		}}]
+		\tikzstyle{axis} = [->, black, very thick]
+		\tikzstyle{link} = [<->, black!50, very thick]
+		\tikzstyle{task} = [anchor=west,shape=rectangle,thick,text=white,minimum height=0.5cm, draw=black, fill=myblue, align=center, rounded corners=2,inner sep=0]
+		\tikzstyle{difftask} = [shape=circle,thick,text=white,minimum height=0.5cm, draw=black, fill=myblue, align=center,inner sep=2]
+		\tikzstyle{router} = [icon,draw,fill=black!30!yellow,inner sep=0,minimum width=0.45cm,minimum height =0.3cm]
+		\tikzstyle{resource} = [rectangle,minimum width=0.6cm,minimum height=0.4cm,draw,fill=black!50!green,text=white]
+		\tikzstyle{route} = [->,black,line width=1.5]
+			\node [router] (v1) at (-3.6,2.2) {\footnotesize$$};
+			\node [router] (v2) at (-2.5,2.2) {\footnotesize$$};
+			\node [router] (v4) at (-3.6,1.3) {\footnotesize$$};
+			\node [router] (v5) at (-2.5,1.3) {\footnotesize$$};
+			
+			\draw [link] (v1) edge (v2);
+			\draw [link] (v1) edge (v4);
+			\draw [link] (v2) edge (v5);
+			\draw [link] (v4) edge (v5);
+			
+			\node [resource] (v10) at (-4.4,2.9) {$p_1$};
+			\node [resource] (v11) at (-1.7,2.9) {$p_2$};
+			\node [resource] (v13) at (-4.4,0.6) {$p_3$};
+			\node [resource] (v14) at (-1.7,0.6) {$p_4$};
+			
+			\draw [link] (v10.south east) -- (v1.north west);
+			\draw [link] (v11.south west) -- (v2.north east);
+			\draw [link] (v13.north east) -- (v4.south west);
+			\draw [link] (v14.north west) -- (v5.south east);
+		\node [difftask] (t1) at (-5.5,2.8) {$t_1$};
+		\node [difftask,fill=black!40!red,inner sep=0] (c1) at (-5.5,1.8) {\tiny$c$};
+		\node [difftask] (t2) at (-5.5,0.8) {$t_2$};
+		
+		\draw [axis] (t1) edge (c1);
+		\draw [axis] (c1) edge (t2);
+			\draw [axis,dashed] (t2) edge node[midway,below,font=\tiny]{1} (v13);
+			\draw [axis,dashed] (t2) edge[bend left=14] node[midway,below,font=\tiny]{2} (v14);
+			\draw [axis,dashed] (t1) edge node[midway,above,font=\tiny]{2} (v10);
+			\draw [axis,dashed] (t1) edge[bend right=14] node[midway,above,font=\tiny]{3} (v11);
+		\end{tikzpicture}

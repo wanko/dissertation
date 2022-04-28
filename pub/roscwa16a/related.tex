@@ -1,0 +1,508 @@
+
+\section{Related Work}\label{sec:related}
+
+\paragraph{DISTANCE-SAT: Complexity and Algorithms (O. Bailleux and P. Marquis, AAAI 1999)}
+
+Idea:
+\begin{itemize}
+\item
+    Given propositional theory $T$, a partial interpretation $PI$, and integer $d$, 
+    find a model of $T$ with distance to $PI$ less or equal than $d$.
+    \\
+    Equivalent to: Adding to a reified SAT problem the constraint:
+    \verb| { holds(X) } d.|
+\item
+    Study the complexity for some special cases of $T$ (Horn, f.e.)
+\item
+    Two iterative algorithms.
+    \begin{itemize}
+    \item
+        Algorithm 1: backtrack if current assignment is too distant to $PI$. 
+        Note: They do not use it for propagation.
+    \item
+        Algorithm 2: extend Algorithm 1 by restricting the atoms on which to decide.
+        \\
+        How does the restriction work? 
+        We simplify the set of clauses with the current assignment.
+        We choose first on elements of the clauses that have only elements falsified by $PI$.
+        (And we prefer those that appear in smaller clauses).
+        \\
+        If $PI$ has all atoms set to false, then we look for a model with less than $d$ atoms.
+        Then we decide on atoms that belong to positive clauses. 
+        Note that if none of that exists, then we can always make all atoms false.
+    \end{itemize}
+\item
+    Interesting theorem:
+    If $PI$ is total, then we will only do at most $k^d$ choices, 
+    where $k$ is the size of the longest clause.
+    The idea is as follows. 
+    Suppose there are at least $d$ positive clauses (if there are less, it is even simpler) whose size is at most $k$.
+    Then we can do as follows:
+    For clause 1, we make one choice for each (positive) atom. 
+    Then for each of there choices, we make one choice for each of the atoms of the clause 2, and so on.
+    This leads to $k^d$ choices, and at the end of them, 
+    we just have to check whether those choices with all the rest of the atoms set to false lead to a model.
+    The idea is: We can have at most $d$ true atoms, 
+    and to satisfy those positive clauses they must be taken from there.
+    Note: The theorem no longer applies if $PI$ is not total.
+\item
+    Experimental results with random problems:
+    In many cases, the heuristic modification works much better, 
+    and in some cases it is a bit worse.
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage
+\paragraph{Finding Diverse and Similar Solutions in Constraint Programming (R. Hebrard, B. Hnich, B. O. Sullican, T. Walsh, AAAI-05)}
+
+\begin{itemize}
+\item
+    Define similar programs as in (Eiter et al.) and study complexity in quite a general framework (nice!).
+\item
+    Study in detail Hamming, but others could be considered.
+\item
+    Method 1: Reformulation (as in Eiter et al.) (too big, no experiments)
+\item
+    Method 2: Branch and Bound (every solver call asks for an even more diverse solution)
+    \\
+    Heuristic:
+    Choose the variable normally ($domain/degree$), 
+    but choose the value that was used less in previous solutions.
+    \\
+\item
+    Experiments choosing the value, or with the default heuristic setting or choosing the value randomly.
+    \\
+    Structured benchmarks: loosely constrained, the value ordering heuristic is the best, random is very bad.
+    \\
+    Random benchmarks: random is very bad, and the ordering heuristic is good if the problem is not constrained, 
+    and if it constrained it is similar to the default heuristic.
+\item
+\item
+    IMPORTANT! (in a way ;) They say: We solved MaxDiverseKSet for K set to 3, 
+    motivated by work in recommender systems that argues that the optimal sized set to present to a user contains 3 elements
+    (Shimazu, H., 2001. Expertclerk: Navigating shoppers' buying process with the combination of asking and proposing, IJCAI-2001)
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage
+\paragraph{Distance Constraints in Constraint Satisfaction (R. Hebrard, B. O. Sullican, T. Walsh, IJCAI-07)}
+
+\begin{itemize}
+\item Find in CSP a solution that is as close as possible to a set of solutions.
+\item Heuristics: choose the variable normally ($domain/degree$), 
+      but choose the value that minimize the distance to all solutions.
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage
+\paragraph{Finding Similar/Diverse Solutions in Answer Set Programming (T. Eiter, E. Erdem, H. Erdogan, M. Fink, ICLP 2009)} 
+%\cite{eiererfi13a} }
+$ $\\
+\flushleft 
+Summary
+\begin{itemize}
+\item Similarity on $NP$-problems
+\item
+    Computational complexity analysis, Algorithms and Application to phylogenetics and blocks world.
+\item
+    Best approach is modified clasp: More efficient, and allows to represent distance functions in C++.
+\end{itemize}
+
+\flushleft
+Problems Considered:
+\begin{itemize}
+\item 
+    Assume that a distance measure is given: $\Delta : 2^{Sol(P)} \rightarrow N_0$. 
+    Deciding $\Delta$ is in $NP$ (not necessarily polynomial!)
+\item
+    Note: Everything about similar may be defined for dissimilar
+\item
+    Note: Complexities refer to the class $FNP//log$, which I don't understand well.
+\item
+    $n$ $k$-similar solutions ($NP$-complete):\\
+    Decide whether a set $S$ of size $n$ that contains $k$-similar solutions exists
+    \\Optimization problems:
+    \begin{itemize}
+    \item
+        $n$ most similar solutions ($FNP^{NP}$-complete and $FNP//log$-complete if the value of $\Delta$ is polynomial) \\ 
+        Find a set $S$ of size $n$ that are as similar as possible.\\
+        Implementation: 
+        Do binary search over parameter $k$, using algorithms for $n$ $k$-similar solutions.
+    \item
+        maximal $n$ $k$-similar solutions ($FNP//log-complete$ even if $\Delta$ polynomial) \\
+        Find a set of size at most $n$ $k$-similar solutions as big as possible 
+        (subsetwise, i.e., a maximal set of $k$-similar solutions)\\
+        Implementation (incomplete):
+        Use online method 2 (iterative) until we get UNSAT.
+        \\
+        Note: it is not clear why it is incomplete. If we disregard $n$, it is complete
+        because we stop only when we cannot make the set bigger. 
+        If $n$ is interpreted in such a way that we must find a set of size $n$ such 
+        that it is maximal with respect to any set of \emph{any} size, 
+        then it is incomplete.
+    \end{itemize}
+\item
+    $k$-close solution ($NP$-complete):\\
+    Given a set $S$ of solutions, decide whether a $k$-similar solution exists
+    \\
+    Implementation: Use the algorithms for $n$ $k$-similar solutions
+    \\Optimization problems:
+    \begin{itemize}
+    \item
+        (closest solution ($FNP^{NP}$-complete and $FNP//log$-complete if the value of $\Delta$ is polynomial) \\ 
+        Find a solution that is as similar as possible to S
+        \\Implementation:
+        Do binary search over parameter $k$, using algorithms for $k$-close solution
+    \end{itemize}
+\item
+    Extension to sets, $k$-close set ($NP$-complete):
+    Decide whether there is a set $S'$ with $\Delta(S) - \Delta(S') \leq k$.
+    \\
+    Note: This is a bit confusing to me, here one would ask for a set of solutions that is as close
+    as the set $S$ (with a difference of $k$), although they may  be completely different sets 
+    (we care only about $\Delta(S)$, not about the elements of $S$).
+    \\
+    Implementation: Use algorithms for $n$ $k$-similar solutions
+\end{itemize}
+
+
+\flushleft Algorithms for $n$ $k$-similar solutions:
+\begin{itemize}
+\item 
+    Offline method:\\
+    Compute all solutions, and then identify similar solutions with some clustering method (e.g., ASP).
+    Distance in the language of the clustering method.
+\item
+    Online method 1:\\
+    Replicate the ASP program into many copies, and do one solver call. 
+    Distance in ASP.
+\item 
+    Online method 2 (incomplete, depends on the first solution):\\
+    Iteratively compute similar solutions encoding in ASP the similarity condition.
+    Distance in ASP.
+\item
+    Online method 3 (incomplete, depends on the first solution):\\
+    Iteratively compute similar solutions modifying clasp to encode the similarity condition.
+    Distance in C++.
+    \\
+    \textbf{Question: How do they access the predicate names?}
+    It seems they have to implement a distance for each asp program, 
+    so that the solver is able to refer to the right atoms.
+    For each problem they have to come up with a function, 
+    that they call heuristic, and implement it.
+\end{itemize}
+
+\flushleft
+Phylogenies Example:
+\begin{itemize}
+\item
+    They use first one simple distance function, and then one more complex.
+\item
+    For comparing sets of solutions, they take the maximum distance among the solutions.
+\item
+    Results: clasp-nk is much faster, and
+    the offline method is good with one distance measure and bad with other
+    (it seems there were not many models)
+\end{itemize}
+
+\flushleft
+Blocks World Example:
+\begin{itemize}
+\item
+    They do a special heuristic function for method 3
+\item
+    Offline method has too many solutions
+\item
+    Online Method 1 is slower and bigger, but still does the job correctly
+\item
+    2 and 3 are similar, and both do not give the right solutions
+\end{itemize}
+
+\flushleft
+Related Work:
+\begin{itemize}
+\item
+    Propositional logic: They change the heuristic (check this!!!)
+\item
+    More on constraints, from where they say they got their methods
+\item
+    More on planning
+\end{itemize}
+
+\flushleft
+Advantages:
+\begin{itemize}
+\item
+    Not restricted to domain independent distance functions
+\item
+    Implementations in ASP or C++
+\item
+    Distance definitions are modular wrt base encoding
+\item
+    Why use before other methods? Because of ASP, and because you may want a domain specific distance
+    without modifying the solver.
+\end{itemize}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage
+\paragraph{Value-Ordering Heuristics: Search Performance Vs. Solution Diversity (Y. Schreiber, CP 2010)}
+
+\begin{itemize}
+\item
+    Study different value ordering heuristics to compute diverse solutions in CSP.
+    No change on the variable selection heuristic, just on the value that is assigned to the variable.
+\item
+    Problem: compute $k$ approximately maximally diverse solutions
+    \\
+    Application: Automatic Generation of Tests for a given specification (typically, a hardware).
+    Time is important: maybe it is better to have many solutions not that diverse 
+    than to have few very diverse solutions.
+    Given that they want to be fast, they approximate using heuristics.
+\item
+    Random ordering gets very good diversity, 
+    and they analyze other heuristics, that have less diversity (not as in SAT paper!)
+    but are faster (speed!).
+\item
+    There is also a theoretical framework on which they base the heuristics they develop
+    (quite ugly to read).
+    \\
+    Ideal: Diversity but keeping the same computational cost as for computing $k$ solutions
+\item
+    They assume Hamming distance, but say others could also be used.
+\item
+    Heuristics:
+    \begin{itemize}
+    \item
+        Choose the value that minimizes: number of conflicts to which the variable led
+    \item
+        Choose the value that minimizes: number of conflicts divided by number of times it was assigned
+    \item
+        Probabilistic versions of those two, 
+        so that the variables with the second minimum values (and so on)
+        have high probabilities of being chosen
+    \item There are also some adaptive versions (which I didn't understand fully)
+    \end{itemize}
+\item
+    Experiments:
+    \begin{itemize}
+    \item
+        Random problems and Test generation problems.
+    \item
+        It is hard to achieve better diversity than random.
+    \item
+        Some of the heuristics are twice as fast and only a bit less diverse.
+    \end{itemize}
+
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage
+\paragraph{Generate Diverse Solutions in SAT (A. Nadel, SAT 2011)}
+
+\begin{itemize}
+\item
+    Contributions:
+    \begin{itemize}
+    \item
+        Develop of a framework to analyze diverse$k$ algorithms, 
+        measuring diversification quality of a partial assignment and of a variable.
+    \item
+        Development and analysis of new heuristics, 
+        that change the polarity and the variable ordering heuristics.
+        There are guided and randomized variable methods, 
+        which can be local or global wrt the default heuristic.
+    \item
+        In the experiments it can be seen a tradeoff between diversity and runtime.
+        Moderate improvement in diversity comes at almost no cost, 
+        while more significant improvement requires more cost.
+    
+    \end{itemize}
+\item
+    Consider Hamming distance.
+    For a set of models, the distance is the sum of the pairwise Hamming distances.
+    \\
+    NOTE: They dont use the maximal distance between models, but the sum! 
+\item
+    Framework:
+    \begin{itemize}
+    \item
+        Given a set of models $M_1,\ldots,M_n$, 
+        the quality of variable $v$ is $p_v \times n_v$, 
+        where $p_v$ is $|\{ i | v \in M_i \}|$ and $n_v$ is $|\{ i | v \notin M_i \}|$.
+    \item
+        For a set of variables, the quality is the normalized sum of their qualities.
+    \item
+        The potential of a variable is $|p_v - n_v|$.
+    \end{itemize}
+\item
+    Polarity Algorithms:
+    \begin{itemize}
+    \item
+        PRAND: Select the polarity at random
+    \item
+        PGUIDE: Select the polarity to minimize the potential: if $p_v > n_v$ choose $false$, 
+        if $p_v < n_v$ choose $true$ and in other case choose randomly.
+    \item
+        PBCPGUIDE: Do lookahead with both polarities, and take the one that minimizes the potential.
+        \\
+        Idea: PGUIDE does not consider dependencies between variables, maybe setting a variable to true
+        is good for it, but bad for others. Then, do lookahead!
+        \\
+        Problem: time costly, so they do it only until $T$ conflicts happen.
+        Then it switches to PGUIDE.
+    \item
+        Experiments: 
+        \\
+        Run 1 to 100 models.
+        \\
+        Computing each new model takes constant time always,
+        although the time to compute first model may be very different, 
+        and that constant time may be different.
+        \\
+        Time per model of PRAND and PGUIDE is the same, PBCPGUIDE\_100 is higher.
+        \\
+        Diversity: With few models PGUIDE and PBCPGUIDE\_100 are much diverse than PRAND,
+        then PGUIDE becomes closer and PBCPGUIDE\_100 closes also but still it's different.
+        And the gap between these two increases with the number of models.
+    \end{itemize}
+\item
+    Variable based Algorithms:
+    \begin{itemize}
+    \item
+        Diversification can be improved by changing the variable ordering.
+    \item
+        Local methods: choose among variables selected by default heuristic 
+        (expected: a bit worse performance, a bit better diversity)
+    \item
+        VRANDLOC: Select the variable at random from the topmost non satisfied clause.
+    \item
+        VGUIDELOC: Select the variable with most potential from the topmost non satisfied clause.
+    \item
+        Experiments: 
+        \\
+        Applying it to PGUIDE: both tiny improvement in time, small gain in diversity
+        \\
+        Applying it to PBCPGUIDE\_100 after 100 conflicts: $10\%$ more diversity, $1.5$ more time (good!)
+    \item
+        Global methods: consider more variables! 
+        (expected: worse performance, better diversity)
+    \item
+        VRANDGLOB: Select a variable at random the $T\%$ of the times, in other cases take the default choice.
+    \item
+        VGUIDEGLOB: Select a variable with most potential from the topmost $N$ clauses.
+    \item
+        Experiments (applying it to PGUIDE and PBCPGUIDE\_100 after 100 conflicts: 
+        $11-12\%$ diversity and $1.5-4.5$ more time
+    \end{itemize}
+\item
+    Summary:
+    \\
+    Guiding the polarity is better than random.
+    \\
+    Doing BCP is better, but takes time.
+    \\
+    With variable selection, more diversity at the cost of more time.
+\item
+    Future Work: Investigate parallel solving!
+\item
+    Addendum:
+    Study of heuristics for the case of tautological formulas. Interesting!
+    They see that PGUIDE behaves in real instances like in tautological formulas,
+    while with BCP it goes better.
+    \\
+    NOTE: Probably instances are very easy, that's why this result holds, and 
+    why computing each new model takes always the same time.
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage
+\paragraph{Reducing Chaos in SAT-like Search: Finding Solutions Close to a Given One (I. Abio, M. Deters, R. Nieuwenhuis, P. J. Stuckey, SAT 2011)}
+
+\begin{itemize}
+\item
+    Problem: Run the solver with $T$. 
+    Then add a clause $c$ and run it on $T \cup c$. 
+    Try to find a model close to the one found first.
+    \\
+    Using Hamming distance. Here they want close solutions!!!
+    \\
+    Experiments: times change chaotically, solutions are distant 
+    (about 10 times more distant than the closest solution)
+\item
+    Local search like solution:
+    In the second round before the first conflict happens, 
+    give the sign that correspond to the one in the first computed model.
+    \\
+    Experiments: No improvement
+\item
+    Do the obvious thing: (1) set always the polarity, 
+    (2) do branch and bound to become closer to the original model, 
+    and (3) keep learnt clauses.
+    \\
+    Experiments: Very close, and better than ILP solvers.
+    \\
+    Factor analysis: For easy problems, (1) and (2) without learning is the best, a bit better than with learning.
+    For hard problems, the whole setting with (1), (2) and (3) is better than without learning.
+    Without changing the polarity it is extremely bad.
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage
+\paragraph{On Optimal Solutions of Answer Set Optimization Problems (Y. Zhu and M. Truszczyinski, LPNMR 2013)}
+
+\begin{itemize}
+\item
+    Decide whether there is an optimal stable model that is different to another is $NP$-complete.
+    \\
+    Idea: 
+    Compute one stable model that is not worse and different than another, and this proves that there is an optimal different.
+\item
+    Decide whether there is an optimal stable model that is $k$-similar (dissimilar) to another is $\Sigma^p_2$-complete.
+\item
+    Method 1, Iterative (as asprin).
+    For similarity, enumerate optimal until one is similar.
+\item
+    Method 2, enumerate stable models and check for optimality. 
+    For similarity, enumerate similar stable models and check for optimality.
+\item
+    Method 3, claspD.
+\item
+    Experiments:
+    method 2 bad, iterative always good, claspD sometimes good but bad if many ranks.
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage
+\paragraph{Diversely enumerating system-level architectures (E. K. Jackson, G. Simko, J. Sztipanovits, ACM Embedded Software 2013)}
+Nice references for approximating pareto front (in Section 6).
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End: 
+
+
+
+
+

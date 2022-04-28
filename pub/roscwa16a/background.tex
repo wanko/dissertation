@@ -1,0 +1,163 @@
+
+\section{Background}\label{sec:background}
+ 
+In ASP, problems are described as (disjunctive) \emph{logic programs}, 
+being sets of \emph{rules} of the form
+\begin{lstlisting}[mathescape=true,numbers=none]
+   a$_1$;...;a$_m$ :- a$_{m+1}$,...,a$_n$,not a$_{n+1}$,...,not a$_o$
+\end{lstlisting}
+where each \lstinline[mathescape=true]{a$_i$} is a propositional atom %for ${0}\leq{i}\leq{n}$
+and
+\lstinline[mathescape=true]{not} stands for \emph{default negation}.
+%
+We call a rule a \emph{fact} if $m=o=1$, 
+\emph{normal} if $m=1$, and 
+an \emph{integrity constraint} if $m=0$.
+%
+We may reify a rule $r$ with the set of facts 
+\lm{
+$R(r) = 
+\{ $rule($r$)$ \} \cup 
+\{ $head($r$,a$_i$)$ \mid 1 \leq i \leq m \} \cup
+\{ $body($r$,pos,a$_i$)$ \mid m+1 \leq i \leq n \} \cup$}
+\lm{$\{ $body($r$,neg,a$_i$)$ \mid n+1 \leq i \leq o \}$
+}, and we reify 
+a program by joining its reified rules.
+%
+Semantically, a logic program induces a collection of \emph{stable models},
+which are distinguished models of the program determined by stable models semantics;
+see \cite{gellif91a} for details.
+ 
+To ease the use of ASP in practice, 
+several extensions have been developed. 
+First of all, rules with variables are viewed as shorthands for the set of their ground instances.
+Further language constructs include
+\emph{conditional literals} and \emph{cardinality constraints} \cite{siniso02a}.
+The former are of the form
+\lstinline[mathescape=true]{a:b$_1$,...,b$_m$},
+the latter can be written as
+\lstinline[mathescape=true]+s{c$_1$;...;c$_n$}t+,
+where \lstinline{a} and \lstinline[mathescape=true]{b$_i$} are possibly default-negated literals  % for $0\leq i\leq m$,
+and each \lstinline[mathescape=true]{c$_j$} is a conditional literal; % for $1\leq i\leq n$;
+\lstinline{s} and \lstinline{t} provide lower and upper bounds on the number of satisfied literals in the cardinality constraint.
+We refer to \lstinline[mathescape=true]{b$_1$,...,b$_m$} as a \emph{condition}.
+%
+The practical value of both constructs becomes apparent when used with variables.
+For instance, a conditional literal like
+\lstinline[mathescape=true]{a(X):b(X)}
+in a rule's antecedent expands to the conjunction of all instances of \lstinline{a(X)} for which the corresponding instance of \lstinline{b(X)} holds.
+%
+Similarly,
+\lstinline[mathescape=true]+2{a(X):b(X)}4+
+is true whenever at least two and at most four instances of \lstinline{a(X)} (subject to \lstinline{b(X)}) are true.
+%
+%%%Finally, objective functions minimizing the sum of weights $w_j$ of conditional literals $c_j$ are expressed as
+%%%\lstinline[mathescape=true]!#minimize{$w_1$:$c_1$,$\dots$,$w_n$:$c_n$}!.
+%
+Specifically, 
+we rely in the sequel
+on the input language of the ASP system \clingo~\cite{gekakasc14b};
+further language constructs are explained on the fly.
+ 
+In what follows, we go beyond plain ASP and deal with \emph{logic programs with preferences}.
+%
+More precisely,
+we consider programs $P$ over some set $\mathcal{A}$ of atoms
+along with a strict partial order ${\succ}\subseteq{\mathcal{A}\times\mathcal{A}} $ among their stable models. 
+%and we restrict ourselves to order relations decidable in polynomial time.
+Given two stable models $X,Y$ of $P$,
+$X\succ Y$ means that $X$ is preferred to $Y$.
+%
+Then, a stable model $X$ of $P$ is \emph{optimal} wrt $\succ$,
+if there is no other stable model $Y$ such that $Y\succ X$.
+%
+In what follows,
+we often leave the concrete order implicit and simply refer to a program with preferences and its optimal stable models.
+% \comment{T: Needed\dots?}
+% Note that an empty order yields all stable models of a program.
+% Hence, our contributions also apply to this base case without further mention.
+%
+We restrict ourselves to partial orders and distance measures (among pairs of stable models) that can be computed in polynomial time.
+%
+For simplicity, we focus on the Hamming distance, 
+defined for two stable models $X,Y$ of a program $P$ over $\mathcal{A}$ as
+\(
+d(X,Y)
+=
+|(\mathcal{A} - X) - Y| + | X \cap Y |
+\).
+%
+Given a logic program $P$ with preferences and a positive integer $n$,
+we define % (similar to~\cite{eiererfi13a}) %in defining
+a set $\mathcal{X}$ of optimal stable models of $P$ as \emph{most diverse},
+if
+\(
+\min \{\, d(X,Y) \mid X, Y \in \mathcal{X},  X \neq Y \} 
+> 
+\min \{\, d(X,Y) \mid X, Y \in \mathcal{X}', X \neq Y \}
+\)
+for every other set $\mathcal{X}'$ of optimal stable models of $P$.
+%
+We are thus interested, following \cite{eiererfi13a}, in the problem \emph{n Most Diverse Optimal Models}:
+%
+Given a logic program $P$ with preferences and a positive integer $n$, 
+find $n$ most diverse optimal stable models of $P$.
+
+For representing logic programs with complex preferences and computing their optimal models,
+we built upon the preference framework of \asprin~\cite{brderosc15a},
+a system for dealing with aggregated qualitative and quantitative preferences.
+%
+In \asprin, the above mentioned \emph{preference relations} are represented by declarations of the form
+\lstinline[mathescape]!#preference($\mathtt{p}$,$\mathtt{t}$){$\mathtt{t_1}$:$\mathtt{b_1}$,$\dots$,$\mathtt{t_n}$:$\mathtt{b_n}$}!
+where $\mathtt{p}$ and $\mathtt{t}$ are the name and type of the preference relation, %respectively, 
+and $\mathtt{t_i}$ and $\mathtt{b_i}$ are tuples of terms and conditions, respectively,\footnote{
+See~\cite{brderosc15a} %and Section~\ref{sec:maxmin} 
+for more general preference elements.}
+%each $\mathtt{c_j}$ is a conditional literal
+serving as arguments of $\mathtt{p}$.
+%
+The directive \lstinline[mathescape]!#optimize($\mathtt{p}$)! instructs \asprin\ to search for stable models that are optimal wrt the strict partial order
+$\succ_{\mathtt{p}}$ associated with $\mathtt{p}$.
+%
+While \asprin\ already comes with a library of predefined primitive and aggregate preference types, like \texttt{subset} or \texttt{pareto},
+respectively,
+it also allows for adding customized preferences.
+%
+We illustrate this by implementing preference type \texttt{maxmin} in Section~\ref{sec:basic}.
+%To this end,
+%users provide rules defining an atom \lstinline[mathescape]!better($\mathtt{p}$)! that indicates whether $X\succ_{\mathtt{p}}Y$ holds 
+%for two stable models $X,Y$.
+%
+%The sets $X$ and $Y$ are provided by \asprin\ in reified form via unary predicates \lstinline!holds! and \lstinline!holds'!\!.%
+%\footnote{That is, \lstinline[mathescape]!holds($\mathtt{a}$)!\! (or \lstinline!holds'!\!\!\lstinline[mathescape]!($\mathtt{a}$)!\!) is true iff $\mathtt{a}\!\in\!X$ (or $\mathtt{a}\!\in\!Y$).}
+%%
+%The definition of \lstinline[mathescape]!better($\mathtt{p}$)! then draws upon the instances of both predicates for deciding $X\succ_{\mathtt{p}}Y$. 
+%%
+%Note that this delineates the expressiveness of preference handling in \asprin.
+%Note that for representing order relations decidable in polynomial time, stratified rules suffice.
+
+Finally,
+we investigate whether the heuristic capacities of \clingo\ allow for boosting our approach.
+%
+In fact, \clingo~5 features heuristic directives of the form
+`\lstinline[mathescape]!#heuristic c. [$k$,$m$]!'
+where $c$ is a conditional atom,
+$k$ is a term evaluating to an integer, and 
+$m$ is a heuristic modifier among
+\lstinline{init}, \lstinline{factor}, \lstinline{level},  or \lstinline{sign}. %, respectively.
+%
+The effect of the heuristic modifiers is to bias the score of \clasp's heuristic by
+initially adding or multiplying the score,
+prioritizing variables, or
+preferably assigning a truth value, respectively.
+%
+The value of $k$ serves as argument to the respective modification.
+%
+%Modifiers \lstinline{true} and \lstinline{false} combine \lstinline{level} with \lstinline{sign} selection, respectively.
+%
+A more detailed description can be found in~\cite{gekaotroscwa13a}.
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End: 

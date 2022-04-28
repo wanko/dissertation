@@ -1,0 +1,7 @@
+clingcon incqueens.clingcon -c imax=10 -cistop=\"UNKNOWN\"
+
+
+
+%&dom{0..1000} = at(n).
+% use this restriction to speed up computation of all 3759 solutions with the call
+clingcon yale.clingcon -c imax=10 -cistop=\"UNKNOWN\" 0

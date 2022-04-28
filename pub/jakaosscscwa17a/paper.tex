@@ -1,0 +1,91 @@
+%% $Id:  $
+%% $HeadURL:  $
+\documentclass{new_tlp}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{microtype}
+\usepackage{listings}
+\usepackage{pifont}
+\input{macro} 
+\newtheorem{theorem}{Proposition}
+
+\newcommand{\cmark}{\ding{51}}%
+\newcommand{\xmark}{\ding{55}}%
+\usepackage{threeparttable}
+\usepackage{booktabs}
+\usepackage{url}
+
+\lstset{xleftmargin=2\parindent,aboveskip=\smallskipamount,belowskip=\smallskipamount,captionpos=b}
+\lstset{numbers=left,numberblanklines=false,basicstyle=\ttfamily}
+\lstset{keywords=[1]{m,n},keywordstyle=[1]\usefont{OT1}{cmtt}{m}{n}}
+
+\lstdefinelanguage{clingo}{
+  keywordstyle=[1]\usefont{OT1}{cmtt}{m}{n},%
+  keywordstyle=[2]\textbf,%
+  keywordstyle=[3]\usefont{OT1}{cmtt}{m}{n},%\textit
+  alsoletter={\#,\&},%
+  keywords=[1]{not,from,import,def,if,else,return,while,break,and,or,for,in,del,and,class},%
+  keywords=[2]{\#const,\#show,\#minimize,\#base,\#theory,\#count,\#external,\#program,\#script,\#end,\#heuristic,\#edge,\#project,\#show},%
+  keywords=[3]{&,&dom,&sum,&diff,&show},%
+  morecomment=[l]{\#\ },%
+  morecomment=[l]{\%\ },%
+  commentstyle={\color{darkgray}}%
+}
+
+\title[{\textit{Clingo} goes Linear Constraints over Reals and Integers}]{\textit{Clingo} goes Linear Constraints\\ over Reals and Integers}
+
+\author[Tomi Janhunen et al.]{%
+  Tomi Janhunen
+  \\
+  Aalto University
+  \and 
+  Roland Kaminski
+  \\
+  University of Potsdam
+  \and
+  Max Ostrowski
+  \\
+  University of Potsdam
+  \and 
+  Torsten Schaub
+  \\
+  INRIA Rennes and University of Potsdam
+  \and
+  Sebastian Schellhorn
+  \\
+  University of Potsdam
+  \and
+  Philipp Wanko
+  \\
+  University of Potsdam}
+
+\submitted{[n/a]}
+\revised{[n/a]}
+\accepted{[n/a]}
+
+\begin{document}
+
+\maketitle
+
+\input{abstract}
+
+\input{introduction}
+\input{background}\input{semantics}
+\input{multishot}
+\input{system}
+\input{related}
+\input{experiments}
+\input{discussion}
+\input{acknowledgments}
+\bibliographystyle{acmtrans}
+% \bibliography{lit,procs,akku,own}
+\input{bbl}
+% \input{appendix}
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

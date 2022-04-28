@@ -1,0 +1,4 @@
+% Make unreached vertices inputs
+
+input(P,V) :- exp(P), vertex(V), not edge(U,V) : edge(U,V) : U != V.
+input(P,V) :- exp(P), vertex(V), edge(V,V), obs_elabel(V,V,1).

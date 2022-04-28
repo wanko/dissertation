@@ -1,0 +1,209 @@
+
+\section{Conflict-driven constraint learning}\label{sec:cdcl}
+
+Given that we are primarily interested in the heuristic machinery of a solver,
+we only provide a high-level description of the basic decision algorithm for 
+conflict-driven constraint learning (CDCL;~\cite{marsak99a,zamamoma01a})
+in Figure~\ref{algo:cdcl}.
+%
+% ----------------------------------------------------------------------
+\begin{figure}[t]
+\newcommand{\ITEMHACK}{\itemindent=-5pt\itemsep=0pt\parsep=\itemsep}
+\small
+\hrule\vspace{2pt}
+\noindent\textbf{loop}\\[-12pt]
+  \begin{itemize}\ITEMHACK
+  \item [] \textit{propagate}  
+    \hfill// compute deterministic consequences
+  \item [] \textbf{if} no conflict \textbf{then}
+    \begin{itemize}\ITEMHACK
+    \item [] \textbf{if} all variables assigned 
+      \textbf{then} 
+      \textbf{return} variable assignment
+    \item [] \textbf{else}
+      \textit{decide} 
+      \hfill// non-deterministically assign some literal
+    \end{itemize}
+  \item [] \textbf{else} 
+    \begin{itemize}\ITEMHACK
+    \item [] \textbf{if} top-level conflict %found 
+      \textbf{then} 
+      \textbf{return} unsatisfiable
+    \item [] \textbf{else}
+      \begin{itemize}\ITEMHACK
+      \item [] \textit{analyze}\hfill// analyze conflict and add a conflict constraint
+      \item [] \textit{backjump}\hfill// undo assignments until conflict constraint is unit
+      \end{itemize}
+    \end{itemize}
+  \end{itemize}
+  \hrule  
+  \caption{Basic decision algorithm: CDCL}
+  \label{algo:cdcl}
+\end{figure}
+% ----------------------------------------------------------------------
+CDCL starts by extending a (partial) {assignment} by deterministic (unit) propagation.
+% Importantly, every derived literal is ``implied'' by some {nogood}
+% % (set of literals that must not jointly be assigned), 
+% which would be violated if the literal's complement were assigned.
+Although propagation aims at forgoing nogood violations,
+assigning a literal implied by one nogood may lead to the violation of another nogood;
+this situation is called \emph{conflict}.
+If the conflict can be resolved, % (the violated nogood contains backtrackable literals),
+it is analyzed to identify a conflict constraint.
+The latter represents a ``hidden'' conflict reason that is recorded and
+guides backjumping to an earlier stage such that
+the complement of some formerly assigned literal is implied by the conflict constraint,
+thus triggering propagation.
+Only when propagation finishes without conflict,
+a (heuristically chosen) literal can be assigned % at a new \emph{decision level},
+provided that the assignment at hand is partial,
+while a {solution} % (total assignment not violating any nogood)
+has been found otherwise.
+% The eventual termination of CDCL is guaranteed
+% by either returning a solution or encountering an unresolvable conflict
+% (independent of (non-implied) decision literals).
+%
+See~\cite{SATHandbook} for details.
+
+A characteristic feature of CDCL is its look-back based approach.
+Central to this are conflict-driven heuristics that score variables according to their prior conflict involvement.
+Even though the primary purpose of this technique is to guide non-deterministic variable assignments,
+it has a global impact in directing constraint learning and deletion.
+%
+A decision heuristic is used to implement the non-deterministic assignment done via
+\emph{decide} in the CDCL algorithm in Figure~\ref{algo:cdcl}.
+In fact,
+the selection of an atom along with its sign relies on two such functions:
+\[
+h: \mathcal{A}\to[0,+\infty)
+\quad\text{and}\quad
+s: \mathcal{A}\to\{\true,\false\}
+\ .
+\]
+Both functions vary over time.
+To capture this, we use $h_i$ and $s_i$ to denote the specific mappings in the $i$th iteration of CDCL's main loop.
+Analogously, we use $\ass_i$ to represent the $i$th assignment (after \textit{propagation}).
+We use $i=0$ to refer to the initialization of both functions via $h_0$ and $s_0$;
+similarly, $A_0$ gives the initial assignment (after \textit{propagation}).
+
+The following lines give a more detailed yet still high-level account of the non-deterministic assignment done by
+\emph{decide} in the CDCL algorithm for $i\geq 1$ (and a given $h_0$):%
+\footnote{\label{fn:ass}For clarity, we keep using indexes in this algorithmic setting although this is
+  unnecessary in view of assignment operator `$:=$'.}
+% --------------------------------------------------
+\begin{enumerate}\itemindent 10pt
+\item $h_i(a) := \alpha_i\times h_{i-1}(a) + \beta_i(a)$ \hfill for each $a\in\mathcal{A}\qquad$
+\item $U:=\mathcal{A}\setminus (\tlits{\ass_{i-1}}\cup\flits{\ass_{i-1}})$
+\item $C:= \textit{argmax}_{a\in U}h_i(a)$
+\item $a:= \tau(C)$
+\item $\ass_i := \ass_{i-1}\cup\{s_i(a)a\}$
+\end{enumerate}
+% --------------------------------------------------
+The first line describes the development of the heuristic depending on a global decay parameter
+$\alpha_i$ and a variable-specific scoring function $\beta_i$.
+The set $U$ contains all atoms unassigned at step~$i$.
+Among them, the ones with the highest heuristic value are collected in $C$.
+Whenever $C$ contains several (equally scored) variables,
+the solver must break the tie by selecting one atom $\tau(C)$ from $C$.
+Such tie-breaking is usually done by adhoc mechanisms.
+
+Look-back based heuristics rely on information gathered during conflict analysis in CDCL.
+Starting from some initial heuristic values in $h_0$,
+the heuristic function is continued as in Item~1 above,
+where
+$\alpha_i\in{[0,1]}$ is a global parameter decaying the influence of past values
+and
+$\beta_i(a)$ gives the conflict score attributed to variable $a$ within conflict analysis.
+The value of $\beta_i(a)$ can be thought of being 0 unless $a$ was scored by \textit{analyze} in CDCL.
+Similarly, $\alpha_i$ usually equals 1 unless it was lowered at some system-specific point, 
+such as after a \emph{restart}.
+%
+Occurrence-based heuristics like~\textit{moms}~\cite{jerwan90aa,pretolani96a} furnish popular initial heuristics.
+%
+Prominent look-back heuristics are
+\textit{vsids}~\cite{momazhzhma01a},
+\textit{berkmin}~\cite{golnov02a},
+and
+\textit{vmtf}~\cite{ryan04a}.
+
+For illustration,
+let us look at a rough trace of atoms $a$, $b$, and $c$ in a fictive run of the CDCL algorithm.
+\[
+\begin{array}{|r|c|c@{\ }@{\ }c@{\,}@{\,}c@{\,}r@{\,}|c@{\,}@{\,}c@{\,}@{\,}c@{\,}r@{\,}|c|c|c@{\,}@{\,}c@{\,}@{\,}c@{\,}r@{\,}|}
+  \hline
+  i&\mathit{operation}&
+  \multicolumn{4}{|c|}{\ass}&
+  \multicolumn{4}{ c|}{h}&
+                       s &
+                       \alpha &
+  \multicolumn{4}{ c|}{\beta}\\
+  \hline
+   &                  &a     &b    &c&...&a&b&c   &...&     &  &a&b&c&...\\
+  \hline
+  \hline
+  0&                  &      &     & &   &0&1&1   &   &\true&1 &0&0&0&   \\
+  \hline
+  1&\mathit{propagate}&\false&     & &   &0&1&1   &   &\true&1 &0&0&0&   \\
+   &\mathit{decide}   &\false&\true& &   &0&1&1   &   &\true&1 &0&0&0&   
+\end{array}
+\]
+The initial heuristic $h_0$ prefers $b$, $c$ over $a$;
+the sign heuristic $s$ constantly assigns \true.
+Initial propagation assigns \false\ to $a$.
+This leaves all heuristics unaffected.
+When invoking \textit{decide}, we find $b$ and $c$ among the unassigned variables in $U$
+(in Item~2 above).
+Assuming the maximum value of $h_1$ to be 1, both are added to $C$.
+This tie is broken by selecting $\tau(C)=b$ in $C$.
+Given that the (constant) sign heuristic yields \true,
+Item~5 adds signed literal \Tsigned{b} to the current assignment.
+
+Next suppose we encounter a conflict involving $c$ at step~8.
+This leads to an incrementation of $\beta_8(c)$.
+\[
+\begin{array}{|r|c|c@{\,}@{\,}c@{\,}@{\,}c@{\,}r@{\,}|c@{\,}@{\,}c@{\,}@{\,}c@{\,}r@{\,}|c|c|c@{\,}@{\,}c@{\,}@{\,}c@{\,}r@{\,}|}
+   &                  &a     &b    &c     &...&a&b&c   &...&     &  &a&b&c&...\\
+  \hline
+  \hline
+  8&\mathit{propagate}&\false&\true&\false&   &0&2&2   &   &\true&1 &0&0&0&   \\
+   &\mathit{analyze}  &\false&\true&\false&   &0&2&2   &   &\true&1 &0&0&1&   \\
+   &\mathit{backjump} &\false&     &      &   &0&2&3   &   &\true&1 &0&0&0&   \\
+  \hline
+  9&\mathit{propagate}&\false&     &      &   &0&2&3   &   &\true&1 &0&0&0&   \\
+   &\mathit{decide}   &\false&     &\true &   &0&2&3   &   &\true&1 &0&0&0&
+\end{array}
+\]
+As at step~1, $b$ and $c$ are unassigned after backjumping.
+Unlike above, $c$ is now heuristically preferred to $b$ since it occurred more frequently within conflicts.
+
+Without going into detail, 
+we mention that at certain steps $i$,
+parameter $\alpha_i$ is decreased for decaying the values of $h_i$ and
+the conflict scores in $\beta_i$ are re-set (eg.~after \textit{analyze}).
+
+Also, look-back based sign heuristics take advantage of previous information.
+The common approach is to choose the polarity of a literal according to the higher
+number of occurrences in recorded nogoods~\cite{momazhzhma01a}.
+Another effective approach is \emph{progress saving}~\cite{pipdar07a},
+caching truth values of (certain) retracted variables and reusing them for sign selection.
+
+Although we focus on look-back heuristics,
+our approach can also be applied to look-ahead heuristics, that 
+%we mention that look-ahead heuristics 
+% are primarily used in DPLL-based solvers~\cite{davput60,dalolo62a}.
+% They 
+aim at shrinking the search space by selecting the (signed) variable offering most implications.
+Look-ahead heuristics rely 
+%This approach relies 
+on failed-literal detection~\cite{freeman95a} to count the number of
+propagations obtained by (temporarily) adding in turn the variable and its negation to the current
+assignment.
+This count can be used in Item~1 above for computing the values $\beta_i(a)$,
+while all $\alpha_i$ are set to 0 (because no past information is taken into account).
+% For instance, such an approach is used in \smodels~\cite{siniso02a} to select both the variable as
+% well as its sign.
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End: 

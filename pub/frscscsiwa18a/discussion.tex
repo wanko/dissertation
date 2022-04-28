@@ -1,0 +1,31 @@
+
+\section{Discussion}\label{sec:discussion} % Summary
+
+We presented the first hybrid approach to metabolic network completion
+by combining topological and stoichiometric constraints in a uniform setting.
+To this end,
+we elaborated a formal framework capturing different semantics for the activation of reactions.
+Based upon these formal foundations, we developed a hybrid ASP encoding reconciling
+disparate approaches to network completion.
+The resulting system, \fluto, thus combines the advantages of both approaches and 
+yields greatly superior results compared to purely quantitative or qualitative existing systems.
+Our experiments show that \fluto\ scales to more highly degraded networks 
+and produces useful solutions in reasonable time. %
+In fact, all of \fluto's solutions passed the biological gold standard.
+The exploitation of the network's topology guides the solver to more likely completion candidates,
+and furthermore avoids self-activated cycles, as obtained in FBA-based approaches.
+Also, unlike other systems, \fluto\ allows for establishing optimality and address the strict stoichiometric completion problem without approximation.
+
+\fluto\ takes advantage of the hybrid reasoning capacities of the ASP system \clingo{}
+for extending logic programs with linear constraints over reals.
+This provides us with a practically relevant application scenario for evaluating this hybrid form of ASP.
+To us, the most surprising empirical result was the observation that domain-specific heuristic allow for boosting unsatisfiable core based
+optimization.
+So far, such heuristics have only been known to improve satisfiability-oriented reasoning modes, and usually hampered unsatisfiability-oriented ones
+(cf.~\citep{gekakarosc15a}).
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End: 

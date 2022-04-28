@@ -1,0 +1,55 @@
+\textbf{Big picture.}
+%
+Finally, let us relate our systems with others extending ASP with linear constraints.
+%
+The first category, referred to as translation-based approaches,
+includes systems such as \ezsmt{}~\cite{liesus16a}, \dingo{}~\cite{jalini11a}, \aspmttosmt{}~\cite{barlee14b}, and \mingo{}~\cite{lijani12a}.
+The first three translate both ASP and constraints into SAT Modulo Theories (SMT;~\cite{baseseti09a});
+\dingo{} is restricted to difference constraints.
+Unlike this,
+\mingo's target formalism is Mixed Integer Linear Programming (MILP).
+Furthermore, \aspartame~\cite{bageinospescsotawe15a} translates \ASPm{lc} (over integers) back to ASP by using the order encoding.
+An advantage of translation-based approaches is that
+once the input program is translated,
+only a solver for the target formalism is needed.
+In this way, they benefit from the features and performance of the respective target systems.
+A drawback is the translation itself
+since it may result in large propositional representations or weak propagation strength.
+%
+The second category extends the standard Conflict Driven Nogood Learning (CDNL;~\cite{gekasc09c}) machinery of ASP solvers with constraint propagators.
+This allows for propagating both Boolean and linear constraints during search.
+The latter are thus continuously checked for consistency and even new constraints may get derived.
+For instance, the \clingo-based system \dlvhex[\textsc{cp}]~\cite{roeireri15a} uses \gecode, while \ezcsp{} uses a \prolog{} constraint solver
+for consistency checking.
+Unlike this,
+\inca~\cite{drewal10a} extends a previous \clingo{} version with a customized lazy propagator generating constraints according to the order encoding.
+This approach allows for deriving new constraints such as bounds of integer variables.
+
+The \clingo{} derivatives \clingod{dl} and \clingod{lp} belong to the second category of systems, just like \clingcon~3.
+%
+% --------------------------------------------------------------------------------
+\input{tables/related}
+% --------------------------------------------------------------------------------
+%
+Table~\ref{tab:related} summarizes important similarities and differences of the aforementioned systems.
+The first row tells us whether a system relies on a translation to SMT, MILP, or ASP\@.
+The second one indicates whether an approach uses some form of explicit variable representation.
+This is the case when using an encoding and usually results in a large number of propositional atoms to represent variables with large domains.
+Half of the systems are able to handle constraints over reals while the other half is restricted to integers.
+Note that for a system of inequalities, a solution over reals can be found much easier than one over integers.
+For all systems, real numbers are implemented as floating point numbers.
+Due to this, round-off errors cannot completely be avoided.
+Note that since computers are finite precision machines, 
+the imprecision of floating point computations is common to any computer systems
+and/or languages~\cite{goldberg91a}. 
+\cplex\ uses numerically stable methods to perform its
+linear algebra so that round-off errors usually do not cause problems.%
+\footnote{See \emph{Numeric difficulties} at \url{https://www.ibm.com/support/knowledgecenter/SSSA5P_12.7.0/ilog.odms.studio.help/pdf/usrcplex.pdf}}
+With ``non-linear'' we distinguish systems handling global or non-linear constraints,
+and ``non-tight'' indicates whether a system can deal with recursive programs.
+Finally, the table lists all systems that are able to optimize an objective function over integer and/or real variables.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End:

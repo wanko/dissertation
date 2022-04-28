@@ -1,0 +1,35 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb}
+\usepackage{times,helvet,courier}
+\usepackage[graphics,tightpage,active]{preview}
+\PreviewEnvironment{tabular}
+\newlength{\imagewidth}
+\newlength{\imagescale}
+\pagestyle{empty}
+\thispagestyle{empty}
+
+\begin{document}
+
+\begin{table}
+\begin{tabular}{|l|r||r|r|r|r|r|r||r|}
+
+\hline
+Class & rank &  CTT & DSE & card-4 & sub-4 & card-8 & sub-8 & total\\ 
+\hline
+A3-Hpos & & 0 & 5.16 & 5.20 & 19.56 & 7.13 & 19.40 & 56.45 \\ 
+A3-Hboth & & 0 &  5.16 & 5.31 & 19.07 & 7.14 & 19.40 & 56.08 \\ 
+A3-Hvgpg & & 0 &  5.27 & 5.37 & 22.17 & 6.81 & 22.29 & 61.90\\
+A3-Hvgpgrd & & 0 & 5.36 & 5.26 & 21.78 & 6.83 & 22.42 & 61.66 \\
+A3 &  & $\approx$0 &  4.66 & 4.44 & 15.71 & 6.15 & 16.34 & 47.30\\
+A3-Hpg &  & 0 &  4.60 & 4.72 & 12.72 & 5.52 & 12.33 & 39.89\\
+A3-Hdyn &  & 0 &  4.51 & 4.91 & 12.34 & 5.62 & 12.67 & 40.06\\ 
+A1-Q3-o &  & 0 &  4.56 & 3.55 & 3.43 & 3.53 & 3.60 & 18.98\\
+A1-Q3 &  & 0 &  4.78 & 2.57 & 3.48 & 3.52 & 3.48 & 17.83\\
+
+\hline
+\end{tabular} 
+\end{table}
+
+\end{document}

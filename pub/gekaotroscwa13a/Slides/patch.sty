@@ -1,0 +1,37 @@
+\renewcommand{\itemize}[1][]{%
+  \beamer@ifempty{#1}{}{\def\beamer@defaultospec{#1}}%
+% TS  \ifnum \@itemdepth >2\relax\@toodeep\else
+  \ifnum \@itemdepth >5\relax\@toodeep\else
+    \advance\@itemdepth\@ne
+    \beamer@computepref\@itemdepth% sets \beameritemnestingprefix
+    \usebeamerfont{itemize/enumerate \beameritemnestingprefix body}%
+    \usebeamercolor[fg]{itemize/enumerate \beameritemnestingprefix body}%
+    \usebeamertemplate{itemize/enumerate \beameritemnestingprefix body begin}%
+    \list
+      {\usebeamertemplate{itemize \beameritemnestingprefix item}}
+      {\def\makelabel##1{%
+          {%
+            \hss\llap{{%
+                \usebeamerfont*{itemize \beameritemnestingprefix item}%
+                \usebeamercolor[fg]{itemize \beameritemnestingprefix item}##1}}%
+          }%
+        }%
+      }
+  \fi%
+  \beamer@cramped%
+  \raggedright%
+  \beamer@firstlineitemizeunskip%
+}
+
+% \def\itemize{% FROM LATEX.LTX
+% % TS \ifnum \@itemdepth >\thr@@ \@toodeep\else
+%      \ifnum \@itemdepth >5      \@toodeep\else
+%      \advance\@itemdepth \@ne
+%      \edef\@itemitem{labelitem\romannumeral\the\@itemdepth}%
+%      \ifintheorem\advance\leftmargin\leftmargini\fi
+%      \expandafter
+%      \list
+%        \csname\@itemitem\endcsname
+%        {\let\makelabel\makeRRlabel}%
+%   \fi
+% }

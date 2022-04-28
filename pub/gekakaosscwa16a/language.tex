@@ -1,0 +1,275 @@
+
+\section{Input Language}\label{sec:language}
+
+This section introduces the novel features of \clingo~5's input language.
+All of them are situated in the underlying grounder \gringo~5 and can thus
+also be used independently of \clingo.
+%
+We start with a detailed description of \gringo~5's generic means for defining theories
+and afterwards summarize further % the remaining 
+new features.
+
+Our generic approach to theory specification rests upon two languages:
+the one defining theory languages and the theory language itself.
+Both borrow elements from the underlying ASP language,
+foremost an aggregate-like syntax for formulating variable length expressions.
+To illustrate this, consider Listing~\ref{prg:diff},
+where a logic program is extended by constructs for handling difference and linear constraints.
+While the former are binary constraints of the form $x_1-x_2\leq k$, % where $x,y$ are integer variables and $k$ is an integer,
+the latter have a variable size and are of form
+\(
+a_1x_1+\dots+a_nx_n\circ k
+\),
+where $x_i$ are integer variables, $a_i$ and $k$ are integers, and $\circ\in\{\leq,\geq,<,>,=\}$
+for $1\leq i\leq n$.%
+\footnote{For simplicity, we consider normalized difference constraints rather than general ones of form $x_1-x_2\circ k$.}
+Note that solving difference constraints is polynomial, while solving linear equations (over integers) is NP-hard.
+The theory language for expressing both types of constraints is defined in Lines~\ref{prg:diff:begin-theory}--\ref{prg:diff:end-theory} and preceded by the directive \lstinline{#theory}.
+The elements of the resulting theory language are preceded by \lstinline{&} and used as regular atoms in the logic program in Lines~\ref{prg:diff:begin-program}--\ref{prg:diff:end-program}.
+% ------------------------------------------------------------
+\lstinputlisting[language=clingo,morekeywords={n,m},float=t,escapeinside={\%(}{\%)},basicstyle=\ttfamily\small,label=prg:diff,caption=Logic program enhanced with difference and linear constraints (\texttt{diff.lp})]{code/diff.lp}
+% ------------------------------------------------------------
+
+To be more precise,
+a \emph{theory definition} has the form
+\begin{lstlisting}[numbers=none,mathescape=t]
+#theory $T$ {$D_1$;$\dots$;$D_n$}.
+\end{lstlisting}
+where $T$ is the theory name and each $D_i$ is a definition for a theory term or a theory atom for $1\leq i\leq n$.
+The language induced by a theory definition is the set of all theory atoms constructible from its theory atom definitions.
+
+A \emph{theory atom definition} has form
+\begin{lstlisting}[numbers=none,mathescape=t]
+&$p$/$k$ : $t$,$o$ $\quad\textrm{ or }\quad$ &$p$/$k$ : $t$,{$\diamond_1$,$\dots$,$\diamond_m$},$t'$,$o$
+\end{lstlisting}
+where $p$ is a predicate name and $k$ its arity,
+$t,t'$ are names of theory term definitions,
+each $\diamond_i$ is a theory operator for $m\geq 1$,
+and
+\(
+o\in\{\mathtt{head},\mathtt{body},\mathtt{any}, \mathtt{directive}\}
+\)
+determines where theory atoms may occur in a rule.
+%
+Examples of theory atom definitions are given in Lines~\ref{lst:ex1-begin-def-atom}--\ref{lst:ex1-end-def-atom} of Listing~\ref{prg:diff}.
+%%
+The language of a theory atom definition as above contains all \emph{theory atoms} of form
+\begin{lstlisting}[numbers=none,mathescape=t]
+&$a$ {${C}_1$:${L}_1$;$\dots$;${C}_n$:${L}_n$}$\quad\textrm{ or }\quad$ &$a$ {${C}_1$:${L}_1$;$\dots$;${C}_n$:${L}_n$} $\diamond$ $c$
+\end{lstlisting}
+where $a$ is an atom over predicate $p$ of arity $k$,
+each ${C}_i$ is a tuple of theory terms in the language for~$t$,
+$c$ is a theory term in the language for~$t'$,
+$\diamond$ is a theory operator among $\{ \diamond_1, \dots, \diamond_m \}$,
+and each ${L}_i$ is a regular condition (i.e., a tuple of regular literals)
+for $1\leq i\leq n$.
+% The last part `${}\diamond c$' is optional.
+Whether the last part `${}\diamond c$' is included depends on the form of a theory atom definition.
+%
+Five occurrences of theory atoms can be found in Lines~\ref{prg:diff:begin-use-theory}--\ref{prg:diff:end-use-theory} of Listing~\ref{prg:diff}.
+
+A \emph{theory term definition} has form
+\begin{lstlisting}[numbers=none,mathescape=t]
+$t$ {$D_1$;$\dots$;$D_n$}
+\end{lstlisting}
+where $t$ is a name for the defined terms and each $D_i$ is a theory operator definition 
+for $1\leq i\leq n$.
+A respective definition specifies the language of all theory terms
+that can be constructed via % admissible term constructors and
+its operators. % , as described next.
+%
+Examples of theory term definitions are given in Lines~\ref{prg:diff:begin-def-term}--\ref{prg:diff:end-def-term} of Listing~\ref{prg:diff}.
+%%
+Each resulting \emph{theory term} is one of the following:
+\par\medskip\noindent
+\begin{minipage}{0.5\linewidth}
+  \begin{itemize}
+  \item a constant term: \ $c$
+  \item a variable term: \ $v$
+  \item a binary theory term: \  $t_1 \diamond t_2$
+  \item a unary theory term: \  ${}\diamond t_1$
+  \end{itemize}
+\end{minipage}
+\begin{minipage}{0.5\linewidth}
+\begin{itemize}
+  \item a function theory term: \  $f(t_1,\dots,t_k)$
+  \item a tuple theory term: \  $(t_1,\dots,t_l,)$
+  \item a set theory term: \  $\{t_1,\dots,t_l\}$
+  \item a list theory term: \  $[t_1,\dots,t_l]$
+\end{itemize}
+\end{minipage}
+\par\medskip\noindent
+where each $t_i$ is a theory term,
+$\diamond$ is a theory operator defined by some $D_i$,
+$c$ and $f$ are symbolic constants,
+$v$ is a first-order variable,
+$k\geq 1$, and
+$l\geq 0$.
+(The trailing comma in tuple theory terms is optional if $l \neq 1$.)
+% Furthermore,
+Parentheses can be used to specify operator precedence.
+
+A \emph{theory operator definition} has form
+\begin{lstlisting}[numbers=none,mathescape=t]
+$\diamond$ : $p$,unary $\quad\textrm{ or }\quad$ $\diamond$ : $p$,binary,$a$
+\end{lstlisting}
+where $\diamond$ is a unary or binary theory operator with precedence $p\geq 0$
+(determining implicit parentheses). % , respectively.
+Binary theory operators are additionally characterized by an associativity
+$a\in\{\text{\lstinline{right}},\linebreak[1]\text{\lstinline{left}}\}$.
+%
+As an example,
+consider Line~\ref{prg:diff:op-mul} of Listing~\ref{prg:diff},
+where the \lstinline{binary} operator~\lstinline{*} is defined with precedence~\lstinline{1} and \lstinline{left} associativity.
+%
+In total, Lines~\ref{prg:diff:begin-def-term}--\ref{prg:diff:end-def-term} of Listing~\ref{prg:diff}
+include nine theory operator definitions.
+%%
+Particular \emph{theory operators} can be assembled (written consecutively without spaces) from the symbols
+`\lstinline{!}',
+`\lstinline{<}',
+`\lstinline{=}',
+`\lstinline{>}',
+`\lstinline{+}',
+`\lstinline{-}',
+`\lstinline{*}',
+`\lstinline{/}',
+`\lstinline{\}',
+`\lstinline{?}',
+`\lstinline{&}',
+%`\texttt{\&}',
+`\lstinline{|}',
+`\lstinline{.}',
+`\lstinline{:}',
+`\lstinline{;}',
+`\lstinline{~}', and
+`\lstinline{^}'.
+%
+For instance,
+in Line~\ref{prg:diff:op-dot} of Listing~\ref{prg:diff}, the operator `\lstinline{..}' is defined as the concatenation of two periods.
+%
+% Note that
+The tokens
+`\lstinline{.}',
+`\lstinline{:}',
+`\lstinline{;}', and
+`\lstinline{:-}'
+must be combined with other symbols
+due to their dedicated usage.
+Instead, one may write
+`\lstinline{..}',
+`\lstinline{::}',
+`\lstinline{;;}',
+`\lstinline{::-}',
+etc.
+% Each operator is either unary or binary.
+% To resolve ambiguities,
+% a binary theory operator is either left or right associative.
+% Furthermore, each operator has a precedence to allow for omitting parentheses in some situations.
+
+While theory terms are formed similar to regular ones,
+theory atoms rely upon an aggregate-like construction for forming variable-length theory expressions.
+In this way, standard grounding techniques can be used for gathering theory terms.
+(However, the actual atom within a theory atom comprises regular terms only.)
+%
+The treatment of theory terms still % and atoms % is different
+differs from their regular counterparts
+% This is due to the fact 
+in that the grounder skips simplifications like, e.g., arithmetic evaluation.
+% completely ignores the theory's semantics and thus performs no theory-specific simplifications.
+This can be nicely seen on the different results in Listing~\ref{prg:grd:diff} of grounding terms formed with
+the regular and theory-specific variants of operator `\lstinline{..}'.
+Observe that
+the     fact \lstinline{task(1..n)} in Line~\ref{prg:diff:rule-task} of Listing~\ref{prg:diff} results in \lstinline{n} ground     facts,
+viz.\ \lstinline{task(1)} and \lstinline{task(2)} because of \lstinline{n=2}.
+Unlike this, the theory expression \lstinline{1..m} stays structurally intact and is only transformed into \lstinline{1..1000} in view of \lstinline{m=1000}.
+That is, the grounder does not evaluate the theory term \lstinline{1..1000} and
+leaves its interpretation to a downstream theory solver.
+%
+% ------------------------------------------------------------
+\lstinputlisting[language=clingo,float=t,basicstyle=\ttfamily\small,label=prg:grd:diff,caption={Human-readable result of grounding Listing~\ref{prg:diff} via `\texttt{gringo --text diff.lp}'}]{code/diff.grd}
+% ------------------------------------------------------------
+%
+A similar situation is encountered when comparing the treatment of the regular term `\lstinline{200*T}' in Line~\ref{prg:diff:rule-duration} of Listing~\ref{prg:diff} to the
+theory term `\lstinline{end(T)-start(T)}' in Line~\ref{prg:diff:rule-diff}.
+While each instance of `\lstinline{200*T}' is evaluated during grounding,
+instances of the theory term  are left in Line~6 of Listing~\ref{prg:grd:diff}.
+In fact, if `\lstinline{200*T}' had been a theory term as well,
+it would have resulted in the unevaluated instances  `\lstinline{200*1}' and `\lstinline{200*2}'. % , respectively.
+% This is because the grounder ignores the meaning of the theory operator `\lstinline{*}'.
+
+The remainder of this section is dedicated to other language extensions of \gringo~5 aiming
+at a disentanglement of the various uses of \lstinline{#show} directives
+(and their induced symbol table).
+Such directives were beforehand used for
+controlling the output of stable models,
+delineating the scope of reasoning modes (e.g., intersection, union, projection, etc.),
+and for
+passing special-purpose information to downstream systems.
+For instance,
+theory and heuristic information was passed to \clasp\ via dedicated predicates like \lstinline{_edge} and \lstinline{_heuristic}.
+This entanglement brought about several shortcomings.
+% For one, the output of reasoning modes had to coincide with the atoms subject to the reasoning mode.
+In fact, passing information via a symbol table did not only scramble the output, but also provoked overhead in grounding and filtering ``artificial'' symbolic information.
+
+Now, in \gringo~5, the sole purpose of \lstinline{#show} is to furnish an output directive.
+There are three different kinds of such statements:
+%
+\begin{lstlisting}[numbers=none,mathescape=t]
+#show.     #show $p$/$n$.      #show $t$ : $l_1$,$\dots$,$l_n$.
+\end{lstlisting}
+%
+The first form hides all atoms, and the second all except those over predicates~$p/n$ indicated by \lstinline{#show} statements.
+The third form does not hide any atoms and can be used to output arbitrary terms~$t$,
+whenever the literals $l_1,\dots,l_n$ in the condition after~`\lstinline{:}' hold.
+This is particularly useful in meta-programming,
+e.g., `\lstinline{#show A : holds(A).}' can be used to map back reified atoms.
+
+Atoms used in reasoning modes are indicated by \lstinline{#project} directives, having two forms:
+%
+\begin{lstlisting}[numbers=none,mathescape=t]
+#project $p$/$n$.     #project $a$ : $l_1$,$\dots$,$l_n$.
+\end{lstlisting}
+%
+Here, $p$ is a predicate name with arity $n$, $a$ is an atom, and $l_1,\dots,l_n$ are % regular
+literals.
+While the first form declares all atoms over predicate~$p/n$ as % being
+subject to projection,
+the second includes instances of~$a$
+obtained via grounding, as detailed in \cite{gekakasc14b} for
+\lstinline{#external} directives.
+
+The last two new directives of interest abolish the need for % using
+the special-purpose predicates \lstinline{_edge} and \lstinline{_heuristic},
+previously used in conjunction with the ASP solver \clasp:
+\begin{lstlisting}[numbers=none,mathescape=t]
+#edge ($u$,$v$) : $l_1$,$\dots$,$l_n$.
+#heuristic $a$ : $l_1$,$\dots$,$l_n$. [$k$@$p$,$m$]
+\end{lstlisting}
+As above, $a$ is an atom, and $l_1,\dots,l_n$ are literals.
+Moreover,
+$u,v,k,p,m$ are terms, % is a condition;
+where 
+`\lstinline[mathescape=t]{($u$,$v$)}' stands for an
+edge from $u$ to $v$ in an acyclicity extension \cite{bogejakasc15a}.
+Integer values for $k$ and $p$ along with
+\lstinline{init}, \lstinline{factor}, \lstinline{level}, \lstinline{sign}, \lstinline{true}, or \lstinline{false} for~$m$
+determine a heuristic modifier \cite{gekaotroscwa13a}.
+Finally, note that
+zero is taken as default priority when
+the optional `\lstinline[mathescape=t]{@$p$}' part 
+in `\lstinline[mathescape=t]{[$k$@$p$,$m$]}',
+resembling the syntax of ranks for weak constraints \cite{aspcore2},
+is omitted.
+% $k$ is a term evaluating to an integer and $m$ is a heuristic modifier among
+% \lstinline{init}, \lstinline{factor}, \lstinline{level}, \lstinline{sign}, \lstinline{true}, or \lstinline{false}, respectively.
+% A positive integer priority $p$ is optional (and zero by default).
+% Note that the usage of the term \lstinline[mathescape=t]{[$k$@$p$,$m$]} is borrowed from weak constraints~\cite{aspcore2}.
+% Also, observe that arcs \lstinline[mathescape=t]{($u$,$v$)} and heuristically modified atoms $a$ can still be defined (recursively) via arbitrary subprograms,
+% but now without any need to show them in a resulting stable models.
+% %
+% We refer the reader to \cite{bogejakasc15a} and \cite{gekaotroscwa13a} for details on the underlying concepts.
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End:

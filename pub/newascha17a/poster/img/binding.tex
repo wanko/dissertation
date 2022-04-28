@@ -1,0 +1,63 @@
+\begin{tikzpicture}[>=stealth,scale=2.7,cross/.style={path picture={ 
+		\draw[black,line width=0.12cm]
+		(path picture bounding box.south east) -- (path picture bounding box.north west) (path picture bounding box.south west) -- (path picture bounding box.north east);
+	}},icon/.style={path picture={ 
+	\draw[black,line width=0.12cm]
+	($(path picture bounding box.south east)+(-0.2,0.2)$) -- ($(path picture bounding box.south east)+(-0.4,+0.2)$) -- ($(path picture bounding box.north west)+(0.4,-0.2)$) -- ($(path picture bounding box.north west)+(0.2,-0.2)$) ($(path picture bounding box.south west)+(0.2,0.2)$) -- ($(path picture bounding box.south west)+(0.4,0.2)$) -- ($(path picture bounding box.north east)+(-0.4,-0.2)$) -- ($(path picture bounding box.north east)+(-0.2,-0.2)$);
+}}]
+	\tikzstyle{axis} = [->, black, line width=0.12cm]
+	\tikzstyle{link} = [<->, black!50, line width=0.12cm]
+	\tikzstyle{task} = [anchor=west,shape=rectangle,thick,text=white,minimum height=0.5cm, draw=black, fill=myblue, align=center, rounded corners=2,inner sep=0]
+	\tikzstyle{difftask} = [shape=circle,thick,text=white,minimum height=0.5cm, draw=black, fill=myblue, align=center,inner sep=2]
+	\tikzstyle{router} = [icon,draw,fill=black!30!yellow,inner sep=0]
+%	\tikzstyle{router} = [circle,cross,draw,fill=black!30!yellow,inner sep=0, line width=0.12cm]
+%	\tikzstyle{router} = [diamond,draw,fill=black!30!yellow,inner sep=0]
+	\tikzstyle{resource} = [rectangle,minimum width=0.6cm,minimum height=0.4cm,draw,fill=black!50!green,text=white]
+	\tikzstyle{route} = [->,black,line width=1.5]
+%	\node [router] (v1) at (-3.8,2.4) {\footnotesize$rsu_1$};
+%	\node [router] (v2) at (-2.2,2.4) {\footnotesize$rsu_2$};
+%	\node [router] (v4) at (-3.8,0.8) {\footnotesize$rsu_3$};
+%	\node [router] (v5) at (-2.2,0.8) {\footnotesize$rsu_4$};
+	\node [router,minimum width=1.5cm, minimum height=1cm] (v1) at (-3.8,2.4) {};
+	\node [router,minimum width=1.5cm, minimum height=1cm] (v2) at (-2.2,2.4) {};
+	\node [router,minimum width=1.5cm, minimum height=1cm] (v4) at (-3.8,0.8) {};
+	\node [router,minimum width=1.5cm, minimum height=1cm] (v5) at (-2.2,0.8) {};
+	
+	\draw [link] (v1) edge (v2);
+	\draw [link] (v1) edge (v4);
+	\draw [link] (v2) edge (v5);
+	\draw [link] (v4) edge (v5);
+	
+	\node [resource] (v10) at (-4.6,3.2) {$r_1$};
+	\node [resource] (v11) at (-1.4,3.2) {$r_2$};
+	\node [resource] (v13) at (-4.6,0) {$r_3$};
+	\node [resource] (v14) at (-1.4,0) {$r_4$};
+	
+	\draw [link] (v10) edge (v1);
+	\draw [link] (v11) edge (v2);
+	\draw [link] (v13) edge (v4);
+	\draw [link] (v14) edge (v5);
+	
+	
+	
+	\node [difftask] (t3) at (-5,3.5) {$t_1$};
+	\node [difftask,fill=black!40!red,inner sep=0] (c3) at (-3.55,1.6) {\small$c_3$};
+	\node [difftask,fill=black!40!red,inner sep=0] (c4) at (-1.95,1.6) {\small$c_4$};
+	\node [difftask,fill=black!40!red,inner sep=0] (c5) at (-4.05,1.6) {\small$c_2$};
+	\node [difftask,,fill=black!20!orange,inner sep=0] (c1) at (-2.45,1.6) {\small$c_5$};
+	\node [difftask] (t4) at (-5,-0.3) {$t_3$};
+	\node [difftask] (t5) at (-4.2,3.5) {$t_4$};
+	\node [difftask] (t6) at (-5,2.9) {$t_2$};
+	\node [difftask] (t1) at (-1,-0.3) {$t_6$};
+	\node [difftask] (t2) at (-1.0,3.5) {$t_5$};
+
+	\draw[axis,draw=black!40!red, dashed]  plot[smooth, tension=.7] coordinates {(v10.290) (-4.1,2.6) (c5) (-4.1,0.6) (v13.70)};
+	\node [difftask,fill=black!40!red,inner sep=0] (c5a) at (c5.center) {\small$c_2$};
+	\draw[axis,draw=black!40!red, dashed]  plot[smooth, tension=.7] coordinates {(v13.0) (-3.7,0.5) (c3) (-3.7,2.7) (v10.0)};
+	\node [difftask,fill=black!40!red,inner sep=0] (c3a) at (c3) {\small$c_3$};
+	
+	\draw[axis,draw=black!40!red, dashed]  plot[smooth, tension=.7] coordinates {(v11.250) (-1.9,2.6) (c4) (-1.9,0.6)(v14.110)};
+	\node [difftask,fill=black!40!red,inner sep=0] (c4a) at (c4.center) {\small$c_4$};
+	\draw[axis,draw=black!20!orange, dashed]  plot[smooth, tension=.7] coordinates {(v14.west) (-2.3,0.5) (c1) (-2.3,2.7)(v11.west)};
+	\node [difftask,,fill=black!20!orange,inner sep=0] (c1a) at (c1.center) {\small$c_5$};
+\end{tikzpicture}

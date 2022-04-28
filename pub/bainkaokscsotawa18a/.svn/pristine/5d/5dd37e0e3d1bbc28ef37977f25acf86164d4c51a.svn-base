@@ -1,0 +1,349 @@
+\section{Multi-objective Course Timetabling considering Minimal Perturbation Problems}\label{mpp}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\lstinputlisting[float=t,caption={ASP Encoding of the Manhattan distance},%
+captionpos=b,frame=single,label=en:distance.lp,%
+numbers=none,%
+basicstyle=\ttfamily\scriptsize]{code_distance_lp.tex}
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\emph{The Multi-Objective Discrete Optimization Problem} (MODOP; \citep{Ehrgott2005})
+is a problem involving multiple objective functions 
+that should be considered separately and optimized simultaneously. 
+It is therefore well suited for modeling many real world 
+applications involving multiple criteria, such as 
+decision making,  %\cite{BB17791648,figueira2005multiple}, 
+scheduling,  %\cite{DBLP:journals/anor/BurkeLQ12,DBLP:journals/itor/IturriagaDN17}, 
+automated planning,  %\cite{AlarconRodriguez20101353,DBLP:conf/ijcai/YiGS15}, 
+%product design %\cite{DBLP:books/daglib/0027803}
+etc.
+%
+The goal of this problem is finding the \emph{Pareto front}
+(viz. the set of Pareto optimal solutions) 
+defined by Pareto optimality.
+Usually, a Pareto optimal solution is expressed in the form of
+utility vector $(o_1,o_2,\ldots, o_n)$
+where each $o_i$ is a value representing the optimization quality of an objective.
+From a practical point of view, 
+finding a promising subset of Pareto optimal solutions is also
+important,  since finding the Pareto front is known to be difficult.
+
+\emph{The Minimal Perturbation Problem} 
+(MPP; \citep{Hani2000, BartakMR03, Roie2011}) 
+can be generally defined as a problem aiming at solutions featuring
+minimal perturbation with respect to an initial solution. 
+For a given initial solution of the original problem, a new problem, and a
+distance function that is used to compare a solutions of the new problem
+with the initial solution, 
+the goal of MPP is to find a solution of the new problem with a minimal
+distance to the initial solution of the original problem.
+%
+There exists some work on MPP in course timetabling~\citep{RudovaMM11,MullerRB04,Phillips2016}.
+In this case, the goal is to find a feasible solution 
+of a new timetabling problem with
+minimal change usually defined by \emph{Manhattan distance}
+to the legacy solution. % of original timetabling problem.
+
+In this section, we extend the {\asap} system to solving 
+multi-objective course timetabling problems combining CB-CTT and MPP
+with two criteria \emph{optimality} and \emph{stability}. 
+The first criterion, optimality, is to minimize
+the penalty of soft constraints for CB-CTT solving.
+The second criterion, stability, is to minimize
+the change from a legacy solution for MPP solving.
+%
+For a given legacy solution of the original CB-CTT problem, a new CB-CTT
+problem, and a distance function,
+the goal is to find Pareto optimal solutions, that is, 
+trade-off solutions of the new problem with minimal penalty
+as well as with minimal change from the legacy solution.
+We adopt the Manhattan distance as a distance function, which is
+widely used in MPP research.
+Pareto optimal solutions of this problem are in the form
+of a utility vector $(o_1,o_2)$ in which $o_1$ is a value for optimality
+representing the optimization quality, and 
+$o_2$ is a value for stability representing the stabilization quality.
+
+For optimality, we can use {\asap} encodings presented in 
+Section~\ref{sec:approach} and Section~\ref{sec:ext}.
+For stability, we explain {\asap}'s fact format of legacy solutions
+and then present an ASP encoding of the following new constraint to capture
+the Manhattan distance:
+\begin{list}{}{}
+\item\bm{$C_1$}. \textbf{ManhattanDistance}: 
+  The obtained timetable should be as similar as possible to the
+  legacy timetable.
+  Each legacy assignment not in the obtained timetable counts as 1 violation.
+\end{list}
+%
+A solution of CB-CTT is represented as a set of atoms of the predicate
+\code{assigned/4} as can be seen in Listing~\ref{ex:toy_out.lp}.
+Each atom \code{assigned(C,R,D,P)} expresses an assignment such that
+a lecture of a course \code{C} is assigned to a room \code{R} at a
+period \code{P} on a day \code{D}.
+In a similar way, we represent a legacy solution as a set of atoms of
+\code{legacy(assigned(C,R,D,P))}.
+%
+The {\asap} encoding of $C_1$ is shown in Listing~\ref{en:distance.lp}.
+For every course \code{C}, room \code{R}, day \code{D}, and period \code{P}, 
+the rule generates a penalty atom with the cost of \code{W} and with the
+priority level of \code{Prior}
+if an assignment represented by \code{assigned(C,R,D,P)} is satisfied 
+in the legacy solution, but not in the obtained solution.
+
+Our proposed approach can handle at least three types of differences
+between the original and the new problems:
+\begin{itemize}
+\item Removal version : Remove some constraints from the original problem. 
+\item Additional version : Add some new constraints to the original problem. 
+\item Mixed version : Mix the removal and additional versions.
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\lstinputlisting[float=t,caption={The UD2 formulation with the Manhattan distance},%
+captionpos=b,frame=single,label=en:ud2_mpp.lp,%
+numbers=none,%
+basicstyle=\ttfamily\scriptsize]{code_ud2_mpp_lp.tex}
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
+For illustration, let us consider a simple scenario for an additional
+version consisting of 
+a problem instance in UD1 as an original problem, 
+its optimal solution as a legacy solution, and 
+the same instance in UD2 as a new problem ($S_5$.\;RoomStability is added).
+In this scenario, 
+the optimization criterion is changed from
+the original to the new problem due to the additional soft 
+constraint $S_5$. Therefore, 
+the optimization quality (viz. the penalty of soft constraints)
+might be different between them depending on the instance.
+The stabilization quality (viz. the change from the legacy solution)
+is the number of changed assignments.
+Note that the number of possible changes is identical to the size of
+the legacy solution.
+
+ASP facts representing the UD2 formulation plus
+the Manhattan distance $C_1$ are shown in Listing~\ref{en:ud2_mpp.lp}.
+The constants \texttt{p1} and \texttt{p2} represent the priority
+levels of soft constraints in lexicographic optimization. 
+We can obtain 
+two extreme Pareto optimal solutions by varying those
+priority levels.
+If \texttt{p1}$>$\texttt{p2}, one extreme solution
+prioritizing optimality is computed.
+If we change the priority level to \texttt{p1}$<$\texttt{p2}, 
+another extreme solution prioritizing stability is computed.
+%
+To be specific, for \texttt{comp13} instance, 
+we can obtain two extreme Pareto optimal solutions 
+$(59,185)$ and $(233,0)$.
+In each solution, 
+the first value is the penalty of soft constraints,
+and 
+the second is the change from the legacy solution.
+Since the optimization qualities of \texttt{comp13} are 31 in UD1 and
+59 in UD2, and the number of possible changes is 308,
+the extreme solution $(59,185)$ has the minimal penalty 59
+but 60\% of the legacy assignments are changed.
+The solution $(233,0)$ has the minimal change 0
+but incurs higher penalty 233.
+
+In the following, we explain how to find other Pareto optimal solutions.
+We iteratively obtain Pareto optimal solutions 
+by alternating between finding lexicographic optima
+and restricting the objective functions using the values of said optima.
+The method consists of two steps:
+(i) calculate lexicographic optimal solutions for \texttt{p1}$>$\texttt{p2} or \texttt{p2}$>$\texttt{p1};
+(ii) if solutions have been found, restrict the search space to only allow for value vectors
+that are incomparable to previous solutions and return to (i).
+Since all lexicographic optimal solutions are also Pareto optimal 
+and the solutions we iterate are incomparable by design to previous solutions,
+all lexicographic optima found in (i) are also Pareto optimal. 
+And also, we are sure to obtain the Pareto front given enough time 
+because we consider the whole search space in the beginning.
+%
+Reconsidering the example from before, 
+we would obtain lexicographic optima $(59,185)$ and $(233,0)$ in Step (i),
+then we restrict the search space by adding constraints 
+forcing optimality to be between $59$ and $233$
+and stability to be between $0$ and $185$.
+Then, we are able to find another Pareto optimal solution $(232,1)$ via lexicographic optimization for \texttt{p2}$>$\texttt{p1} in the restricted search space.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\begin{table}
+\scriptsize
+\centering
+\caption{Pareto optimal solutions of bi-objective course timetabling problem combining CB-CTT and MPP}
+\label{table:bench:mpp}
+%\renewcommand{\arraystretch}{0.9}
+%\tabcolsep = 3mm
+%\begin{tabular}[t]{l|| l | l | l | l }\hline
+%\begin{tabular}[t]{l|| r | r | r | r }\hline
+\begin{tabular}[t]{lr|r@{}c@{}l|c }\hline
+\lw{Instance} & \#Possible  & \multicolumn{3}{c|}{\lw{Pareto optimal solutions}} & \#Optima\\
+ & changes & \multicolumn{3}{c|}{} & \\\hline	
+\texttt{comp02} & 283 & & & $(164, 0)$ & 1 \\
+\texttt{comp04} & 286 & $(35, 172),$ & & $(197, 0)$& 2 \\
+\texttt{comp06} & 361 & & & $(225, 0)$& 1 \\
+\texttt{comp07} & 434 & & & $(246, 0)$& 1 \\	
+\texttt{comp08} & 324 & & & $(223, 0)$& 1 \\	
+\texttt{comp10} & 370 & & &$(206, 0)$& 1 \\	
+\texttt{comp11} & 162 & $(0, 39),$& $(26, 1), (25, 2), (24, 3), (23, 4), (22, 5), (21, 6), (20, 7),$ & $(27, 0)$& 9 \\	
+\texttt{comp13} & 308 & $(59, 185),$ & $(232, 1),$& $(233, 0)$ & 3 \\	
+\texttt{comp14} & 275 & & &$(209, 0)$& 1 \\	
+\texttt{comp16} & 366 & & &$(224, 0)$& 1 \\	
+\texttt{comp17} & 339 & & &$(234, 0)$& 1 \\	
+\texttt{comp19} & 277 & & &$(198, 0)$& 1 \\	
+\texttt{comp20} & 390 & & &$(208, 0)$& 1 \\	
+\texttt{DDS1} & 900 & & &$(562, 0)$& 1 \\	
+\texttt{DDS2}   & 146 & $(0, 48),$& $(47, 1), (46, 2), (45, 3),$ &$(48, 0)$ & 5 \\	
+\texttt{DDS3}   & 206 & $(0, 104),$& $(96, 1), (95, 2),$& $(97, 0)$ &  4 \\	
+\texttt{DDS5}   & 560 & $(0, 321),$& $(298, 1),$& $(299, 0)$& 3 \\	
+\texttt{DDS6}   & 324 & & &$(172, 0)$& 1 \\	
+\texttt{DDS7}   & 254 & $(0, 160),$ & $(133, 1), (132, 2),$ &$(134, 0)$& 4 \\	
+\texttt{EA01}   & 351 & $(65, 179),$ & $(242, 1),$ & $(243, 0)$ &  3\\	
+\texttt{EA02}   & 241 & $(0, 133),$ &  $(112, 1), (111, 2),$& $(113, 0)$ & 4 \\	
+\texttt{EA04}   & 688 & $(0, 428),$ & $(379, 1),$& $(380, 0)$ & 3 \\	
+\texttt{EA05}   & 275 & $(0, 84),$ &  $(82, 1),$& $(83, 0)$ & 3 \\	
+\texttt{EA06}   & 300 & $(5, 151),$ &  $(127, 1),$& $(128, 0)$ & 3 \\	
+\texttt{EA07}   & 653 & $(0, 399),$ & $(381, 1),$ & $(382, 0)$ & 3 \\	
+\texttt{EA08}   & 486 & $(0, 251),$ & $(225, 1),$ & $(226, 0)$ & 3 \\	
+\texttt{EA09}   & 423 & $(4, 226),$ & $(223, 1),$ & $(224, 0)$& 3 \\	
+\texttt{EA10}   & 284 & $(0, 158),$ & $(124, 1), (123, 2),$&$(125, 0)$&  4\\	
+\texttt{EA11}   & 139 & $(0, 52),$ & $(51, 1), (1, 51), (50, 2),$&$(52, 0)$& 5 \\	
+\texttt{EA12}   & 174 & $(4, 73),$ & $(5, 72), (76, 1),$&$(77, 0)$& 4 \\	
+\texttt{test2}  & 223 & & & $(130, 0)$& 1 \\	
+\texttt{test3} & 252 & & & $(200, 0)$&  1\\	
+\texttt{toy}    & 16 & $(0, 7),$ & $(2, 3), (4, 1), (3, 2), (1, 5),$&$(5, 0)$& \hspace{0.1cm}$6^*$ \\	
+\texttt{Udine1} & 360 & & &$(180, 0)$& 1 \\	
+\texttt{Udine2} & 383 & $(8, 201),$ & $(205, 1),$&$(206, 0)$& 3 \\	
+\texttt{Udine3} & 324 & & & $(180, 0)$&  1\\	
+\texttt{Udine4} & 201 & $(64, 109),$ & $(167, 1),$&$(168, 0)$&  3\\	
+\texttt{Udine5} & 337 & $(0, 162),$& $(155, 1),$&$(156, 0)$& 3 \\	
+\texttt{Udine6} & 329 & $(0, 156),$&$(148, 1),$&$(149, 0)$&  3\\	
+\texttt{Udine7} & 356 & $(0, 188),$&$(179, 1),$&$(180, 0)$& 3 \\	
+\texttt{Udine8} & 400 & $(29, 223),$& $(241, 1),$&$(242, 0)$& 3 \\	
+\texttt{Udine9} & 312 & $(21, 166),$& $(180, 1),$&$(181, 0)$&  3\\	\hline
+\end{tabular}
+\end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+We implemented the proposed method for 
+solving bi-objective course timetabling problems combining CB-CTT and MPP
+by using multi-shot ASP solving techniques and the built-in
+lexicographic optimization in {\clingo}.
+%
+Our empirical analysis considers the same scenario as discussed above.
+% This scenario consists of 
+% a problem instance in UD1 as an original problem, 
+% its optimal solution as a legacy solution, and 
+% the same instance in UD2 as a new problem.
+We used 42 instances in Table~\ref{table:bench:optimum_times}
+for which optimal solutions in UD1 were found.
+The computational environment is the same as in Section~\ref{system}.
+As configuration of {\clingo}, we chose \emph{USC11-JP} since it was
+the best 1-way configuration in the single-objective optimization experiments.
+% Note that we first calculated the extreme Pareto optimal
+% solutions regarding stability and optimality giving both a time limit
+% of 3 hours.
+% Afterwards, we used another 3 hours to enumerate additional Pareto
+% optimal solutions.
+
+Table~\ref{table:bench:mpp} 
+shows the Pareto optimal solutions that we were able to obtain.
+The first column contains the instance name.
+The second column displays the total number of possible changes.
+%(viz. the size of the legacy solution).
+The third and forth columns show a set of Pareto optimal solutions and
+its size respectively.
+The third column is separated into three parts.
+The leftmost entry gives the extreme Pareto optimal solution regarding optimality,
+the rightmost entry regarding stability,
+and in between are the additional Pareto optimal solutions.
+A star `$*$' attached to the number of optimal solutions indicates
+that the Pareto front has been found.
+
+We were able to calculate the extreme Pareto optimal solutions for
+\texttt{p2}$>$\texttt{p1} for all 42 instances and 
+the extreme Pareto optimal solutions for \texttt{p1}$>$\texttt{p2} for 26 instances.
+Finding the former is trivial since it amounts to calculating the
+optimization quality of the legacy solution taking the additional soft
+constraint $S_5$ into consideration.
+The latter requires a more involved optimization, 
+first optimizing according to the soft constraints in UD2
+and then finding the optimal solution with the best stability.
+For 25 out of the 26 instances, 
+we successfully obtained an additional Pareto optimal solution,
+and for 9 instances, we computed 4 Pareto optimal solutions or more.
+We can observe the completeness of our approach on the instance \texttt{toy}
+since we were able to find the Pareto front.
+
+Overall, the results show that we can leverage the efficient
+lexicographic optimization of \clingo\ and 
+the information provided by the vectors of lexicographic optima
+to successfully compute additional Pareto optimal solutions other than
+the extreme cases.
+With that, our system provides a complete method for finding the
+Pareto front of multi-objective course timetabling problem, 
+as illustrated on the small instance \texttt{toy}.
+
+Finally, we discuss some more details of our experimental results
+from a practical point of view.
+In our experiments, 
+we first calculated the extreme Pareto optimal solutions regarding
+stability and optimality giving both a time limit of 3 hours.
+Afterwards, we used another 3 hours to enumerate additional Pareto
+optimal solutions.
+We showed that the proposed method can find a small subset
+of Pareto optimal solutions for many real-world instances.
+However, at the same time, 
+we observed that the current implementation
+is insufficient to find a promising subset that includes solutions
+such that both criteria are reasonably well-balanced
+(e.g., \citep{DBLP:conf/ictai/SchwindOKWI14}).
+%
+As an example, let us see the result of \code{DDS2} instance.
+We obtained five Pareto optimal solutions: 
+$(0,48)$,
+$(47,1)$,
+$(46,2)$, 
+$(45,3)$, and 
+$(48,0)$.
+Again, in each solution, 
+the first value is the penalty of soft constraints,
+and 
+the second is the change from the legacy solution.
+Since the optimization quality of \code{DDS2} is 0 both in UD1 and UD2,
+and the number of possible changes is 146,
+the extreme solution $(0,48)$ has the minimal penalty 0
+but 33\% of the legacy assignments are changed.
+The extreme solution $(48,0)$ has the minimal change 0
+but incurs higher penalty 48 than the optimal quality 0.
+The others $(47,1)$, $(46,2)$, and $(45,3)$
+are additional Pareto optimal solutions, but 
+the improvement from the complete stability $(48,0)$ is small.
+This shows a limitation of our approach at present.
+To overcome this issue, there might be at least two approaches. 
+One is spending more times, since our approach is complete, and we can
+find more Pareto optimal solutions.
+Another is extending our approach with an advanced technique in MODOP solving 
+based on P-minimal model generation~\citep{sbtl2017}.
+It would be promising because P-minimal models can be 
+efficiently computed by ASP.
+
+% \comment{M2Tenda: please add some explanations for the 1st reviewer's
+%   comments on ''1) Results presented for extreme cases are important from the research
+% point of view. From practical point of view, results where both
+% criteria are reasonably good are much more important.  Given the
+% results, it seems that the practical value is rather weak -
+% improvement from extremal values (0 in stability) is obtained by
+% subsequent increases of the complete stability by one (e.g., DDS2
+% (47,1), (46,2), (45,3)).''}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End:

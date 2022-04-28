@@ -1,0 +1,42 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb}
+\usepackage{times,helvet,courier}
+\usepackage[graphics,tightpage,active]{preview}
+\PreviewEnvironment{tabular}
+\newlength{\imagewidth}
+\newlength{\imagescale}
+\pagestyle{empty}
+\thispagestyle{empty}
+
+\begin{document}
+
+\begin{table}
+\begin{tabular}{|l||r|r|}
+
+\hline
+Class & S & avg\\ 
+\hline
+\Alabel{1} & \textbf{15} & 12.25\\
+\Alabel{2}-dist-to & 13 & 10.38\\
+\Alabel{3}-pg-l-rd & 13 & 11.82 \\
+\Alabel{2}-dist & 12 & 5.31\\
+\Alabel{3}-pg-l & 12 & 11.10\\
+\Alabel{2}-pg & 10 & \textbf{12.86}\\
+\Alabel{2}-rd & 9 & 8.77 \\
+\Alabel{3}-all & 7 & 3.99 \\ 
+\Alabel{3}-true & 6 & 4.00 \\ 
+\Alabel{3}-false & 6 & 7.07 \\ 
+\Alabel{2}-false & 6 & 6.80\\
+\Alabel{2}-all & 4 & 6.98\\
+\Alabel{2}-true & 3 & 5.31\\
+\Alabel{3}-rd & 2 & 6.43\\
+\Alabel{3} & 2 & 4.28\\
+%\Alabel{3}-Hdyn & 1 & 2.90\\ 
+\Alabel{3}-pg & 0 & 2.79\\
+\hline
+\end{tabular} 
+\end{table}
+
+\end{document}

@@ -1,0 +1,36 @@
+
+* schedule
+  - January 19, 2013 (11:59 PM PST): Electronic abstracts due
+  - January 22, 2013 (11:59 PM PST): Electronic papers due
+
+* theory
+  - torsten
+  - example
+    - prioritized circ 
+* related work
+  - Javier 
+* computation
+  - all models
+* reasoning modes
+  - prioritized circ 
+  - all models
+  - minimal models
+  - ...
+* benchmarking
+  - static benchmarks
+    - various benchmarks
+    - various settings
+    - scalability
+  - bio-informatics
+    - subset/cardinality
+    - 1-2 settings
+    - several dynamic heuristics
+  - Advisor
+    - just mention choice/conflict reduction
+  - PUP, Circuit, Mailbot
+  - planning
+    - dynamic heuristics
+    - pddl
+    - several dynamic heuristics
+
+	  

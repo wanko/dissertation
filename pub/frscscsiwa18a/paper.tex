@@ -1,0 +1,110 @@
+%% $Id: paper.tex 59236 2018-04-25 08:28:29Z cfrioux $
+%% $HeadURL: https://svn.cs.uni-potsdam.de/svn/reposWV/Papers/ExpansionAlg/trunk/paper.tex $
+
+\documentclass{new_tlp}
+
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{xparse,xifthen}
+\usepackage{natbib}
+\usepackage{amsmath,amssymb}
+\let\proof\relax
+\let\endproof\relax
+\usepackage{amsthm}%,thmtools,environ}
+\usepackage{url}
+\usepackage{listings}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{tikz}
+\usepackage{slashbox}
+
+\makeatletter
+\let\O@argtabularcr\@argtabularcr
+\def\O@xtabularcr{\@ifnextchar[\O@argtabularcr{\ifnum 0=`{\fi}\cr}}
+\let\O@tabacol\@tabacol
+\let\O@tabclassiv\@tabclassiv
+\let\O@tabclassz\@tabclassz
+\let\O@tabarray\@tabarray
+\def\author@tabular{\authorsize\def\@halignto{}\@authortable}
+\let\endauthor@tabular=\endtabular
+\def\author@tabcrone{{\ifnum0=`}\fi\O@xtabularcr\affilsize\itshape
+ \let\\=\author@tabcrtwo\ignorespaces}
+\def\author@tabcrtwo{{\ifnum0=`}\fi\O@xtabularcr[-3\p@]\affilsize\itshape
+ \let\\=\author@tabcrtwo\ignorespaces}
+\def\@authortable{\leavevmode \hbox \bgroup $\let\@acol\O@tabacol
+ \let\@classz\O@tabclassz \let\@classiv\O@tabclassiv
+ \let\\=\author@tabcrone \ignorespaces \O@tabarray}
+\makeatother
+
+
+\usepackage{xcolor,colortbl}
+\usepackage{xintexpr, xinttools}
+\usepackage{caption}
+%\usepackage{colortbl}
+
+\lstset{numberbychapter=false,basicstyle=\ttfamily,captionpos=b,floatplacement=t}
+
+\renewcommand{\topfraction}{1}
+\renewcommand{\bottomfraction}{1}
+\renewcommand{\textfraction}{0}
+
+\newcommand{\review}[1]{{\textcolor{red}{#1}}}
+
+\input{macro}
+
+\allowdisplaybreaks
+
+\title{Hybrid Metabolic Network Completion}
+
+\author[C.~Frioux, T.~Schaub, S.~Schellhorn, A.~Siegel, and P.~Wanko]{%
+  Clémence Frioux
+  \\
+  Univ Rennes, Inria, CNRS, IRISA F-35000 Rennes, France
+  \and
+  Torsten Schaub%  orsten \thanks{Affiliated with the
+                          %     School of Computing Science at
+                          %     Simon Fraser University,
+                          %     Burnaby, Canada,
+                          %     and the
+                          %     Institute for Integrated and Intelligent Systems
+                          %     at
+                          %     Griffith University,
+                          %     Brisbane, Australia.}
+  \\
+  Inria, Rennes, France \ and \ Universit\"at Potsdam, Germany
+  \and
+  Sebastian Schellhorn
+  \\
+  Universit\"at Potsdam, Germany
+  \and
+  Anne Siegel
+  \\
+  Univ Rennes, Inria, CNRS, IRISA F-35000 Rennes, France
+  \and
+  Philipp Wanko
+  \\
+  Universit\"at Potsdam, Germany} %
+
+
+\begin{document}
+
+\maketitle
+\input{abstract}
+\input{introduction}
+\input{problem}
+\input{background}
+\input{approach}
+\input{experiments}
+\input{discussion}
+\input{acknowledgments}
+\bibliographystyle{acmtrans}
+\bibliography{lit,procs,akku,bibioinfo} % https://svn.cs.uni-potsdam.de/svn/reposWV/Papers/bibfiles/trunk
+%\input{bbl}
+\newpage
+\appendix
+\input{appendix}
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End:

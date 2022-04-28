@@ -1,0 +1,84 @@
+\newcommand{\gringo}{\textit{gringo}}
+\newcommand{\clasp}{\textit{clasp}}
+\newcommand{\clingo}{\textit{clingo}}
+\newcommand{\asprin}{\textit{asprin}}
+\newcommand{\asap}{\textit{teaspoon}}
+\newcommand{\piclasp}{\textit{piclasp}}
+
+\newcommand{\code}[1]{\lstinline[basicstyle=\ttfamily]{#1}}
+
+\newcommand{\lw}[1]{\smash{\lower1.ex\hbox{#1}}}
+\newcommand{\llw}[1]{\smash{\lower3.ex\hbox{#1}}}
+
+%\newcommand{\dataCL}[5]{%
+%  \code{#1} & #3 & #5 & #4
+%}
+%\newcommand{\dataCS}[5]{%
+%  #3 & #5 & #4
+%}
+
+\newenvironment{tableC}{%
+  \scriptsize
+  \tabcolsep = 0.6mm
+  \begin{tabular}[t]{l|rlr|rlr|rlr|rlr|rlr}\hline
+    \multicolumn{1}{l|}{\llw{Instance}} &
+    \multicolumn{3}{c|}{UD1} &
+    \multicolumn{3}{c|}{UD2} &
+    \multicolumn{3}{c|}{UD3} &
+    \multicolumn{3}{c|}{UD4} &
+    \multicolumn{3}{c}{UD5} \\
+    & 
+    \multicolumn{1}{c}{Best} & & \multicolumn{1}{c|}{\emph{tea-}} & 
+    \multicolumn{1}{c}{Best} & & \multicolumn{1}{c|}{\emph{tea-}} & 
+    \multicolumn{1}{c}{Best} & & \multicolumn{1}{c|}{\emph{tea-}} & 
+    \multicolumn{1}{c}{Best} & & \multicolumn{1}{c|}{\emph{tea-}} & 
+    \multicolumn{1}{c}{Best} & & \multicolumn{1}{c}{\emph{tea-}} \\
+    & 
+    known & & \emph{spoon} & 
+    known & & \emph{spoon} & 
+    known & & \emph{spoon} & 
+    known & & \emph{spoon} & 
+    known & & \emph{spoon} \\
+    \hline
+  }{%
+    \hline
+  \end{tabular}
+}
+
+\newenvironment{tableB}{%
+  \scriptsize
+  \tabcolsep = 0.7mm
+%  \begin{tabular}[t]{|l|c|r|l|l|l|}\hline
+  \begin{tabular}[t]{lcrlll}\hline
+    Instance &
+    Formulation &
+    Time (sec.)\\
+    \hline
+  }{%
+    \hline
+  \end{tabular}
+}
+\newenvironment{tableL}{%
+  \scriptsize
+  \tabcolsep = 0.7mm
+  \begin{tabular}[t]{l|rrrrrrrr|r}\hline
+    \lw{Instance} &
+    \lw{Time (sec.)} &
+    \multicolumn{6}{c}{The best utility vector} &
+    The sum of  &
+    The best of basic\\
+    &
+    &
+    $(S_1,$ & $S_4,$ & $S_2,$ & $S_7,$ & $S_6,$ & $S_3)$ &
+    utility vector &
+    and optimized \\
+    \hline
+  }{%
+    \hline
+  \end{tabular}
+}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End:

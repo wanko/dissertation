@@ -1,0 +1,145 @@
+%\PassOptionsToPackage{table}{xcolor}
+\documentclass[conference]{IEEEtran}
+
+\usepackage[english]{babel}
+\usepackage{blindtext}
+\usepackage[table]{xcolor}
+%\usepackage[hidelinks]{hyperref}        % interne Hyperlinks
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usetikzlibrary{arrows,chains,matrix,positioning,scopes,shapes.geometric,calc}
+\usepackage[hang]{footmisc}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{cite}
+\usepackage{acronym}
+
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{adjustbox}
+\usepackage{fixltx2e}
+\graphicspath{{figures/}}
+\usepackage[linesnumbered,vlined,ruled]{algorithm2e}
+
+%savetrees; all settings normal except for the specificly given options (some settings may not be compatible with other packages!)
+\usepackage[all=normal,mathspacing=tight,wordspacing=tight,tracking=normal,charwidths=tight,mathdisplays=normal,paragraphs=tight,bibbreaks=tight,floats=tight]{savetrees}
+
+\DeclareMathOperator{\lcm}{lcm}
+\definecolor{HRO1}{HTML}{004A99}
+
+\renewcommand{\baselinestretch}{0.94} 
+%less space below / above floats like figures, algorithms, tables (negative vspace doesn't work for algorithms!)
+\setlength{\textfloatsep}{0pt}
+%Mathdisplays tighter spacing:
+\AtBeginDocument{%
+	\abovedisplayskip=3pt plus 3pt	
+	\belowdisplayskip=3pt plus 3pt	
+	\abovedisplayshortskip=0pt plus 0pt	
+	\belowdisplayshortskip=0pt plus 0pt	
+}
+%Footnode indent
+\setlength{\skip\footins}{0.1cm}
+
+
+\makeatletter
+\newcommand{\specificthanks}[1]{\@fnsymbol{#1}}% Inserts a specific \thanks symbol
+\renewcommand\@makefntext[1]{%
+	\@setpar{%
+		\@@par \@tempdima=\hsize
+		\advance\@tempdima by -0.4cm\relax
+		\parshape \@ne 0.4cm \@tempdima
+	}%
+	\par \parindent=\z@ \noindent
+	\hb@xt@ \z@{\hss \hb@xt@ 0.4cm\textsuperscript{\@thefnmark\hss}}%
+	#1%
+}
+\makeatother
+
+
+\begin{document}
+
+\title{Exact Multi-Objective Design Space Exploration using ASPmT}
+
+
+% author names and affiliations
+% use a multiple column layout for up to three different
+% affiliations
+%\author{\IEEEauthorblockN{Kai Neubauer, Christian Haubelt}
+%\IEEEauthorblockA{University of Rostock\\Rostock, Germany\\
+%\{kai.neubauer, christian.haubelt\}@uni-rostock.de}
+%\and
+%\IEEEauthorblockN{Philipp Wanko, Torsten Schaub}
+%\IEEEauthorblockA{University of Potsdam\\
+%Potsdam, Germany\\
+%\{wanko, torsten\}@cs.uni-potsdam.de}}
+\author{
+	Kai Neubauer\textsuperscript{\specificthanks{1}}, Philipp Wanko\textsuperscript{\specificthanks{2}}, Torsten Schaub\textsuperscript{\specificthanks{2}}, and Christian Haubelt\textsuperscript{\specificthanks{1}}
+	\\\small{\textsuperscript{\specificthanks{1}}University of Rostock, Applied Microelectronics and Computer Engineering, Germany}
+	\\\small{\textsuperscript{\specificthanks{2}}University of Potsdam, Knowledge Processing and Information Systems, Germany}
+	\\\footnotesize{\{kai.neubauer,christian.haubelt\}@uni-rostock.de}, \{wanko, torsten\}@cs.uni-potsdam.de%\vspace*{-1cm}
+	%\\ % To make more spaces just add \\!
+}
+%\author{\IEEEauthorblockN{Blinded}
+%\IEEEauthorblockA{Blinded\\blinded\\
+%blinded@blinded.blinded}}
+%\author{blinded}
+%\and
+%\IEEEauthorblockN{James Kirk\\ and Montgomery Scott}
+%\IEEEauthorblockA{Starfleet Academy\\
+%San Francisco, California 96678--2391\\
+%Telephone: (800) 555--1212\\
+%Fax: (888) 555--1212}}
+
+%\IEEEspecialpapernotice{(Invited Paper)}
+
+\maketitle
+
+\input{macro}
+
+\input{chapters/abstract}
+\input{chapters/introduction}
+\input{chapter/relatedwork}
+\input{chapter/model}
+\input{chapter/framework}
+\input{chapter/experiments}
+\input{chapter/conclusion}
+% no keywords
+
+
+
+
+% For peer review papers, you can put extra information on the cover
+% page as needed:
+% \ifCLASSOPTIONpeerreview
+% \begin{center} \bfseries EDICS Category: 3-BBND \end{center}
+% \fi
+%
+% For peerreview papers, this IEEEtran command inserts a page break and
+% creates the second title. It will be ignored for other modes.
+\IEEEpeerreviewmaketitle
+
+%\input{chapters/introduction_relatedwork}
+
+%\input{chapters/introduction}
+%
+%\input{chapters/related}
+
+%\input{chapters/model}
+
+%\input{chapters/framework}
+
+%\input{chapters/conclusion}
+
+\section*{Acknowledgment}
+This work was funded by the German Science Foundation (DFG) under grants HA 4463\slash4-1 and SCHA 550/11-1.
+%This work was blinded by the blind review organization (BRO) under grant BR-1337.
+\renewcommand{\baselinestretch}{1} 
+\footnotesize
+\bibliographystyle{unsrt}
+\bibliography{library}%,lit,akku,procs}
+
+% that's all folks
+\end{document}

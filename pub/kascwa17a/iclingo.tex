@@ -1,0 +1,108 @@
+
+\subsection{Incremental ASP solving}
+\label{sec:iclingo}
+
+As mentioned, \clingo{} fully supersedes its special-purpose predecessor \iclingo{} aiming at incremental ASP solving.
+To illustrate this,
+we give below in Listing~\ref{fig:iclingo:python} a \python\ implementation of \iclingo's control loop,
+corresponding to the one shipped with \clingo.\footnote{Alternatively, this can be invoked by `\lstinline{#include <incmode>.}'.}%
+${}^,$\footnote{The \python\ as well as a \lua\ implementation can be found in \texttt{examples/clingo/iclingo} in the \clingo{} distribution.}
+%
+Roughly speaking,
+\iclingo\ offers a step-oriented, incremental approach to ASP that avoids redundancies by gradually processing the extensions to a problem
+rather than repeatedly re-processing the entire extended problem (as in iterative deepening search).
+%
+To this end, a program is partitioned into a
+base part, describing static knowledge independent of the step parameter~\lstinline{t},
+a cumulative part, capturing knowledge accumulating with increasing~\lstinline{t},
+and
+a volatile part specific for each value of~\lstinline{t}.
+%
+% These parts are delineated in \iclingo\ by the special-purpose directives \lstinline{#base}, `\lstinline{#cumulative t}', and `\lstinline{#volatile t}'.
+%
+In \clingo, all three parts are captured by \lstinline{#program} declarations
+along with \lstinline{#external} atoms for handling volatile rules.
+More precisely,
+the implementation in Listing~\ref{fig:iclingo:python} relies upon subprograms named \lstinline{base}, \lstinline{step}, and \lstinline{check}
+along with external atoms of form \lstinline{query(t)}.%
+\footnote{These names have no general, predefined meaning; their meaning emerges from their usage in the associated script (see below).}
+
+We illustrate this approach by adapting the Towers of Hanoi encoding from Listing\ref{fig:toh:opt:enc} in Section~\ref{sec:optimization}
+to an incremental version in Listing~\ref{fig:toh:enc}.
+% --------------------------------------------------------------------------------------------------------------------------------------------
+\lstinputlisting[float=tb,literate={\%\%}{}{0},escapeinside={\#(}{\#)},language=clingo,caption={Towers of hanoi incremental encoding (\lstinline{tohE.lp})},label={fig:toh:enc},linerange={3-24}]{example/opt/tohE.lp}
+% --------------------------------------------------------------------------------------------------------------------------------------------
+To this end,
+we arrange the original encoding in program parts \lstinline{base}, \lstinline{check(t)}, and \lstinline{step(t)}, 
+use \lstinline{t} instead of \lstinline{T} as time parameter, and 
+simplify checking the goal.
+%
+Checking the goal is easier here because the iterative deepening approach guarantees a shortest plan and, hence, does not require additional minimization.
+
+At first, we observe that
+the problem instance in Listing~\ref{fig:toh:opt:ins} as well as line~\ref{fig:toh:enc:static} in Listing~\ref{fig:toh:enc} 
+constitute static knowledge and thus belong to the \lstinline{base} program.
+%
+More interestingly, the query is expressed in line~\ref{fig:toh:enc:goal} of Listing~\ref{fig:toh:enc}.
+Its volatility is realized by making it subject to the truth assignment to the external atom \lstinline{query(t)}.
+For convenience,
+this atom is predefined in line~\ref{fig:iclingo:python:query} in Listing~\ref{fig:iclingo:python} as part of the \lstinline{check} program (cf.~line~\ref{fig:iclingo:python:check}).
+Hence, subprogram \lstinline{check} consists of a user- and predefined part.
+%
+Finally,
+the transition function along with state constraints are described in the subprogram \lstinline{step} in lines~\ref{fig:toh:enc:step:begin}--\ref{fig:toh:enc:step:end}.
+
+The idea is now to control the successive grounding and solving of the program parts in Listing~\ref{fig:toh:opt:ins} and~\ref{fig:toh:enc}
+by the \python\ script in Listing~\ref{fig:iclingo:python}.
+%
+% --------------------------------------------------------------------------------------------------------------------------------------------
+\lstinputlisting[float=tbp,literate={\%\%}{}{0},escapeinside={\#(}{\#)},language=clingo,basicstyle=\ttfamily\small,caption={\python\ script implementing \iclingo\ functionality in \clingo\ (\lstinline{inc.lp})},label=fig:iclingo:python]{example/opt/inc.lp}
+% --------------------------------------------------------------------------------------------------------------------------------------------
+%
+Lines~\ref{fig:iclingo:python:const:begin}--\ref{fig:iclingo:python:const:end} fix the values of the constants \lstinline{imin}, \lstinline{imax}, and \lstinline{istop}.
+In fact, the setting in line~\ref{fig:iclingo:python:imin} and~\ref{fig:iclingo:python:istop} relieves us from adding
+`\lstinline{-c imin=0 -c istop="SAT"}'
+when calling \clingo.
+All three constants mimic command line options in \iclingo.
+\lstinline{imin} and \lstinline{imax} prescribe a least and largest number of iterations, respectively;
+\lstinline{istop} gives a termination criterion.
+The initial values of variables \lstinline{step} and \lstinline{ret} are set in line~\ref{fig:iclingo:python:vars}.
+The value of \lstinline{step} is used to instantiate the parametrized subprograms
+and \lstinline{ret} comprises the solving result.
+Together, the previous five variables control the loop in lines~\ref{fig:iclingo:python:loop:begin}--\ref{fig:iclingo:python:loop:end}.
+
+The subprograms grounded at each iteration are accumulated in the list \lstinline{parts}.
+Each of its entries is a pair consisting of a subprogram name along with its list of actual parameters.
+In the very first iteration, the subprograms \lstinline{base} and \lstinline{check(0)} are grounded.
+Note that this involves the declaration of the external atom \lstinline{query(0)} and the assignment of its default value false.
+The latter is changed in line~\ref{fig:iclingo:python:assign:query} to true in order to activate the actual query.
+The \lstinline{solve} call in line~\ref{fig:iclingo:python:solve} then amounts to checking whether the goal situation is already satisfied in the initial state.
+As well, the value of \lstinline{step} is incremented to \lstinline{1}.
+
+As long as the termination condition remains unfulfilled,
+each following iteration takes the respective value of variable \lstinline{step}
+to replace the parameter in subprograms \lstinline{step} and \lstinline{check}
+during grounding.
+In addition,
+the current external atom \lstinline{query(t)} is set to true,
+while the previous one is permanently set to false.
+This disables the corresponding instance of the integrity constraint in line~\ref{fig:toh:enc:goal} of Listing~\ref{fig:toh:enc} before it is replaced in the next iteration.
+In this way,
+the query condition only applies to the current horizon.
+
+An interesting feature is given in line~\ref{fig:iclingo:python:cleanup}.
+As its name suggests, this function cleans up domains used during grounding.
+That is, whenever the truth value of an atom is ultimately determined by the solver,
+it is communicated to the grounder where it can be used for simplifications.
+
+The result of each call to \lstinline{solve} is printed by \clingo.
+In our example, the solver is called 16 times before a plan of length 15 is found:
+%
+% --------------------------------------------------------------------------------------------------------------------------------------------
+\lstinputlisting[numbers=none,mathescape=true,numbers=none,basicstyle=\ttfamily\small]{example/opt/inc.txt}
+% --------------------------------------------------------------------------------------------------------------------------------------------
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End:

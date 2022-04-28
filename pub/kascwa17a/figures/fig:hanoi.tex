@@ -1,0 +1,28 @@
+\begin{figure}[ht]
+\centering
+	\begin{tikzpicture}
+		% peg a 0.0 - 3.0
+		\draw (0.5,0)   rectangle node {1} (2.5,0.5);
+		\draw (0.7,0.5) rectangle node {2} (2.3,1);
+		\draw (0.9,1)   rectangle node {3} (2.1,1.5);
+		\draw (1.1,1.5) rectangle node {4} (1.9,2);
+		\draw (1.4,2)   rectangle          (1.6,2.1);
+		\draw [-] (1.5,2.3) node [above] {\textbf{a}};
+		% peg b 3.0 - 6.0
+		\draw (4.4,0.0)   rectangle          (4.6,2.1);
+		\draw [-] (4.5,2.3) node [above] {\textbf{b}};
+		% peg c 6.0 - 9.0
+		\draw [dashed] (6.5,0)   rectangle node {1} (8.5,0.5);
+		\draw [dashed] (6.7,0.5) rectangle node {2} (8.3,1);
+		\draw [dashed] (6.9,1)   rectangle node {3} (8.1,1.5);
+		\draw [dashed] (7.1,1.5) rectangle node {4} (7.9,2);
+		\draw (7.4,2.0) rectangle          (7.6,2.1);
+		\draw [-] (7.5,2.3) node [above] {\textbf{c}};
+	\end{tikzpicture}
+\caption{Towers of Hanoi: initial and goal situation}
+\label{fig:hanoi}
+\end{figure}%
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "../book"
+%%% End: 

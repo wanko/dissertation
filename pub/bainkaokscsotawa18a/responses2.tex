@@ -1,0 +1,116 @@
+\documentclass[a4j]{article}
+\title{Responses to the reviewers}
+\author{Mutsunori Banbara}
+\date{December 13, 2017}
+%
+%\usepackage{bm}
+%\usepackage{mathptmx}
+\usepackage{amsmath,amssymb}
+\usepackage{color}
+%\usepackage{comments}
+\usepackage{listings}
+\usepackage{array}
+\lstset{numbers=left,numberblanklines=false,basicstyle=\ttfamily\footnotesize,%
+numberbychapter=false,columns=fullflexible,keepspaces=true}
+%\usepackage{slashbox}
+%\usepackage{natbib}
+%\usepackage{hyperref}
+%\usepackage{url}
+%\usepackage{tikz}
+%\usetikzlibrary{arrows,chains,positioning,automata,decorations,shapes,calc,matrix,fit,backgrounds} % CHECK!!
+\input{macro}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+\maketitle
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{quote}
+\begin{list}{}{}
+\item[PAPER ID:]
+  ANOR-D-16-01064
+\item[TITLE:]
+  \textit{teaspoon}: Solving the Curriculum-Based Course Timetabling Problems with Answer Set Programming
+\item[AUTHORS:]
+  Mutsunori Banbara, 
+  Katsumi Inoue,
+  Benjamin Kaufmann,
+  Tenda Okimoto,
+  Torsten Schaub,
+  Takehide Soh,
+  Naoyuki Tamura, and
+  Philipp Wanko
+\end{list}
+\end{quote}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{Response to review \#1}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{it}\color{blue}
+Reviewer \#1: Thank you for all the revisions, I am very happy with
+them. Now I see only few minor revisions which can be handled easily.
+
+\begin{itemize}
+\item 
+p.2,par.1: Based on the sentence "In this paper, we focus on
+curriculum-based course timetabling (CB-CTT; (Bettinelli et al,
+2015)), one of the most studied course timetabling problems, as well
+as post-enrollment course timetabling.", it may seem that your study
+is also about the post-enrollment course timetabling. However, this is
+not the case. Please reformulate.
+\item 
+p.5,par.-1: Based on the sentence "In this paper, we formulate the
+CB-CTT problem as a single-objective combinatorial optimization
+problem whose objective function is to minimize the weighted sum of
+penalty points in the same manner as ITC-2007.", you seem to forgot
+the multi-criteria problem.  Please reformulate.
+\end{itemize}
+\end{it}
+
+Thank you for your comments. We reformulated the sentences.
+
+\begin{it}\color{blue}
+\begin{itemize}
+\item 
+p.10,listing 7: You are using the construct 
+"\code{\{ assigned(C,D,P) : course(C,T,_,_,_,_) \} 1}" which was not
+defined before.  I think that you could easily explain it on page 6
+when defining "\code{s \{c1 ,...,cn\} t"}.
+p.11,listing 8: Again it would be helpful to define semantics of 
+"\code{N = \{ working_day(C,D) \}}" and "\code{2 \{ assigned(C,D,PPD) \}}".
+\end{itemize}
+\end{it}
+
+We added some explanations about those constructs.
+
+\begin{it}\color{blue}
+\begin{itemize}
+\item 
+p.25,par.2: Why "new program"? It is there three times but I believe
+that it should be replaced by "new problem".
+\end{itemize}
+\end{it}
+
+You are right. We replaced ``new program''by ``new problem''.
+
+\begin{it}\color{blue}
+\begin{itemize}
+\item 
+Please check carefully references. There are several mistakes having
+incorrect typesetting such as: Maxsat, udine, maxsat, csps.
+\end{itemize}
+\end{it}
+
+We carefully checked the references and corrected the mistakes.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{Response to review \#3}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{it}\color{blue}
+Reviewer \#3: The revisions have addressed my comments
+satisfactorily. I'm happy to recommend accepting the revised paper.
+\end{it}
+
+Thank you very much!
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{document}
+

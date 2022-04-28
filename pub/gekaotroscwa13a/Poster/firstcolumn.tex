@@ -1,0 +1,122 @@
+\begin{block}{Motivation}
+  \begin{itemize}
+    \bigskip %\bigskip \bigskip 
+
+	\item $ \! $ \alert{Answer Set Programming} (ASP)
+	\begin{itemize}
+		\item General purpose approach to \alert{declarative problem solving}
+		\item Combination of a rich yet simple \alert{modeling language} with highly performant \alert{solving capacities}
+	\end{itemize}
+
+    \bigskip %\bigskip \bigskip 
+%
+	\item 
+	    Sometimes it is advantageous to take a more application-oriented approach by including \\
+	    domain-specific information:
+	\begin{itemize}
+	    \item \alert{domain-specific knowledge} can be added for improving propagation
+	    \item \alert{domain-specific heuristics}  can be used for making better choices
+	\end{itemize}
+%
+    \bigskip %\bigskip \bigskip 
+
+	\item \structure{Proposal:} A declarative framework for \alert{incorporating domain-specific heuristics into ASP} \\ by extending its
+	\begin{itemize}
+	    \item input language for expressing domain-specific heuristics
+	    \item solving capacities for integrating domain-specific heuristics
+	\end{itemize}
+  \end{itemize}
+\end{block}
+
+%\vskip 100pt
+\bigskip \bigskip \bigskip
+\bigskip %\bigskip %\bigskip
+
+\begin{block}{Conflict Driven Answer Set Solving}
+
+\dosubtitle{Basic CDCL decision algorithm}
+
+	\ \ \ \textbf{loop}
+	\begin{itemize}
+		\item [] \ \ \ \ \ \ \textit{propagate}  
+		\hfill// compute deterministic consequences
+		\item [] \ \ \ \ \ \ \textbf{if} no conflict \textbf{then}
+	\end{itemize}
+	\begin{itemize}
+		      \item [] \ \ \ \ \ \ \ \ \ \ \ \ \textbf{if} all variables assigned 
+		      \textbf{then} 
+		      \textbf{return} variable assignment
+		      \item []  \ \ \ \ \ \ \ \ \ \ \ \ \textbf{else}
+		      \alert{\text{decide} }
+		      \hfill// \alert{non-deterministically assign some literal}
+	\end{itemize}
+	%\item [] 
+	\begin{itemize}
+		\item [] \ \ \ \ \ \ \textbf{else}
+	\end{itemize}
+	\begin{itemize}
+		      \item [] \ \ \ \ \ \ \ \ \ \ \ \ \textbf{if} top-level conflict
+		      \textbf{then} 
+		      \textbf{return} unsatisfiable
+		      \item []  \ \ \ \ \ \ \ \ \ \ \ \ \textbf{else} \textit{add a conflict constraint} \textbf{and} \textit{backjump}
+%	      \begin{itemize}
+%				\item [] \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textit{analyze}\hfill// analyze conflict and add a conflict constraint
+%				\item [] \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textit{backjump}\hfill// undo assignments until conflict constraint is unit
+%		\end{itemize}
+	\end{itemize}
+	%\item [] \ \ \ \ \ \ \ \ \ \ \ \ \textbf{else} 
+
+%  \end{itemize}
+
+%\vskip50pt
+%\begin{frame}{
+%\bigskip \bigskip \bigskip \bigskip 
+
+\dosubtitle{  Inside \alert{\textit{decide}}}
+  %}
+
+\begin{columns}
+\begin{column}{.02\linewidth}\end{column}
+\begin{column}{.98\linewidth}
+    \begin{itemize}
+
+    \item \structure{Basic concepts}
+      \begin{itemize}
+%      \item Atoms, $\mathcal{A}$
+      \item Atoms $\mathcal{A}$, and partial assignments $\ass: \mathcal{A}\to\{\true,\false\}$
+%	\begin{itemize}
+	\item[] \ \ \ 
+	  $\tlits{\ass}=\{a\in\mathcal{A}\mid\Tsigned{a}\in\ass\}$ \ and \
+	  $\flits{\ass}=\,\{a\in\mathcal{A}\mid\Fsigned{a}\in\ass\}$
+%	\end{itemize}
+      \end{itemize}
+
+    \medskip %\bigskip \bigskip \bigskip
+
+    \item \structure{Heuristic functions}
+      \[
+      h: \mathcal{A}\to[0,+\infty)
+      \quad\text{and}\quad
+      s: \mathcal{A}\to\{\true,\false\}
+      \]
+
+    \medskip %\bigskip \bigskip \bigskip
+
+    \item \structure{Algorithmic scheme}
+    \medskip
+      \begin{description}
+      \item [$1 \ $] $h(a) := \alpha\times h(a) + \beta(a)$ \hfill for each $a\in\mathcal{A}\qquad$
+      \item [$2 \ $] $U:=\mathcal{A}\setminus (\tlits{\ass}\cup\flits{\ass})$
+      \item [$3 \ $] $C:= \textit{argmax}_{a\in U}h(a)$
+      \item [$4 \ $] $a:= \tau(C)$
+      \item [$5 \ $] $\ass := \ass\cup\{a\mapsto s(a)\}$
+      \end{description}
+    \end{itemize}
+
+\end{column}
+
+\end{columns}
+%\end{frame}
+
+
+\end{block}

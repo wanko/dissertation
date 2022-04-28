@@ -1,0 +1,50 @@
+
+\section{Introduction}\label{sec:introduction}
+
+The success of modern Boolean constraint technology was greatly boosted by Satisfiability Testing
+(SAT;~\cite{SATHandbook}).
+Meanwhile, this technology has been taken up in many related areas, 
+like
+Answer Set Programming (ASP; \cite{baral02a}),
+because it provides highly performant yet general-purpose solving techniques for addressing demanding combinatorial search problems.
+%
+Sometimes, it is however advantageous to take a more application-oriented approach
+by including domain-specific information.
+On the one hand, domain-specific knowledge can be added for improving deterministic assignments
+through propagation.
+And on the other hand, domain-specific heuristics can be used for making better non-deterministic assignments.
+
+In what follows,
+we introduce a general declarative framework for incorporating domain-specific heuristics into ASP solving.
+The choice of ASP is motivated by its first-order modeling language offering an easy way to express and process
+heuristic information.
+To this end,
+we use a dedicated predicate \hpredicate\
+whose arguments allow us to express various modifications to the solver's heuristic treatment of atoms.
+The respective heuristic rules are seamlessly processed as an equitable part of the logic program
+and subsequently exploited by the solver when it comes to choosing an atom for a non-deterministic 
+truth assignment.
+%
+For instance, the rule
+\begin{lstlisting}
+_h(occ(A,T),factor,T) :- action(A), time(T).
+\end{lstlisting}
+favors later action occurrences over earlier ones (via multiplication by \texttt{T}).
+That is, when making a choice between the two unassigned atoms \texttt{occ(a,2)} and \texttt{occ(b,3)},
+the solver's heuristic value of \texttt{occ(a,2)} is doubled while that of \texttt{occ(b,3)} is tripled.
+This results in a bias on the system heuristic that may or may not take effect.
+%
+Besides \texttt{factor}, our heuristic language extension offers the primitive heuristic modifiers
+\texttt{init}, \texttt{level}, and \texttt{sign}, from which even further modifiers can be defined.
+Our approach provides an easy and flexible access to the solver's heuristic,
+aiming at its modification rather than its replacement.
+Note that the effect of the modifications is generally dynamic,
+unless the truth of a heuristic atom is determined during grounding (as with the rule above).
+As a result, our approach offers a declarative framework for expressing domain-specific heuristics. %,
+%thereby abolishing the need for special-purpose implementations.
+As such, it appears to be the first of its kind.
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End: 

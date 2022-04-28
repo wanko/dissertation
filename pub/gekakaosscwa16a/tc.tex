@@ -1,0 +1,99 @@
+%% $Id: tc.tex 52726 2016-08-04 06:31:27Z torsten $
+%% $HeadURL: https://svn.cs.uni-potsdam.de/svn/reposWV/Papers/GrinGo/branches/Clingo5/tc.tex $
+\documentclass[a4paper,USenglish]{oasics-v2016}
+
+\usepackage{microtype}
+\bibliographystyle{plainurl}
+
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb}
+\usepackage{url}
+\usepackage{wrapfig}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{graphicx}
+
+\frenchspacing
+\renewcommand{\topfraction}{1}
+\renewcommand{\bottomfraction}{1}
+
+\lstset{xleftmargin=2\parindent,aboveskip=\smallskipamount,belowskip=\smallskipamount,captionpos=b}
+\lstset{numbers=left,numberblanklines=false,basicstyle=\ttfamily\small}
+\lstset{keywords=[1]{m,n},keywordstyle=[1]\usefont{OT1}{cmtt}{m}{n}}
+
+\lstdefinelanguage{clingo}{
+  keywordstyle=[1]\usefont{OT1}{cmtt}{m}{n},%
+  keywordstyle=[2]\textbf,%
+  keywordstyle=[3]\usefont{OT1}{cmtt}{m}{n},%\textit
+  alsoletter={\#,\&},%
+  keywords=[1]{not,from,import,def,if,else,return,while,break,and,or,for,in,del,and,class},%
+  keywords=[2]{\#const,\#show,\#minimize,\#base,\#theory,\#count,\#external,\#program,\#script,\#end,\#heuristic,\#edge,\#project,\#show},%
+  keywords=[3]{&,&dom,&sum,&diff,&show},%
+  morecomment=[l]{\#\ },%
+  morecomment=[l]{\%\ },%
+  commentstyle={\color{darkgray}}%
+}
+
+\input{macro}
+
+\title{Theory Solving Made Easy with \textit{Clingo}~5\footnote{This work was partially supported by DFG-SCHA-550/9}}
+\titlerunning{Theory Solving Made Easy with \textit{Clingo}~5}
+
+\author[1]{Martin~Gebser}
+\author[1]{Roland~Kaminski}
+\author[1]{Benjamin~Kaufmann}
+\author[1]{Max~Ostrowski}
+\author[1,2]{Torsten~Schaub}
+\author[1]{Philipp~Wanko}
+
+\affil[1]{University of Potsdam, Germany}
+\affil[2]{INRIA Rennes, France}
+
+\authorrunning{M. Gebser, R. Kaminski, B. Kaufmann, M. Ostrowski, T. Schaub, and P. Wanko}
+
+\Copyright{M. Gebser, R. Kaminski, B. Kaufmann, M. Ostrowski, T. Schaub, and P. Wanko}%mandatory, please use full first names. OASIcs license is "CC-BY";  http://creativecommons.org/licenses/by/3.0/
+
+\subjclass{D.1.6 Logic Programming}
+\keywords{Answer Set Programming, Theory Language, Theory Propagation}
+
+\pdfinfo{
+/Title (Theory Solving Made Easy with Clingo 5)
+/Author (Martin~Gebser, Roland~Kaminski, Benjamin~Kaufmann, Max~Ostrowski, Torsten~Schaub, Philipp~Wanko) }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%Editor-only macros:: begin
+\EventEditors{Manuel Carro, Andy King, Marina De Vos, and Neda Saeedloei}
+\EventNoEds{4}
+\EventLongTitle{Technical Communications of the 32nd Int'l Conference on Logic
+      Programming (ICLP 2016)}
+\EventShortTitle{ICLP 2016 TCs}
+\EventAcronym{ICLP}
+\EventYear{2016}
+\EventDate{October 16--21, 2016}
+\EventLocation{New York City, USA}
+\EventLogo{}
+\SeriesVolume{52}
+\ArticleNo{NNN}
+% Editor-only macros::end %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\maketitle
+
+\input{abstract}
+
+\input{introduction}
+\input{language}
+\input{approach}
+\input{algorithms}
+\input{system}
+\input{experiments}
+\input{discussion}
+\bibliography{paper} % {lit,akku,procs}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

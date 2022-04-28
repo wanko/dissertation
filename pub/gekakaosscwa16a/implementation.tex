@@ -1,0 +1,112 @@
+\section{Implementation Aspects}\com{B: feel free to remove}
+\begin{itemize}
+\item algorithmic framework
+  \begin{itemize}
+    \item solving techniques similar to SMT approach
+    \item Tight integration between CDCL-based Boolean solver (clasp) and theory propagation
+    \item Invoke theory propagation on partial assignments
+    \begin{itemize}
+      \item can extend assignment and/or backtrack immediately on (theory) conflict
+      \item but also possibly many expensive but useless theory propagations
+    \end{itemize}
+    \item Theory propagator invoked after BCP but only if at least one relevant atom was assigned
+    \item (Theory) propagation only via explicit clause (no support for lazy reasons)
+    \item No support (in python) for on-demand splitting yet (i.e. adding new variables)
+    \item Termination in case of deletion subject to increasing limit!
+    \item Multiple theory propagators possible
+    \begin{itemize}
+     \item No combination (i.e. Nelson-Oppen) and/or splitting on interface equalities
+     \item Propagators interact only with main solver
+     \item Model only if all theory propagators agree
+    \end{itemize}
+
+  \end{itemize}
+\item challenges
+\end{itemize}
+
+\blockcomment{
+\begin{lstlisting}
+def DPLL(T1,..,Tn)
+  while True
+    // unit propagation, unfounded set propagation,
+    // and other "simple" PPs
+    conflict = bcp()
+    changed  = True
+    while conflict == None and changed = True
+      for each t in T1...Tn:
+        while conflict == None
+          clause = t.propagate(all_assigned())
+          if clause == None: break
+          if unsat(clause)
+            conflict = clause
+            break
+          if asserting(clause)
+            // all but one literal false
+            level = assertion_level(clause)
+            if level < decision_level(): backtrack(level)
+            changed = true
+          learn(clause)
+          conflict = bcp()
+    if conflict != None:
+      level, clause = analyze(conflict)
+      if level < 0: return UNSAT
+      backtrack(level)
+      learn(clause)
+    elif all_assigned(): return SAT
+    decide()
+\end{lstlisting}
+\begin{itemize}
+ \item Algorithm starts with boolean constraint propagation (BCP).
+       This may include unfounded set propagation, acyclicity checking, and/or
+       other propagators that only extend the current decision level
+ \item If BCP terminates without conflict, theory propagation considers theory propagators one by one.
+ \item Each theory propagator is called in a loop until it has reached a fixpoint wrt BCP
+ \item Theory propagation is repeated until fixpoint (or conflict)
+\end{itemize}}
+
+\begin{itemize}
+  \item On the clasp side, more elaborate propagation mechanisms can be added via so called \emph{Post propagators}
+        and theory propagators are implemented as such.
+  \item clasp distinguishes two categories of post propagators:
+  \begin{itemize}
+    \item \textit{simple} post propagators are deterministic and either \textit{conflict-complete} or \textit{implication-complete}.
+    As such, they only extend the current decision level. Furthermore, they have associated priorities and
+    are propagated after unit propagation in priority-order. \\
+    Unfounded-set checking is a typical example.
+    \item \textit{complex} post propagators on the other hand may or may not be deterministic and may
+    add implications and/or conflicts on decision levels smaller than the current.
+    Furthermore, they are propagated in fifo-order and only after simple post propagators.\\
+    Given that theory propagators can add arbitrary clauses via the add\_clause() function,
+    they are currently always implemented as complex propagators in clasp.
+  \end{itemize}
+  \item Propagating a post propagator $P_i$ amounts to computing a fixpoint wrt to unit propagation and all previous
+        post propagators. To this end, clasp provides a dedicated propagateUntil() function that
+        first does unit propagation and then calls post propagators up to but not including $P_i$.
+
+  \item When integrating a new clause $C$ of size $N$ during propagation, clasp distinguishes two general cases.
+  \item First, if $C$ is \emph{safe} it is added without requiring further action. Clause $C$ is considered safe
+        if either at most $N-2$ literals are false or if some true literal $x\in~C$
+        was assigned prior to the last assigned false literal $y\in~C$.
+  \item Otherwise, $C$ is conflicting or unit-resulting and is integrated on the proper decision level $X$,
+        the last level on which some false literal $y\in~C$ was assigned.
+  \item If $X$ is smaller than the current decision level, clasp first cancels propagation on the current decision level and backtracks to decision level $X$.
+  \item After possible backtracking, $C$ now either contains exactly one unassigned literal $x\in~C$ or is conflicting.
+  \item In the former case, $x$ is assigned true and propagation continues on decision level $X$.
+        In the latter case, propagation is terminated and a conflict analysis on $C$ is started.
+
+  \item Regarding the implementation of PropagateControl:
+  \begin{itemize}
+    \item The propagate() function calls the previously mentioned propagateUntil() function to ensure
+          that we do not recursively call into the propagate() function of a user-supplied propagator.
+    \item The add\_clause() function returns true only if the new clause is \emph{safe}. Otherwise,
+          the function returns false and the clause is added only after we returned from the
+          user-supplied propagator. This way, we avoid calling back into undo() during an active propagate()
+          or check() call.
+  \end{itemize}
+
+\end{itemize}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End: 

@@ -1,0 +1,14 @@
+% S8.RoomSuitability (soft constraint)
+penalty("RoomSuitability",assigned(C,R,D,P),W,Prior) :- 
+	assigned(C,R,D,P), room_constraint(C,R), soft_constraint("RoomSuitability",W,Prior).
+
+% S8.RoomSuitability (hard constraint)
+:- assigned(C,R,D,P), room_constraint(C,R), hard_constraint("RoomSuitability").
+
+% H4.Availability (soft constraint)
+penalty("Availability",assigned(C,D,P),W,Prior) :- 
+        assigned(C,D,P), unavailability_constraint(C,D,P),
+        soft_constraint("Availability",W,Prior).
+
+% H4.Availability (hard constraint)
+:- assigned(C,D,P), unavailability_constraint(C,D,P), hard_constraint("Availability").

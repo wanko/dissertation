@@ -1,0 +1,46 @@
+% S7.TravelDistance
+scheduled_curricula(Cu,B,D,P) :- assigned(C,R,D,P), curricula(Cu,C), room(R,_,B).
+penalty("TravelDistance",instantaneous_move(Cu,D,P,P+1),weight_of_s7) :-
+        scheduled_curricula(Cu,BLG1,D,P), scheduled_curricula(Cu,BLG2,D,P+1), BLG1 != BLG2.
+
+% S7.TravelDistance
+penalty("TravelDistance",instantaneous_move(Cu,D,P,P+1),weight_of_s7) :-
+        cu(Cu), d(D), ppd(P), ppd(P+1),
+        #count { B : assigned(C,R,D,(P;P+1)), curricula(Cu,C), room(R,_,B) } > 1.
+
+% S4.Windows
+dp(1;-1).
+scheduled_curricula(Cu,D,P) :- assigned(C,D,P), curricula(Cu,C).
+scheduled_curricula_chain(Cu,D,P,   DP) :- scheduled_curricula(Cu,D,P), ppd(P+DP), dp(DP).
+scheduled_curricula_chain(Cu,D,P+DP,DP) :- scheduled_curricula_chain(Cu,D,P,DP), ppd(P+DP).
+penalty("Windows",windows(Cu,D,P),weight_of_s4) :-
+        scheduled_curricula_chain(Cu,D,P,-1),
+        not scheduled_curricula(Cu,D,P),
+        scheduled_curricula_chain(Cu,D,P,1).
+
+% S2.MinWorkingDays
+working_day(C,D) :- assigned(C,D,P).
+wd_counter(C,M,-1,0) :- course(C,_,_,M,_,_).
+wd_counter(C,M,D,N+1) :- wd_counter(C,M,D-1,N), working_day(C,D), N+1 <= M.
+wd_counter(C,M,D,N+0) :- wd_counter(C,M,D-1,N), d(D), N <= M.
+penalty("MinWorkingDays",course(C,N),weight_of_s2) :-
+        course(C,_,_,M,_,_), N = 1..M, days(D), not wd_counter(C,M,D-1,N).
+
+% S6.StudentMinMaxLoad
+abc(M,min)  :- min_max_daily_lectures(M,_).
+abc(M,max)  :- min_max_daily_lectures(_,Max), periods_per_day(Ppd), M=Ppd-Max.
+abc(Cu,D,P) :- assigned(C,D,P), curricula(Cu,C).
+abc_counter(Cu,D,-1,  0,min) :- cu(Cu), d(D).
+abc_counter(Cu,D,-1,  0,max) :- cu(Cu), d(D).
+abc_counter(Cu,D, P,N+1,min) :- 
+        abc_counter(Cu,D,P-1,N,min),             abc(Cu,D,P), N+1 <= M, abc(M,min).
+abc_counter(Cu,D, P,N+1,max) :- 
+        abc_counter(Cu,D,P-1,N,max), ppd(P), not abc(Cu,D,P), N+1 <= M, abc(M,max).
+abc_counter(Cu,D, P,N+0,MM)  :- 
+        abc_counter(Cu,D,P-1,N,MM),  ppd(P),                  N   <= M, abc(M,MM).
+abc_counter(Cu,D,min) :- abc(Cu,D,P).
+abc_counter(Cu,D,max) :- cu(Cu), d(D).
+penalty("StudentMinMaxLoad",student_min_max_load(Cu,D,N),weight_of_s6) :-
+        cu(Cu), d(D), N = 1..M, periods_per_day(P), abc(M,MM), abc_counter(Cu,D,MM),
+        not abc_counter(Cu,D,P-1,N,MM).
+

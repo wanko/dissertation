@@ -1,0 +1,33 @@
+\begin{table}%
+\caption{Feature comparison}%
+\label{tab:features}%
+\center%
+\begin{threeparttable}
+\begin{tabular}{@{}l@{}@{}c@{}@{}c@{}@{\;}c@{}@{}c@{}@{}c@{}@{}c@{}@{}c@{}@{}c@{}@{}c@{}}
+\toprule
+             & \python{} &   \cpp{} &            strict & non-strict & external &           defined &    n-ary &             reals &      optimization\\
+\midrule
+\clingod{dl} &  \cmark{} & \cmark{} & \cmark{}\tnote{1} &   \cmark{} & \cmark{} & \cmark{}          & \xmark{} & \cmark{}\tnote{2} & \cmark{}\tnote{3}\\
+\clingod{lp} &  \cmark{} & \xmark{} & \cmark{}          &   \cmark{} & \cmark{} & \cmark{}          & \cmark{} & \cmark{}          & \cmark{}\tnote{4}\\
+\clingcon{}  &  \xmark{} & \cmark{} & \cmark{}          &   \xmark{} & \cmark{} & \xmark{}\tnote{5} & \cmark{} & \xmark{}          & \cmark{}         \\
+%\bottomrule
+\end{tabular}%
+\begin{tablenotes}\footnotesize
+  \begin{minipage}{0.375\textwidth}
+  \item[1] Only with \python{} API
+  \item[2] Only for non-strict lc-atoms
+  \item[3] Needs an additional plugin
+  \end{minipage}%
+  \begin{minipage}{0.6\textwidth}
+  \item[4] Optimization is relative to stable models
+  \item[5] Theory atoms in rule heads are shifted into negative body
+  \item[] \
+  \end{minipage}
+\end{tablenotes}%
+\end{threeparttable}%
+\end{table}%
+%
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../paper"
+%%% End:

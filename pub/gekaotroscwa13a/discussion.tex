@@ -1,0 +1,55 @@
+
+\section{Discussion}\label{sec:discussion}
+
+Various ways of adding domain-specific information have been explored in the literature.
+%
+A prominent approach is to implement forms of preferential reasoning
+% , like reasoning wrt inclusion-minimal models, 
+by directing choices through
+a given partial order on literals~\cite{cacacale96a,rogima10a,giumar12a}.
+%
+To some degree, this can be simulated by heuristic modifiers like
+\hpre{a}{\texttt{false}}{1}
+that allow for computing a (single) inclusion-minimal model.
+However, as detailed in \cite{rogima10a}, enumerating all such models needs additional constraints
+or downstream tester programs.
+Similarly,
+\cite{balduccini11b} modifies the heuristic of the ASP solver \textit{smodels} to accommodate learning from smaller instances.
+See also~\cite{falepf01a,falemari07a}.
+Most notably,
+\cite{rintanen12a} achieves impressive results in planning by equipping a SAT solver with
+planning-specific heuristics.
+%
+All aforementioned approaches need customized changes to solver implementations.
+%
+Hence, it will be interesting to investigate how these approaches can be expressed and combined in
+our declarative framework.
+%
+Declarative approaches to incorporating control knowledge can be found in heuristic planning.
+For instance, \cite{backab00a} harness temporal logic formulas, while \cite{sierra04a} also uses
+dedicated predicates for controlling backtracking in a forward planner.
+%
+However,
+care must be taken when it comes to modifying a solver's heuristics.
+Although it may lead to great improvements, it may just as well lead to a degradation of search.
+In fact, the restriction of choice variables may result in exponentially larger search spaces~\cite{jajuni05a}.
+This issue is reflected in our choice of heuristic modifiers, 
+ranging from an \texttt{init}ial bias,
+over a continued yet scalable one by \texttt{factor},
+to a strict preference with \texttt{level}.
+
+To sum up,
+we introduced a declarative framework for incorporating domain-specific heuristics into ASP solving.
+The seamless integration into ASP's input language provides us with a general and flexible tool for
+expressing domain-specific heuristics.
+As such, we believe it to be the first of its kind.
+Our heuristic framework offers completely new possibilities of applying, experimenting, and studying
+domain-specific heuristics in a uniform setting.
+Our example heuristics merely provide first indications on the prospect of our approach,
+but much more systematic empirical studies are needed to exploit its full power.
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End: 

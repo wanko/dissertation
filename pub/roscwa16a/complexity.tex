@@ -1,0 +1,84 @@
+\section{Supplementary complexity results} \label{sec:complexity}
+
+\emph{$\Sigma^p_2$-hardness for queries over normal logic programs with preferences.}
+%  
+Let $P$ be a normal logic program with preferences, and \lm{q} an atom. 
+%
+We prove that the query problem of deciding whether 
+there is an optimal stable model of $P$ that contains \lm{q} is $\Sigma^p_2$-hard.
+%
+We do this by a reduction from the problem of deciding 
+the existence of a stable model of a disjunctive logic program $D$.
+%
+For this, consider the reified facts $\mathcal{R}(D)$ and the following meta-encoding $\mathcal{M}_D$:
+\begin{lstlisting}
+atom(A) :- head(_,A). atom(A) :- body(_,_,A).
+
+{  holds(A) ; nholds(A) } :- atom(A).
+
+:- not holds(A) : head(R,A) ;  holds(A) : body(R,pos,A); 
+                              nholds(A) : body(R,neg,A).
+
+nquery :-     holds(A),     nholds(A).
+nquery :- not holds(A), not nholds(A), atom(A).
+ query :- not nquery.
+
+#preference(min_holds,subset) {
+  holds(A)  : atom(A);
+  nholds(A) : atom(A); not nholds(A) : atom(A)
+}.
+#optimize(min_holds).
+\end{lstlisting}
+It turns out that the disjunctive logic program $D$ has a stable model iff 
+there is an optimal stable model of the normal logic program with preferences 
+$\mathcal{R}(D) \cup \mathcal{M}_D$ that contains \lm{query}.
+%
+Intuitively, in an optimal stable model with \lm{query}, 
+the \lm{holds/1} and \lm{nholds/1} atoms
+represent the true and false atoms of a stable model of $D$, respectively.
+%
+Then the constraint rule guarantees that the stable model is a classical model of $D$, 
+and the preference \lm{min_holds} enforces the minimality condition.
+
+\emph{$F\Delta^p_3$-hardness of solving preferences over optimal models.}
+%  
+Let $P$ be a normal logic program and let $s$ and $t$ be two preference statements.
+%
+We prove that the problem of finding an optimal model of $P$ wrt $s$ and then $t$ is $F\Delta^p_3$-hard.
+%
+We do this by a reduction from the problem of finding 
+an optimal stable model of a disjunctive logic program $D$ with weight minimization.
+%
+For this, consider the reified facts $\mathcal{R}(D)$
+(where the pairs of weights and atoms to minimize $\langle w, a \rangle$ are reified by \lm{minimize(w,a)}) 
+and the following meta-encoding $\mathcal{M}_O$:
+\begin{lstlisting}
+#preference(query,superset) { query }.
+
+#preference(minimize,less(weight)) { W,A : holds(A), minimize(W,A) }.
+
+#preference(overall,lexico) { 1 : name(query); 2 : name(minimize) }.
+
+\end{lstlisting}
+First, observe that the optimal stable models of 
+$\mathcal{R}(D) \cup \mathcal{M}_D \cup \mathcal{M}_O \cup \{ \mathtt{\#reoptimize(query).} \}$
+correspond to the (possibly non optimal) stable models of $D$  if \lm{query} belongs to them\footnote{Note
+that either \lm{query} belongs to all of them, or it belongs to none.}.
+%
+If \lm{query} does not belong to them, 
+then $D$ has no stable model\footnote{
+Note that it cannot be the case that the program with preferences has no stable models, 
+since making all \lm{holds/1} atoms true always leads to a stable model.}.
+%
+Replacing the reoptimize statement by `$\mathtt{\#reoptimize(overall)}$',
+if \lm{query} belonged to the previous optimal models (which where stable models of $D$), 
+then those models are now optimized at the second level wrt \lm{minimize}, 
+and therefore the selected ones are also optimal models of $D$.
+In the other case, we have again that $D$ has no stable model.
+%
+Summarizing, the optimal stable models of 
+$\mathcal{R}(D) \cup \mathcal{M}_D \cup \mathcal{M}_O \cup \{ \mathtt{\#reoptimize(overall).} \}$
+correspond to the optimal stable models of $D$ if \lm{query} belongs to them, 
+and if not, $D$ has no stable model.
+
+

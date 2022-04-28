@@ -1,0 +1,19 @@
+$ clingo dlO.lp fsE.lp fsI.lp 0
+clingo version 5.2.0
+Reading from dlO.lp ...
+Solving...
+!\textit{[\/\dots]}!
+Solving...
+Answer: 1
+permutation(b,a) permutation(a,c)
+Valid assignment for constraints found:
+(b,2)=1 (a,2)=7 bound=16 (c,1)=4 (a,1)=1 (c,2)=11 (b,1)=0
+Found new bound: 16
+Solving...
+Optimum found
+UNSATISFIABLE
+
+Models       : 4
+Calls        : 5
+Time         : 0.017s (Solving: 0.00s !\textit{[\/\dots]}!)
+CPU Time     : 0.010s

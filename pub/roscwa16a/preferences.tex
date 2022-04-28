@@ -1,0 +1,176 @@
+%\newpage
+\emph{Preferences over optimal models in \asprin.}
+%
+%Our approximation algorithms use a solution to the \emph{Most Distant Optimal Model} 
+%problem that applies preferences over optimal models.
+%
+Formally, this extension of \asprin\ is defined as follows.
+%
+Let $P$ be a logic program over $\mathcal{A}$, 
+and let $s$ and $t$ be two preference statements.
+%
+A stable model $X$ of $P$ is optimal wrt $s$ \emph{and then} $t$ if
+it is optimal wrt $s$, 
+and there is no optimal model $Y$ of $P$ wrt $s$ such that $Y \succ_t X$.
+%
+From the point of view of complexity theory, when $P$ is normal, 
+finding a stable model optimal wrt $s$ and then $t$ is $F\Delta^p_3$-hard.
+We prove this by reducing the problem of finding an optimal stable model of a 
+disjunctive logic program with weight minimization (see~\cite{roscwa16b}). % \ref{sec:complexity}).
+%
+We note that finding a stable model of a normal logic program $P$ with preferences 
+is in $F\Sigma^p_2$, given the translation to disjunctive logic programs using the \gc\ method.
+%
+Therefore, assuming $F\Sigma^p_2 \neq F\Delta^p_3$, 
+we cannot find a polynomial translation to a normal program with preferences.
+%This approach allows for solving the \emph{Most Distant Optimal Model} problem in a simple way.
+%This approach allows for solving 
+
+It turns out that the \emph{Most Distant Optimal Model} problem can be easily formulated and solved within this approach.
+%
+Given a logic program $P$ with a preference statement $s$, 
+and a set $\mathcal{X}=\{ X_1, \ldots, X_m \}$ of optimal stable models of $P$, 
+the most distant optimal models for this problem correspond to the stable models of the logic program
+\lstinline[mathescape=true]!$P \cup \{\; $holds($a$,0) :- $a$. $\mid a \in \mathcal{A}\} \cup H_\mathcal{X}$!
+that are optimal wrt $s$ and then \lm{distance}.
+%
+In \asprin, this is represented simply by adding to the resulting logic program 
+the preference statements $s$ and \lm{distance}, 
+along with the declarations `\lm{#optimize($s$).}' and `\lm{#reoptimize(distance).}'.
+
+For computing optimal models of a logic program $P$ over $\mathcal{A}$ wrt preference statements $s$ and then $t$, 
+we propose a variant of \asprin's iterative algorithm~\cite{brderosc15a}.
+%
+Let $\mathit{solveOpt}(P,s)$ be the \asprin\ procedure for computing one optimal model of $P$ wrt $s$, 
+and let $\mathit{solveQuery}(P,s,q)$ be any of our algorithms for solving the query problem  
+given a logic program $P$ with preference statement $s$ and query atom $q$.
+%
+The algorithm follows these steps:
+\begin{enumerate}
+\item
+Call $\mathit{solveOpt}(P,s)$ and assign the result to $Y$. Return $Y$ if it is $\bot$.
+\item
+Assign $Y$ to $X$, and call $\mathit{solveQuery}(P \cup Q_t^* \cup R_\mathcal{A} \cup H_{X}',s,\mathtt{better(}t\mathtt{)})$ assigning the result to $Y$.
+If $Y$ is $\bot$, return $X$, else repeat this step.
+\end{enumerate}
+where $Q_t^*$ is the result of deleting the constraint `\lm{:- not better($t$).}' 
+from a preference program $Q_t$ for $t$.
+%
+The first step of the algorithm computes an optimal model of $P$ wrt $s$.
+%
+Then Step~2, like in \asprin's basic algorithm, searches iteratively for better models. 
+%
+Specifically, it searches for optimal models of $P$ wrt $s$ that are better than $X$ wrt $t$.
+%
+Note that by construction of $Q_t^*$, 
+the stable models $Y$ of $P \cup Q_t^* \cup R_\mathcal{A} \cup H_{X}'$ 
+are better than $X$ wrt $t$ iff \lm{better($t$) $\in Y$}. 
+%
+Then if $\mathit{solveQuery}$ returns a model $Y$, it contains \lm{better($t$)},
+and therefore it is better than $X$ wrt $t$.
+%
+On the other hand, if $\mathit{solveQuery}$ returns $\bot$, there is no optimal model of $P$ wrt $s$ that is better than $X$ wrt $t$, 
+and this implies that $X$ is an optimal model wrt $s$ and then $t$.
+
+%Similarly to \texttt{\#optimize} statements, 
+%this directive is translated into the fact \texttt{optimize(t)}, 
+%which is added to the preference program for \texttt{t}.
+%Internally, some modifications are needed to separate the preference programs for \texttt{s} and \texttt{t}
+%(with facts \texttt{optimize(s)} and \texttt{optimize(t)}, respectively)
+%but from a formal and a user perspective, the original definitions suffice.
+%
+%For computing a $\succ_{s,t}$-preferred we may use any of the algorithms of the previous section
+%to solve queries over optimal models. 
+%Let $P$ be a program over $\mathcal{A}$, $s$ be a preference statement, and $q \in \mathcal{A}$ be an atom, 
+%then $\mathit{solveQuery}Opt(P,s,q)$ is a procedure that returns a
+%$\succ_s$-preferred stable model of $P$ containing $q$ if it exists, and $\bot$ otherwise.
+%Furthermore, let $\mathit{solveOpt}(P,s)$ be the basic \asprin\ procedure that returns a
+%$\succ_s$-preferred stable model of $P$, if $P$ is satisfiable, and $\bot$ otherwise.
+%
+%The method starts computing any optimal model $Y$ of $P$ wrt $s$ calling $\mathit{solveOpt}(P,s)$.
+%Then, it searches for an optimal model of $P$ wrt $s$ that is better than $Y$ wrt $t$.
+%If it exists, it searches again for an optimal model of $P$ wrt $s$, better than the last computed wrt $t$.
+%Whenever no such optimal model exists, the last optimal model computed is a solution.
+%
+%%%The search of the iterative step is posed as a query problem, 
+%%%where the query holds if the model is better thatn the previous one wrt $t$.
+%%%This is formalized as follows.
+%%%Given a program $P$, define $P^q$ as the program
+%%%\[
+%%%(P \setminus \{ r\in P \mid head(r)=\emptyset \})
+%%%\cup
+%%%\{ bot \leftarrow body(r) \mid r\in P, head(r)=\emptyset \} \cup \{\ q \leftarrow \naf bot  \}
+%%%\]
+%%%where $bot$ and $q$ are new fresh atoms.
+%%%% ----------------------------------------------------------------------
+%%%\begin{proposition}
+%%%If program $P$ is stratified, $P^q$ has a unique stable model $X$, 
+%%%and $P$ is satisfiable iff $q \in X$.
+%%%\end{proposition}
+%%%
+%%%Then we have the following proposition:
+%%%% ----------------------------------------------------------------------
+%%%\begin{proposition}\label{prop:preference:statements}
+%%%Let $P$ be a program over $\mathcal{A}$, 
+%%%let $s$ and $t$ be preference statements, 
+%%%and let $O_s$ be a preference program for $s$.
+%%%%
+%%%%Then, we have that
+%%%\begin{enumerate}
+%%%\item
+%%%If $X$ is a $\succ_s$-preferred stable model of $P$, 
+%%%then $X$ is $\succ_{s,t}$-preferred
+%%%iff
+%%%\(
+%%%\big(P\cup (O_t \cup R_{\mathcal{A}}  \cup \Holdsp{X})^q\big)
+%%%\)
+%%%has no $\succ_s$-preferred stable model containing $q$.
+%%%\item
+%%%If $Y$ is a $\succ_s$-preferred stable model of 
+%%%\(
+%%%\big(P\cup (O_t \cup R_{\mathcal{A}}  \cup \Holdsp{X})^q\big)
+%%%%\big(P\cup E_{t_s}\cup F_s\cup C \cup R_{\mathcal{A}}  \cup \Holds{X}'\big)
+%%%\)
+%%%containing $q$ 
+%%%for some $X\subseteq\mathcal{A}$,
+%%%then $Y\cap\mathcal{A}$ is a $\succ_s$-preferred stable model of $P$ such that $(Y\cap\mathcal{A})\succ_t X$.
+%%%\end{enumerate}
+%%%\end{proposition}
+%%%% ----------------------------------------------------------------------
+%
+%Putting all the pieces together, we have the following algorithm:
+%%  ----------------------------------------------------------------------
+%\begin{algorithm}[ht]\caption{$\mathit{\mathit{solveOpt}}(P,s,t)$\label{algo:solve:opt}}
+%  \Input{A program $P$ over $\mathcal{A}$ and preference statements $s$ and $t$.}
+%  \Output{A $\succ_{s,t}$-preferred stable model of $P$, if $P$ is satisfiable, and $\bot$ otherwise.}
+%  \BlankLine
+%  $Y \leftarrow \mathit{\mathit{solveOpt}}(P,s)$\;
+%  \lIf{$Y = \bot$}{\Return $\bot$}
+%  \Repeat{$Y = \bot$}{%
+%    $X \leftarrow Y$\;
+%    $Y  \leftarrow \mathit{\mathit{solveQuery}Opt}\big((P\cup (O_{t} \cup R_{\mathcal{A}} \cup \Holdsp{X} )^q ),s,q\big) \cap\mathcal{A}$\;
+%  }
+%  \Return $X$
+%\end{algorithm}
+% 
+% ----------------------------------------------------------------------
+%%%\begin{itemize}
+%%%\item
+%%%The Method:
+%%%    \begin{enumerate}
+%%%    \item
+%%%    Find $\succ_s$-preferred model $X$ of $P$.
+%%%    If $P$ is unsat, return unsat, else goto 2.
+%%%    \item
+%%%    TODO
+%%%    %Find an optimal model $Y$ of $P$ optimizing $p1$ that is better than $X$ optimizing wrt $p2$.
+%%%    %Assign $Y$ to $X$. 
+%%%    %Repeat until we get UNSAT.
+%%%    %The last model computed is a solution.
+%%%    \end{enumerate}
+%%%\end{itemize}
+%
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End: 

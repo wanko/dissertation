@@ -1,0 +1,47 @@
+\texttt{comp02} & UD2 & 5457.97\\
+\texttt{comp04} & UD2 & 1.89\\
+\texttt{comp06} & UD2 & 113.57\\
+\texttt{comp07} & UD2 & 369.27\\
+\texttt{comp08} & UD2 & 2.56\\
+\texttt{comp10} & UD2 & 29.17\\
+\texttt{comp11} & UD2 & 0.41\\
+\texttt{comp13} & UD2 & 21.25\\
+\texttt{comp14} & UD2 & 15.91\\
+\texttt{comp16} & UD2 & 8.24\\
+\texttt{comp17} & UD2 & 515.23\\
+\texttt{comp19} & UD2 & 26.46\\
+\texttt{comp20} & UD2 & 92.86\\
+\texttt{DDS1} & UD2 & 230.39\\
+\texttt{DDS2} & UD2 & 0.43\\
+\texttt{DDS3} & UD2 & 0.24\\
+\texttt{DDS5} & UD2 & 1.81\\
+\texttt{DDS6} & UD2 & 13.98\\
+\texttt{DDS7} & UD2 & 0.35\\
+\texttt{EA01} & UD2 & 2.04\\
+\texttt{EA02} & UD2 & 0.56\\
+\texttt{EA04} & UD2 & 2.99\\
+\texttt{EA05} & UD2 & 1.45\\
+\texttt{EA06} & UD2 & 0.59\\
+\texttt{EA07} & UD2 & 4.98\\
+\texttt{EA08} & UD2 & 1.64\\
+\texttt{EA09} & UD2 & 2.23\\
+\texttt{EA10} & UD2 & 0.58\\
+\texttt{EA11} & UD2 & 0.34\\
+\texttt{EA12} & UD2 & 0.59\\
+\texttt{test2} & UD2 & 8.37\\
+\texttt{toy} & UD2 & 0.01\\
+\texttt{Udine1} & UD2 & 3.24\\
+\texttt{Udine2} & UD2 & 3.21\\
+\texttt{Udine3} & UD2 & 5.41\\
+\texttt{Udine4} & UD2 & 3.56\\
+\texttt{Udine5} & UD2 & 2.00\\
+\texttt{Udine6} & UD2 & 1.26\\
+\texttt{Udine7} & UD2 & 1.64\\
+\texttt{Udine8} & UD2 & 372.09\\
+\texttt{Udine9} & UD2 & 2.81\\\hline
+\#41 & UD2 & 178.62\\
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../paper"
+%%% End:

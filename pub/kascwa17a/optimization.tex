@@ -1,0 +1,109 @@
+
+\subsection{Branch-and-bound-based optimization}
+\label{sec:optimization}
+
+We illustrate \clingo's multi-shot solving machinery in this as well as the next section via a simple Towers of Hanoi puzzle.
+The complete source code of this example is available at \url{https://github.com/potassco/clingo/tree/master/examples/clingo/opt}.
+Our example consists of three pegs and four disks of different size; it is shown in Figure~\ref{fig:hanoi}.
+The goal is to move all disks from the left peg to the right one.
+Only the topmost disk of a peg can be moved at a time.
+% ------------------------------------------------------------
+\input{figures/fig:hanoi}
+% ------------------------------------------------------------
+Furthermore,
+a disk cannot be moved to a peg already containing a disk of smaller size.
+Although there is an efficient algorithm to solve our simple puzzle,
+we do not exploit it and below merely specify conditions for
+sequences of moves being solutions.
+%
+More generally,
+the Towers of Hanoi puzzle is a typical planning problem,
+in which the aim is to find a plan, that is, a sequence of actions, that leads from an initial state to a state satisfying a goal.
+% Each action application describes a state transition.
+
+To illustrate how multi-shot solving can be used for realizing branch-and-bound-based optimization,
+we consider the problem of finding the shortest plan solving our puzzle within a given horizon.
+%
+To this end,
+we adapt the Towers of Hanoi encoding from~\cite{gekakasc12a} in Listing~\ref{fig:toh:opt:enc}.
+% --------------------------------------------------------------------------------------------------------------------------------------------
+\lstinputlisting[float=tb,literate={\%\%}{}{0},escapeinside={\#(}{\#)},label={fig:toh:opt:enc},language=clingo,caption={Bounded towers of hanoi encoding (tohB.lp)}]{example/opt/tohB.lp}
+% --------------------------------------------------------------------------------------------------------------------------------------------
+Here, the length of the horizon is given by parameter \texttt{n}.
+%
+The problem instance in Listing~\ref{fig:toh:opt:ins} together with line~\ref{fig:toh:opt:enc:init} in Listing~\ref{fig:toh:opt:enc} gives the initial
+configuration of disks in Figure~\ref{fig:hanoi}.
+% --------------------------------------------------------------------------------------------------------------------------------------------
+\lstinputlisting[float=tb,literate={\%\%}{}{0},escapeinside={\#(}{\#)},label={fig:toh:opt:ins},language=clingo,caption={Towers of hanoi instance (tohI.lp)}]{example/opt/tohI.lp}
+% --------------------------------------------------------------------------------------------------------------------------------------------
+%
+Similarly,
+the goal is checked in lines~\ref{fig:toh:opt:enc:goal:begin}--\ref{fig:toh:opt:enc:goal:end} of Listing~\ref{fig:toh:opt:enc} 
+(by drawing on the problem instance in Listing~\ref{fig:toh:opt:ins}).
+Because the overall objective is to solve the problem in the minimum number of steps within a given bound,
+it is successively tested in line~\ref{fig:toh:opt:enc:goal:begin}.
+Once the goal is established, it persists in the following steps.
+This allows us to read off whether the goal was reached at the planning horizon (in line~\ref{fig:toh:opt:enc:goal:end}).
+%
+The state transition function along with state constraints are described in lines~\ref{fig:toh:opt:enc:trans:begin}--\ref{fig:toh:opt:enc:trans:end}.
+Since the encoding of the Towers of Hanoi problem is fairly standard, we refer the interested reader to~\cite{gekakasc12a}
+and devote ourselves in the sequel to implementing branch-and-bound-based minimization.
+In view of this, note that line~\ref{fig:toh:opt:enc:move} ensures that moves are only permitted if the goal is not yet achieved in the previous state.
+This ensures that the following states do not change anymore and allows for expressing the optimization function in line~\ref{fig:toh:opt:enc:minimize} as: minimize the number of states where the goal is not reached.
+
+% --------------------------------------------------------------------------------------------------------------------------------------------
+\lstinputlisting[float=tb,literate={\%\%}{}{0},escapeinside={\#(}{\#)},basicstyle={\ttfamily\small},label={prg:opt:main},caption={Branch and bound optimization (opt.lp)},language=clingo]{example/opt/opt.lp}
+% --------------------------------------------------------------------------------------------------------------------------------------------
+
+Listing~\ref{prg:opt:main} contains a logic program for bounding the next solution and the actual optimization algorithm.
+%
+The logic program expects a bound \lstinline{b} as parameter and adds an integrity constraint in line~\ref{prg:opt:main:sum} 
+ensuring that the next stable model yields a better bound than the given one.
+%
+The minimization algorithm starts by grounding the \lstinline{base} program in line~\ref{prg:opt:main:ground}
+before it enters the loop in lines~\ref{prg:opt:loop:begin}--\ref{prg:opt:loop:end}.
+This loop implements the branch-and-bound-based search for the minimum
+by searching for stable models while updating the bound until the problem is unsatisfiable.
+%
+Note the use of the $\code{with}$ clause in line~\ref{prg:opt:main:solve} that is used to acquire and release a solve handle.
+With it,
+the nested loop in lines~\ref{prg:opt:main:models:begin}--\ref{prg:opt:main:models:end} iterates over the found stable models.
+%
+If there is a stable model, lines~\ref{prg:opt:main:atoms:begin}--\ref{prg:opt:main:atoms:end} iterate over the atoms of the stable model
+while summing up the current bound by extracting the weight of atoms over predicates \lstinline[mathescape=true]{_minimize/$n$} with $n>0$.%
+\footnote{In our case, $n=2$ would be sufficient.}
+%
+We check that the first argument of the atom is an integer and ignore atoms where this is not the case; 
+just as is the case of the \lstinline{#sum} aggregate in line~\ref{prg:opt:main:sum}.
+%
+The loop over the stable models is exited in line~\ref{prg:opt:main:models:end}.
+%
+Note that this bypasses the $\code{else}$ clause in line~\ref{prg:opt:main:finish:begin}
+and the algorithm continues in line~\ref{prg:opt:main:print_bound} 
+with printing the bound and adding an integrity constraint in line~\ref{prg:opt:main:ground_bound}
+making sure that the next stable model is strictly better than the current one.
+%
+Furthermore, note that grounding happens after the $\code{with}$ clause because it must not interfere with an active search for stable models.
+%
+Finally,
+if the program becomes unsatisfiable, the branch and bound loop in lines~\ref{prg:opt:loop:begin}--\ref{prg:opt:loop:end} is exhausted.
+Hence, control continues in the $\code{else}$ clause in lines~\ref{prg:opt:main:finish:begin}--\ref{prg:opt:main:finish:end} printing that the previously found stable model (if any) is the optimal solution and exiting the outermost while loop in line~\ref{prg:opt:main:finish:end} terminating the algorithm.
+
+When running the augmented logic program in Listing~\ref{fig:toh:opt:enc}, \ref{fig:toh:opt:ins}, and~\ref{prg:opt:main} with a horizon of $17$,
+the solver finds plans of length 17, 16, and 15 and shows that no plan of length 14 exists.
+This is reflected by \clingo's output indicating 4 solver calls and 3 found stable models:
+%
+% --------------------------------------------------------------------------------------------------------------------------------------------
+\lstinputlisting[numbers=none,escapechar=!,basicstyle=\ttfamily\small]{example/opt/opt.txt}
+% --------------------------------------------------------------------------------------------------------------------------------------------
+
+Last but not least,
+note that the implemented above functionality is equivalent to using \clingo's inbuilt optimization mode by replacing line~\ref{fig:toh:opt:enc:minimize} in Listing~\ref{fig:toh:opt:enc} with
+\begin{lstlisting}[language=clingo,firstnumber=23]
+#minimize { 1,T : ngoal(T) }.
+\end{lstlisting}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End:

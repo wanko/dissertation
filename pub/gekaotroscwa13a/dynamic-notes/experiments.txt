@@ -1,0 +1,85 @@
+
+
+=========================================================
+					  PDDL
+=========================================================	
+
+Method: 
+- Get pddl problems of icaps competitions: 
+  * didnt get those of 1998
+  * tried problems of years 2000, 2002, 2004 and 2006
+- Transform them with plasp, 
+  modifying the program code so that it only does the transformation, 
+  and does not run any solver
+- For many problems, plasp didnt do the transformation, it seems it was a simple error,
+  but i didnt go through the code to solve it.
+  Note: i tried only the Strips instances of the competitions
+- I decided to use a timeout of 300 seconds
+- Then i had to select what instances to use, and what lasttime for planning to use.
+  For this i run gringo+clasp with berkmin on the instances (from the simpler to the more difficult)
+  using branch and bound, and when the system for a given instance and lasttime took more than 300 seconds, 
+  i selected that instance, the 5 easier than it and the 4-5 more difficult than it for the experiments.
+  And as lasttime for each instance i took 1.5 or 2 times the lasttime of that timed out instance.
+- I ran gringo+clasp with --heu=vsids option 
+  and hclasp with --heu=domain option and compared the results
+  
+Summary of the results:
+For each pddl problem, i put the following data:
+	- wall clock of solving all instances
+	- solving time for all instances
+	- models found
+	- timeouts
+I will put this data for all instances, for the instances that were SAT by hclasp, 
+and for the instances that were SAT by clasp. 
+In most cases the instances sat by hclasp are a superset of those sat by clasp, 
+but it is not always the case.
+
+SEE FILE SUMMARY.ODS
+
+There are 8 problems:
+- in 6 hclasp is clearly better
+- in 1 hclasp is a bit better
+- in 1 clasp is better
+
+  
+=========================================================
+					ASP
+=========================================================
+
+Blocksworld: 
+- used pddl instace problems with logic programming encoding
+
+Hanoi: used asparagus instances and encodings
+
+-> In both hclasp is better
+
+Mailbot: 
+Tried 5 configurations with these files (timeout 1000, in all others i used 300)
+ strategy.lp: constraints that may delete optimal solutions
+ strategy7.lp: constraints that do not delete optimal solutions
+ heuristic2.lp: decide first on deliver, then on pickup (going is deduced by up: only domain choices are made with this simple setup)
+ heuristic7.lp: decide first on deliver, then on pickup prefering closer packets, and then on going prefering to continue in current direction
+Configurations:
+ strategy.lp: 44 solutions, 9 timouts
+ strategy7.lp: 15 solutions, 59 timeouts
+   * too few constraints, so there is no way to solve the problem
+ strategy.lp heuristic2.lp: 47 solutions, no timeouts!
+   * improves on SAT and on UNSAT!!!
+ strategy.lp heuristic7.lp: 
+   * same as with heuristic2.lp
+ strategy7.lp heuristic7.lp: 
+   * solves 57 and 18 timeouts: it either proves SAT or timeouts
+   * except for one instance it is as fast as with strategy2.lp for SAT, 
+     but finds more solutions than the others, 
+	 and on UNSAT times out always!
+ 
+=================================================================
+						More problems
+=================================================================
+
+Worked with Sokoban and Graph Colouring with no success.
+
+Simulating Partner Unit Problem paper method but had no success:
+  * this i cannot explain, i will check again the experiments
+  
+  

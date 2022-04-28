@@ -1,0 +1,49 @@
+===========================================================
+				DONE: How does it work?
+===========================================================
+
+It accepts:
+	_heuristic(a,mode,value,priority)
+    mode: init, factor, level, sign
+	value, priority: integers
+	priority is optional
+
+And macros:
+	_heuristic(a,true,value)
+	_heuristic(a,false,value)
+	
+Behavior:
+
+	_h(a,true,X)  == _h(a,level,X,abs(X)) && _h(a,sign, 1,abs(X))
+	_h(a,false,X) == _h(a,level,X,abs(X)) && _h(a,sign,-1,abs(X))
+		why? sign must be abs(X), so better put all like that, and it makes sense by its own
+		
+	_h(a,mode,value) == _h(a,mode,value,abs(value))	
+		 mode!=true,false
+		 why? so we choose the max absolute value, which makes sense
+		 
+	For each atom a, if there are various atoms _heurstic(a,mode,X,Y) true, 
+	then the value of mode is the X such that the corresponding Y is higher.
+	If two coincide in Y value, we keep the last asserted.
+
+	Before the first choice activity(a) = moms(a) + init(a).
+	
+	At each moment every atom has factor, level and sign values, 
+	and depending of them and on the activity, hclasp chooses.
+	
+NOTES and THINGS THAT COULD BE CHANGED:
+
+	init is not dynamic: if it is not a fact, it is discarded
+
+	atoms with negative priority can be chosen, if there is no one with higher priority
+		* the idea is that priority is only to solve conflicts, so if there is only one _h for one atom, 
+		    we just dont look at it
+		* i.e. by default an atom has priority -INF
+	
+	macros
+	
+	a conflict is resolved choosing the last value
+	
+	change true and false to: level-true level-false OR ltrue levelt
+	change sign to: sign,t and sign,f 					(dislike: other is more uniform)
+	

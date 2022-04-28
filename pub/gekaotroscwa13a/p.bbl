@@ -1,0 +1,221 @@
+\begin{thebibliography}{}
+
+\bibitem[\protect\citeauthoryear{Bacchus and Kabanza}{2000}]{backab00a}
+F.~Bacchus and F.~Kabanza.
+\newblock Using temporal logics to express search control knowledge for
+  planning.
+\newblock {\em Artificial Intelligence}, 116(1-2):123--191, 2000.
+
+\bibitem[\protect\citeauthoryear{Balduccini}{2011}]{balduccini11b}
+Marcello Balduccini.
+\newblock Learning and using domain-specific heuristics in asp solvers.
+\newblock {\em AI Commun.}, 24(2):147--164, 2011.
+
+\bibitem[\protect\citeauthoryear{Baral}{2003}]{baral02a}
+C.~Baral.
+\newblock {\em Knowledge Representation, Reasoning and Declarative Problem
+  Solving}.
+\newblock Cambridge University Press, 2003.
+
+\bibitem[\protect\citeauthoryear{Biere \bgroup \em et al.\egroup
+  }{2009}]{SATHandbook}
+A.~Biere, M.~Heule, H.~{van Maaren}, and T.~Walsh, editors.
+\newblock {\em Handbook of Satisfiability}, volume 185 of {\em Frontiers in
+  Artificial Intelligence and Applications}.
+\newblock IOS Press, 2009.
+
+\bibitem[\protect\citeauthoryear{Calimeri \bgroup \em et al.\egroup
+  }{2011}]{contest11a}
+F.~Calimeri, G.~Ianni, F.~Ricca, M.~Alviano, A.~Bria, G.~Catalano, S.~Cozza,
+  W.~Faber, O.~Febbraro, N.~Leone, M.~Manna, A.~Martello, C.~Panetta, S.~Perri,
+  K.~Reale, M.~Santoro, M.~Sirianni, G.~Terracina, and P.~Veltri.
+\newblock The third answer set programming competition: Preliminary report of
+  the system competition track.
+\newblock In Delgrande and Faber \shortcite{lpnmr11}, pages 388--403.
+
+\bibitem[\protect\citeauthoryear{Castell \bgroup \em et al.\egroup
+  }{1996}]{cacacale96a}
+T.~Castell, C.~Cayrol, M.~Cayrol, and D.~{Le Berre}.
+\newblock Using the davis and putnam procedure for an efficient computation of
+  preferred models.
+\newblock In W.~Wahlster, editor, {\em Proceedings of the Twelfth European
+  Conference on Artificial Intelligence (ECAI'96)}, pages 350--354. John Wiley
+  \& sons, 1996.
+
+\bibitem[\protect\citeauthoryear{Dechter}{2003}]{dechter03}
+R.~Dechter.
+\newblock {\em Constraint Processing}.
+\newblock Morgan Kaufmann Publishers, 2003.
+
+\bibitem[\protect\citeauthoryear{Delgrande and Faber}{2011}]{lpnmr11}
+J.~Delgrande and W.~Faber, editors.
+\newblock {\em Proceedings of the Eleventh International Conference on Logic
+  Programming and Nonmonotonic Reasoning (LPNMR'11)}, volume 6645 of {\em
+  Lecture Notes in Artificial Intelligence}. Springer-Verlag, 2011.
+
+\bibitem[\protect\citeauthoryear{{Di Rosa} \bgroup \em et al.\egroup
+  }{2010}]{rogima10a}
+E.~{Di Rosa}, E.~Giunchiglia, and M.~Maratea.
+\newblock Solving satisfiability problems with preferences.
+\newblock {\em Constraints}, 15(4):485--515, 2010.
+
+\bibitem[\protect\citeauthoryear{Freeman}{1995}]{freeman95a}
+J.~Freeman.
+\newblock {\em Improvements to Propositional Satisfiability Search Algorithms}.
+\newblock PhD thesis, University of Pennsylvania, 1995.
+
+\bibitem[\protect\citeauthoryear{Gebser \bgroup \em et al.\egroup
+  }{2010}]{geguivscsithve10a}
+M.~Gebser, C.~Guziolowski, M.~Ivanchev, T.~Schaub, A.~Siegel, S.~Thiele, and
+  P.~Veber.
+\newblock Repair and prediction (under inconsistency) in large biological
+  networks with answer set programming.
+\newblock In F.~Lin and U.~Sattler, editors, {\em Proceedings of the Twelfth
+  International Conference on Principles of Knowledge Representation and
+  Reasoning (KR'10)}, pages 497--507. AAAI Press, 2010.
+
+\bibitem[\protect\citeauthoryear{Gebser \bgroup \em et al.\egroup
+  }{2011}]{gekaknsc11a}
+M.~Gebser, R.~Kaminski, M.~Knecht, and T.~Schaub.
+\newblock plasp: A prototype for {PDDL}-based planning in {ASP}.
+\newblock In Delgrande and Faber \shortcite{lpnmr11}, pages 358--363.
+
+\bibitem[\protect\citeauthoryear{Gebser \bgroup \em et al.\egroup
+  }{2012}]{gekakasc12a}
+M.~Gebser, R.~Kaminski, B.~Kaufmann, and T.~Schaub.
+\newblock {\em Answer Set Solving in Practice}.
+\newblock Synthesis Lectures on Artificial Intelligence and Machine Learning.
+  Morgan and Claypool Publishers, 2012.
+
+\bibitem[\protect\citeauthoryear{Giunchiglia and Maratea}{2012}]{giumar12a}
+E.~Giunchiglia and M.~Maratea.
+\newblock Algorithms for solving satisfiability problems with qualitative
+  preferences.
+\newblock In E.~Erdem, J.~Lee, Y.~Lierler, and D.~Pearce, editors, {\em Correct
+  Reasoning: Essays on Logic-Based {AI} in Honour of {V}ladimir {L}ifschitz},
+  volume 7265 of {\em Lecture Notes in Computer Science}, pages 327--344.
+  Springer-Verlag, 2012.
+
+\bibitem[\protect\citeauthoryear{Goldberg and Novikov}{2002}]{golnov02a}
+E.~Goldberg and Y.~Novikov.
+\newblock {BerkMin}: A fast and robust {SAT} solver.
+\newblock In {\em Proceedings of the Fifth Conference on Design, Automation and
+  Test in Europe (DATE'02)}, pages 142--149. IEEE Computer Society Press, 2002.
+
+\bibitem[\protect\citeauthoryear{hclasp}{}]{hclasp}
+hclasp.
+
+\bibitem[\protect\citeauthoryear{Huang \bgroup \em et al.\egroup
+  }{1999}]{huseka99a}
+Y.~Huang, B.~Selman, and H.~Kautz.
+\newblock Control knowledge in planning: Benefits and tradeoffs.
+\newblock In J.~Hendler and D.~Subramanian, editors, {\em Proceedings of the
+  Sixteenth National Conference on Artificial Intelligence (AAAI'99)}, pages
+  511--517. AAAI/MIT Press, 1999.
+
+\bibitem[\protect\citeauthoryear{ICAPS}{}]{icaps-competition}
+Icaps competitions.
+
+\bibitem[\protect\citeauthoryear{J{\"a}rvisalo \bgroup \em et al.\egroup
+  }{2005}]{jajuni05a}
+M.~J{\"a}rvisalo, T.~Junttila, and I.~Niemel{\"a}.
+\newblock Unrestricted vs restricted cut in a tableau method for {B}oolean
+  circuits.
+\newblock {\em Annals of Mathematics and Artificial Intelligence},
+  44(4):373--399, 2005.
+
+\bibitem[\protect\citeauthoryear{Jeroslow and Wang}{1990}]{jerwan90aa}
+R.~Jeroslow and J.~Wang.
+\newblock Solving propositional satisfiability problems.
+\newblock {\em Annals of Mathematics and Artificial Intelligence}, 1:167--187,
+  1990.
+
+\bibitem[\protect\citeauthoryear{Korf}{1985}]{korf85a}
+R.~Korf.
+\newblock Depth-first iterative-deepening: An optimal admissible tree search.
+\newblock {\em Artificial Intelligence}, 27(1):97--109, 1985.
+
+\bibitem[\protect\citeauthoryear{Lifschitz}{2002}]{lifschitz02a}
+V.~Lifschitz.
+\newblock Answer set programming and plan generation.
+\newblock {\em Artificial Intelligence}, 138(1-2):39--54, 2002.
+
+\bibitem[\protect\citeauthoryear{Marques-Silva and Sakallah}{1999}]{marsak99a}
+J.~Marques-Silva and K.~Sakallah.
+\newblock {GRASP}: A search algorithm for propositional satisfiability.
+\newblock {\em IEEE Transactions on Computers}, 48(5):506--521, 1999.
+
+\bibitem[\protect\citeauthoryear{Moskewicz \bgroup \em et al.\egroup
+  }{2001}]{momazhzhma01a}
+M.~Moskewicz, C.~Madigan, Y.~Zhao, L.~Zhang, and S.~Malik.
+\newblock Chaff: Engineering an efficient {SAT} solver.
+\newblock In {\em Proceedings of the Thirty-eighth Conference on Design
+  Automation (DAC'01)}, pages 530--535. ACM Press, 2001.
+
+\bibitem[\protect\citeauthoryear{Pipatsrisawat and Darwiche}{2007}]{pipdar07a}
+K.~Pipatsrisawat and A.~Darwiche.
+\newblock A lightweight component caching scheme for satisfiability solvers.
+\newblock In J.~Marques-Silva and K.~Sakallah, editors, {\em Proceedings of the
+  Tenth International Conference on Theory and Applications of Satisfiability
+  Testing (SAT'07)}, volume 4501 of {\em Lecture Notes in Computer Science},
+  pages 294--299. Springer-Verlag, 2007.
+
+\bibitem[\protect\citeauthoryear{Pretolani}{1996}]{pretolani96a}
+D.~Pretolani.
+\newblock Efficiency and stability of hypergraph {SAT} algorithms.
+\newblock In D.~Johnson and M.~Trick, editors, {\em DIMACS Series in Discrete
+  Mathematics and Theoretical Computer Science}, volume~26, pages 479--498.
+  American Mathematical Society, 1996.
+
+\bibitem[\protect\citeauthoryear{Rintanen}{2011}]{rintanen11a}
+J.~Rintanen.
+\newblock Planning with sat, admissible heuristics and {A}$^*$.
+\newblock In T.~Walsh, editor, {\em Proceedings of the Twenty-second
+  International Joint Conference on Artificial Intelligence (IJCAI'11)}, pages
+  2015--2020. IJCAI/AAAI, 2011.
+
+\bibitem[\protect\citeauthoryear{Rintanen}{2012}]{rintanen12a}
+J.~Rintanen.
+\newblock Planning as satisfiability: heuristics.
+\newblock {\em Artificial Intelligence}, 193:45--86, 2012.
+
+\bibitem[\protect\citeauthoryear{Ryan}{2004}]{ryan04a}
+L.~Ryan.
+\newblock Efficient algorithms for clause-learning {SAT} solvers.
+\newblock Master's thesis, Simon Fraser University, 2004.
+
+\bibitem[\protect\citeauthoryear{Schaub and Thiele}{2009}]{schthi09a}
+T.~Schaub and S.~Thiele.
+\newblock Metabolic network expansion with {ASP}.
+\newblock In P.~Hill and D.~Warren, editors, {\em Proceedings of the
+  Twenty-fifth International Conference on Logic Programming (ICLP'09)}, volume
+  5649 of {\em Lecture Notes in Computer Science}, pages 312--326.
+  Springer-Verlag, 2009.
+
+\bibitem[\protect\citeauthoryear{Siddiqi}{2011}]{sidiqqi11a}
+Sajjad~Ahmed Siddiqi.
+\newblock Computing minimum-cardinality diagnoses by model relaxation.
+\newblock In {\em Proceedings of the 22nd International Joint Conference on
+  Artificial Intelligence, IJCAI}, pages 1087--1092, 2011.
+
+\bibitem[\protect\citeauthoryear{Sierra-Santib{\'a}{\~n}ez}{2004}]{sierra04a}
+J.~Sierra-Santib{\'a}{\~n}ez.
+\newblock Heuristic planning: A declarative approach based on strategies for
+  action selection.
+\newblock {\em Artificial Intelligence}, 153(1-2):307--337, 2004.
+
+\bibitem[\protect\citeauthoryear{Tamura \bgroup \em et al.\egroup
+  }{2009}]{tatakiba09a}
+N.~Tamura, A.~Taga, S.~Kitagawa, and M.~Banbara.
+\newblock Compiling finite linear {CSP} into {SAT}.
+\newblock {\em Constraints}, 14(2):254--272, 2009.
+
+\bibitem[\protect\citeauthoryear{Zhang \bgroup \em et al.\egroup
+  }{2001}]{zamamoma01a}
+L.~Zhang, C.~Madigan, M.~Moskewicz, and S.~Malik.
+\newblock Efficient conflict driven learning in a {B}oolean satisfiability
+  solver.
+\newblock In {\em Proceedings of the International Conference on Computer-Aided
+  Design (ICCAD'01)}, pages 279--285, 2001.
+
+\end{thebibliography}

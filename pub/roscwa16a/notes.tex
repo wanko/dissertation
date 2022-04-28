@@ -1,0 +1,998 @@
+\documentclass[a4paper,10pt]{article}
+
+\usepackage{ucs}
+\usepackage[utf8x]{inputenc}
+\usepackage{babel}[english]
+\usepackage{fontenc}
+\usepackage{graphicx}
+
+\usepackage[dvips]{hyperref}
+
+\date{03.11.2015}
+
+\begin{document}
+ 
+\section{Notes}\label{sec:notes}
+
+\begin{definition}[Optimal stable model]
+To be defined.
+\end{definition}
+
+\begin{definition}[Distance]
+Given a logic program $P$ over signature $\mathcal{A}$, 
+and two stable models $X$ and $Y$ of $P$, 
+the distance between $X$ and $Y$, written $d(X,Y)$, is $|\mathcal{A} - X - Y| + | X \cap Y |$.
+\end{definition}
+Other distances could be defined. 
+This would involve doing other type of optimization, instead of maxmin.
+
+\begin{definition}[Most dissimilar]
+Given a logic program $P$ (with preferences) and a positive integer $n$, 
+a set $\mathcal{X}$ of (optimal) stable models of $P$ if most dissimilar if
+for every other set $\mathcal{X'}$ of (optimal) stable models of $P$, 
+$
+min \{ d(X,Y) | X, Y \in \mathcal{X}, X \neq Y \} > 
+min \{ d(X,Y) | X, Y \in \mathcal{X'}, X \neq Y \}
+$
+\end{definition}
+(Eiter et al., ICLP 2009) use also this measure, 
+while (A. Nadel, SAT 2011) uses the sum of the distances instead of the minimum.
+\footnote{
+We should explain why we prefer the minimum.
+The main problem I see using the sum is that good sets of solutions
+may consist of two sets of solutions, 
+such that the solutions of one set are very similar to those of the same set, 
+and very different to those of the other set.}
+
+\begin{definition}[Most dissimilar]
+Given a logic program $P$ and a positive integer $n$, 
+find $n$ most dissimilar stable models of $P$.
+\end{definition}
+
+\begin{definition}[Most dissimilar with preferences]
+Given a logic program $P$ with preferences and a positive integer $n$, 
+find $n$ most dissimilar optimal stable models of $P$.
+\end{definition}
+
+\subsection{Complete Methods}
+\begin{itemize}
+\item
+\textbf{$n$ copies}
+\item
+Consider first the case where there are no preferences.
+Join $n$ copies of the logic program $P$, each with a different signature, in logic program $P_n$.
+This allows to extract $n$ stable models of $P$ from every stable model of $P_n$.
+Then, add to $P_n$ an encoding $M$ for maxmin optimization, 
+so that we can extract $n$ most dissimilar stable models of $P$ 
+from every stable model of $P_n \cup M$.
+\item
+For the case with preferences, 
+first translate the \emph{normal} input logic program with preferences
+into a disjunctive logic program without preferences using \texttt{asprin}.
+Then, apply the method above.
+This does not work if $P$ is disjunctive.
+\item
+\textbf{enumerate all}
+\item
+Without preferences, 
+enumerate all stable models of $P$, 
+and afterwards find, among all those stable models, 
+the $n$ most dissimilar via ASP with maxmin optimization 
+(i.e., maximizing the minimum distance among the $n$ chosen solutions).
+\item
+With preferences, it is the same but we enumerate optimal stable models instead.
+\item
+This methods may be exponential in space, given that we may have to compute and store 
+an exponential number of solutions.
+\end{itemize}
+
+
+\subsection{Approximation Methods}
+The following methods approximate $n$ most dissimilar solutions.
+They are variations of Algorithm \ref{algo:solve:opt}.
+\begin{algorithm}[ht]\caption{$\mathit{iterative}(P,n)$\label{algo:solve:opt}}
+  \Input{$P$ is a logic program possibly with preferences, $n$ is a positive integer}
+  \Output{A set of solutions of $P$, or $\bot$}
+  \BlankLine
+  $\mathcal{X} = \{ \mathit{solve}(P,\emptyset) \}$\;
+  \While{$\mathit{test}(\mathcal{X})$}{%
+    $\mathcal{X} = \mathcal{X} \cup \mathit{solve}(P,\mathcal{X})$\;
+  }
+  \Return $\mathit{solution}(\mathcal{X})$\;
+\end{algorithm}%
+
+In the basic case,  
+$test(X)$ returns $true$ while there are less than $n$ solutions in $X$, 
+$solution(X)$ returns the set $X$,
+and the algorithm simply computes $n$ solutions by calling $solve$.
+This can be further elaborated. 
+For example, $test(X)$ may return $true$ until $k$ ($k \geq n$) solutions are in $X$, 
+and $solution(X)$ returns the $n$ most dissimilar solutions among those in $X$.
+The algorithm is complete if $test(X)$ returns $true$ until all solutions have been computed
+(in which case the algorithm reduces to \textbf{enumerate all} above).
+
+The methods differ in the implementation of the $solve(P,n)$ call.
+Below, every method is more imprecise than the previous ones, 
+i.e. the solutions given are more similar than with the previous methods.
+
+\begin{itemize}
+\item
+\textbf{Find a solution most dissimilar to those in $\mathcal{X}$.}
+\footnote{
+For future work, when $test(X)$ allows computing more than $n$ solutions, 
+we could find a solution along with at most $n-1$ solutions in $X$, such that they altogether are most dissimilar.
+In this way, we make choices on the solution we look for, 
+and on which of the previous solutions are also selected.
+}
+\item
+Add maxmin optimization to $P$ to 
+compute a solution that maximizes the minimum distance to any of the solutions in $\mathcal{X}$.
+\item
+Implementation: 
+Without preferences, using Maxmin Optimization (see next subsection).
+With preferences, using the method for preferences over \texttt{asprin}, 
+that uses the method for queries (see next subsection). 
+\item
+\textbf{Consider a partial interpretation $I$ distant to $\mathcal{X}$, and find a solution close to $I$.}
+\footnote{
+For future work, one could consider looking for a solution close to $I$ for a number of conflicts, 
+and if no solution is found, pick another partial interpretation $I'$ and continue from there.
+}
+\item
+Select a partial interpretation $I$:
+\begin{enumerate}
+    \item
+    A Random one.
+    \item
+    According to $pguide$ heuristic from (A. Nadel, SAT 2011).
+    An atom is true if among the solutions in $\mathcal{X}$ it is $false$ more times than $true$, 
+    and it is false in the opposite case. 
+    In case of a tie, it does not appear in $I$.
+    \item
+    The most dissimilar to the solutions in $\mathcal{X}$ (computed using maxmin optimization in ASP).
+    \item
+    Different to the last added element $L$ of $\mathcal{X}$ (for this, $\mathcal{X}$ should be a list).
+    $I$ may be the result of changing all signs of $L$ ($\{ \neg a \ | \ a \in L\} \cup \{ a \ | \ \neg a \in L\}$), 
+    or taking only the positive atoms of $L$ and changing the signs ($\{ \neg a \ | \ a \in L\}$), 
+    or similarly with the negative atoms of $L$ ($\{ a \ | \ \neg a \in L\}$).
+\end{enumerate}
+\item
+Apply minimization to compute a solution as close to $I$ as possible.
+\item
+Implementation: 
+Without preferences, using normal optimization.
+With preferences, using the method for preferences over \texttt{asprin}, 
+that uses the method for queries (see next subsection). 
+\item
+\textbf{Find any solution of $P$.}
+\item
+No optimization here, but we expect that heuristics alone give a good approximation.
+\item
+Implementation:
+Without preferences, add a rule to delete the last model.
+Alternatively, we can simply enumerate models.
+With preferences, use \texttt{asprin} option \texttt{--input-optimal} 
+to delete the last computed optimal models, 
+and all models worse than them.
+Alternatively, we can simply enumerate optimal models.
+\end{itemize}
+
+\textbf{Heuristics} may be combined with any of the previous three methods:
+\begin{itemize}
+\item
+Fix the sign of the atoms to their value in a partial interpretation $I$ selected by any of the methods above (1--4).
+\item
+Adding to modifying the signs, 
+give priority $1$ to the atoms relevant for dissimilarity, 
+or to the atoms in the partial interpretation $I$.
+Furthermore, different priorities may be given depending on the $pguide$ heuristic value
+(i.e., the priority of atom $a$ is $abs(|\{Y \in \mathcal{X} | a \in Y\}| - |\{Y \in \mathcal{X} | \neg a \in Y\}|)$).
+\item
+Adding to modifying the signs, apply the dynamic heuristic. 
+This heuristic, when the current assignment is very close to a previous solution, 
+modifies the signs to get away from it.
+\item
+Different default sign heuristics could also be tried. For example, it would be interesting to try a random sign heuristic.
+\end{itemize}
+
+\subsection{Implementation}
+\begin{itemize}
+
+\item
+\textbf{Maxmin Optimization via \texttt{clingo} and \texttt{asprin}.}
+\comment{JR: I will rewrite the formulas below later.}
+\item
+We have developed three ASP encodings (a basic one and two more advanced) using \texttt{\#minimize}, 
+and one \texttt{asprin} preference type.
+Each encoding takes as input atoms of the following predicates:
+\begin{itemize}
+  \item
+  \texttt{maxmin\_group(G)}: \texttt{G} is a set. This is a domain predicate.
+  \item
+  \texttt{maxmin(G,T)}: Add term \texttt{T} for evaluating group \texttt{G}. This is a non domain predicate.
+  \footnote{We may say that \texttt{T} is an integer, or a list whose first element is an integer,
+  although this is not actually needed in the implementation.} 
+  \item
+  \texttt{maxmin\_domain(G,T)}: A domain predicate that gives the domain of predicate \texttt{maxmin(G,T)}, 
+  and is needed only for the current version of \texttt{asprin}.
+\end{itemize}
+We start with a set of $n$ groups $\mathcal{G}=\{G_1,\ldots,G_n\}$ defined via facts of predicate \texttt{maxmin\_group(G)}, 
+and a set $\mathcal{S}=\{S_1,\ldots,S_n\}$ of stable models. 
+The value $v(S_i)_\mathcal{G}$ of a stable model $S_i \in \mathcal{S}$ wrt. $\mathcal{G}$, 
+is $min \{ \sum_{\texttt{maxmin(G}_\texttt{j}\texttt{,T)} \in S_i}{head(T)} \ | \ G_j \in \mathcal{G} \}$,
+where $head(T)$ is a function that returns the first element of $T$, or $T$ if $T$ is an integer.
+The optimal stable models of $\mathcal{S}$ wrt. $\mathcal{G}$ 
+are those $S \in \mathcal{S}$ such that $v(S)_\mathcal{G}=max \{ v(S_i)_\mathcal{G} \ | \ S_i \in \mathcal{S}\}$. 
+\item
+We also provide the user the option to specify maxmin optimization via normal \texttt{\#minimize} statements, 
+where the level is used to specify the group.
+The implementation reifies the program, 
+generates the \texttt{maxmin} atoms from the reification of the \texttt{\#minimize} statement, 
+and adds on top either one of the three encodings, or the \texttt{asprin} implementation.
+\item
+Available at: \texttt{https://svn.cs.uni-potsdam.de/svn/reposWV
+/Papers/ASPDomHeu/branches/Maxmin}
+\item
+
+\item
+\textbf{Metainterpretation technique to join $n$ copies of a logic program, 
+and application to computing most dissimilar solutions.}
+\item
+The base program \texttt{base.lp} 
+can be reified via command line: 
+\texttt{clingo --pre base.lp | reify}.
+Metainterpretation file \texttt{meta.lp} reifies the stable models of the base program by means of predicate \texttt{hold(l)}, where \texttt{l} is a literal.
+Here, in file \texttt{metaSimilarity.lp}, every copy \texttt{i} of the base program is reified by predicate \texttt{hold(l,i)} instead.
+This metainterpretation file along with the reified program produces 
+stable models that correspond to the cartesian product of $n$ stable models of the base program, 
+where atoms are reified via \texttt{holds(l,i)} predicates ($1\leq \texttt{i} \leq n$).
+\item
+Note that this leads to a lot of symmetries, that could be deleted adding more rules to the metaencoding. 
+\footnote{This is something we should try for the paper, I would say, but I didnt get the time to do it so far.}
+For example, if the stable models of the base program were $\{a\}$ and $\{\}$, 
+then doing $2$ copies we would have $\{hold(a,1)\}$ and $\{hold(a,2)\}$, 
+where the second one would not be necessary for our goal.
+\item
+To compute most dissimilar solutions of the base program, 
+we generate \texttt{maxmin} atoms representing the distance between any pair of reified stable models: 
+\begin{verbatim}
+model(1..n). 
+maxmin_group(I,J) :- I=1..n, J=1..n, I < J.
+maxmin((I,J),(1,A)) :- 
+  model(I), model(J), I < J, 
+  hold(A,I), not hold(A,J).
+maxmin((I,J),(1,A)) :- 
+  model(I), model(J), I < J, 
+  not hold(A,I), hold(A,J).
+maxmin_domain((I,J),(1,A)) :- 
+  model(I), model(J), I < J, 
+  atom(A).
+\end{verbatim}
+Finally, we add either one of the three maxmin encodings, or the \texttt{asprin} implementation.
+\item
+Available at: \texttt{https://svn.cs.uni-potsdam.de/svn/reposWV
+/Papers/ASPDomHeu/branches/Maxmin}
+\item
+
+\item
+\textbf{Script \texttt{metasp.py} for solving $\Sigma^p_2$--complete problems.}
+\item
+An example call is 
+\texttt{python metasp.py file1 file2 +file3 +file4 | clingo -}
+\footnote{The command syntax is provisional.}.
+The base program consists of files \texttt{file1} and \texttt{file2}, 
+while the tester program consists of \texttt{file2} and \texttt{file2}.
+The result of the \texttt{python} call is a disjunctive logic program whose stable models
+correspond to the stable models $X$ of the base program such that 
+the tester along with the facts $\{\_holds(X) | \_holds(X) \in X \}$ is unstatisfiable.
+The base program represents the $NP$ part, and the tester the $coNP$ check.
+\item
+For example, let \texttt{plan} be a file representing a planning problem where 
+the initial situation and the actions are open, there are no constraints on the goal,  
+but the atom \texttt{goal} belongs to a stable model iff the stable model corresponds to a plan.
+Then, if \texttt{addbase} contains rules \texttt{:- not goal. \_holds(A,T) :- occurs(A,T).}, 
+and \texttt{addtester} contains \texttt{:- goal. occurs(A,T) :- \_holds(A,T).}, 
+the call \texttt{python metasp.py plan addbase +plan +addtester} 
+solves the conformant planning problem of finding a sequence of actions that 
+corresponds to a plan for every possible initial situation.
+\item
+This is implemented as follows. 
+First, the base program is reified showing \texttt{\_holds/1} atoms, with \texttt{echo "\#show \_holds/1." | clingo - base --pre | reify}.
+From the facts of form \texttt{\_show(A,\_holds(X))} of the resulting reified program, 
+we extract the domain of \texttt{\_holds/1} in the base program,
+and represent it via facts of predicate \texttt{\_dom\_holds/1}.
+Next, we reify the tester along with the \texttt{\_dom\_holds/1} facts and rule \texttt{\{\_holds(X) : \_dom\_holds(X)\}.}, 
+and we add an underscore before every resulting atom to differenciate the signature from that of the reified base program.
+Finally, we print the two previous reified programs,  
+files \texttt{meta.lp} and \texttt{metaD.lp} (adapted to predicates starting with underscore), 
+and rules mapping the \texttt{\_holds(X)} atoms of the base, to atoms of the tester:
+\begin{verbatim}
+_true(atom(B)) :-     hold(A), 
+                  show(A,_holds(X)), _show(B,_holds(X)).
+_fail(atom(B)) :- not hold(A), 
+                  show(A,_holds(X)), _show(B,_holds(X)).
+\end{verbatim}
+\item
+Available at: \texttt{https://svn.cs.uni-potsdam.de/svn/reposWV
+/Papers/ASPDomHeu/branches/Metasp}
+\item
+
+\item
+\textbf{\texttt{asprin} translation of a program $P$ with preferences (and possibly a query) to a disjunctive logic program, 
+using \texttt{metasp.py}}
+\item
+First, the base program $P$ is printed to a file \texttt{base} 
+along with rules \texttt{\_holds(X) :- X.} for atoms \texttt{X} appering in preference statements, 
+(and rule \texttt{:- not \_query.} if a query is posed).
+File \texttt{base} produces stable models of $P$ and maps the atoms relevant to preferences to \texttt{\_holds(X)} atoms.
+
+Next, the base program $P$ is printed to another file \texttt{tester}
+along with a preference program (that uses \texttt{holds/1} and \texttt{holds'/1}),
+with rules \texttt{holds(X) :- X.} for atoms \texttt{X} appering in preference statements,
+and rule \texttt{holds'(X) :- \_holds(X).}.
+Given a set of facts of predicate \texttt{\_holds(X)}, 
+file \texttt{tester} generates stable models of the base program that are better than the one 
+represented by those \texttt{\_holds(X)} atoms.
+So the tester along with facts of predicate \texttt{\_holds(X)} is unsatisfiable 
+iff there is no stable model of the base that is better than the one 
+represented by those \texttt{\_holds(X)} atoms.
+Finally, the call \texttt{python metasp.py base +tester} gives a disjunctive logic program 
+whose stable models correspond to optimal stable models of $P$ (satisfying a query if it was posed).
+\item
+Available in asprin via option \texttt{--metasp-p} (see \texttt{--help=2}).
+\item
+ 
+
+\item
+\textbf{Script implementing the iterative algorithm, restarting \texttt{clingo} and \texttt{asprin} at every solve call.}
+Not implemented yet, but Philipp implemented something like this for his thesis.
+Here maybe we do not want this restarting of the system, 
+but instead we want to do simply overall one call to \texttt{clingo} or \texttt{asprin}.
+
+\item
+
+\item
+\textbf{Different methods for deciding queries over optimal models with \texttt{asprin}.}
+The problem is the following: Given a logic program $P$ with preferences and an atom \texttt{\_query}, 
+find an optimal stable model of $P$ that satisfies \texttt{\_query}.
+\begin{itemize}
+    \item
+    (From Y. Zhu and M. Truszczyinski, LPNMR 2013) Enumerate optimal models until one satisfies the query.
+    \item
+    (From Y. Zhu and M. Truszczyinski, LPNMR 2013) Enumerate possibly nonoptimal models satisfying the query and
+    test each one for optimality.
+    \item
+    Enumerate optimal stable models of $P\cup\{\texttt{:- not \_query.}\}$ and 
+    test each one for optimality.
+    \begin{enumerate}
+        \item
+        Find an optimal model $X$ of $P\cup\{\texttt{:- not \_query.}\}$. If none exists, return FALSE, else goto 2.
+        \item
+        Find a stable model $Y$ of $P\cup\{\texttt{:- \_query.}\}$ that is better than $X$. 
+        If none exists, return TRUE. 
+        If one exists, optionally $Y$ can be further improved until 
+        an optimal stable model of $P\cup\{\texttt{:- \_query.}\}$ is produced.
+        Add to $P$ rules deleting the best stable model generated, and all stable models worse than it. 
+        Goto 1.
+    \end{enumerate}
+    \item
+    Find a stable model with query, 
+    then another better without query, 
+    then another better with query\ldots
+    \begin{enumerate}
+        \item
+        Find an stable model $X$ of $P\cup\{\texttt{:- not \_query.}\}$. If none exists, return FALSE, else goto 2.
+        \item
+        Find a stable model $Y$ of $P\cup\{\texttt{:- \_query.}\}$ that is better than $X$. 
+        If none exists, return TRUE, else goto 3.
+        Optionally, if none exists, $X$ can be improved until an optimal model of $P$ is obtained.
+        \item
+        Find an stable model $X$ of $P\cup\{\texttt{:- not \_query.}\}$ that is better than $Y$. 
+        If one exists, goto 2.
+        If none exists, optionally, $Y$ can be improved until an optimal model of $P$ is obtained.
+        Add to $P$ rules deleting the best stable model generated and all stable models worse than it.
+        Goto 1.
+    \end{enumerate}
+\end{itemize}
+These methods are implemented in \texttt{asprin} via option \texttt{--query}.
+\footnote{I'm still bugfixing, so this is still not in the common directory.}
+\item
+
+\item
+\textbf{Preferences on top of \texttt{asprin}, implemented by iteratively solving queries. 
+        So far, implemented only for maxmin and min preferences.}
+\item
+Lets describe the problem and the method in general.
+\item
+The Problem: 
+Given a logic program $P$ and preference statements $p1$ and $p2$, 
+find an optimal model $X$ of $P$ optimizing $p1$ such that there is no other
+optimal model $Y$ of $P$ optimizing $p1$ that is better than $X$ wrt $p2$. 
+\item
+The Method:
+    \begin{enumerate}
+    \item
+    Find an optimal model $X$ of $P$ optimizing $p1$. If $P$ is UNSAT, return UNSAT, else goto 2.
+    \item
+    Find an optimal model $Y$ of $P$ optimizing $p1$ that is better than $X$ optimizing wrt $p2$.
+    Assign $Y$ to $X$. 
+    Repeat until we get UNSAT.
+    The last model computed is a solution.
+    \end{enumerate}
+\item
+The Implementation:
+\item
+The condition of being better than $X$ optimizing wrt $p2$ is expressed through a query.  
+For this we add to $P$ the preference program for $p2$ adding the rule
+\texttt{\_query :- better(p2).} and
+facts $\{ \texttt{holds'(x).} | \texttt{x} \in X \}$.
+Then we look for an optimal model $Y$ of $P$ optimizing $p1$ that satisfies \texttt{\_query}.
+For this, we use any of the methods above.
+\item
+In \texttt{asprin} this general method is implemented only for the $maxmin$ preference type 
+and may be selected via option \texttt{--maxmin}.
+\footnote{I'm still bugfixing, so this is still not in the common directory.}
+Note here that $less(weight)$ or $more(weight)$ can be represented using $--maxmin$ with just one group.
+\footnote{At this point I would leave for future work implementing the method in general.}
+
+\item
+\item
+\textbf{Heuristic programs.}
+
+\end{itemize}
+
+\subsection{Complexity?}
+This shouldn't be hard. 
+Hardness results probably can be borrowed from Truzczyinski LPNMR paper, 
+and inclusion comes from the implementation via metasp. 
+But this still needs some thought\ldots
+
+\subsection{Summary of contributions}
+
+\begin{itemize}
+\item
+Maxmin Optimization encodings for \texttt{clingo} and \texttt{asprin}.
+\item
+Two complete methods for computing most dissimilar solutions, 
+$n$ copies and all enumeration:
+\begin{itemize}
+    \item
+    Metainterpretation technique for joining $n$ copies of a logic program, 
+    and application for computing most dissimilar solutions.
+    \item
+    Method for solving $\Sigma^p_2$-complete problems.
+    \item
+    \texttt{asprin} translation of a logic program $P$ with preferences
+    to a disjunctive logic program (using previous method)
+\end{itemize}
+\item
+Three methods for approximating most dissimilar solutions, 
+maxmin optimization, minimization, or enumeration:
+\begin{itemize}
+    \item
+    Methods for queries over optimal models in \texttt{asprin}.
+    \item
+    Preferences over \texttt{asprin} optimal models.
+    \item
+    Heuristics
+\end{itemize}
+\end{itemize}
+
+\subsection{My thoughts towards publication}
+
+At this point, I think the material is good and general enough to go for ECAI. 
+The deadline would be 15th of April, and we have 8 pages plus references.
+
+I also think that even with 8 pages it is too much material, 
+so I would say that we cut some parts for ECAI (or wherever we decide to send it finally)
+and we go with all for a journal.
+
+I think the best place to cut is deleting all normal ASP, 
+which basically means not using the maxmin optimization \texttt{clingo} encodings.
+Then for maxmin optimization we would always use \texttt{asprin} preference type.
+
+Then the paper would be just about preferences 
+(I think that was always your idea, Torsten), 
+and we would be on a much safer position for acceptance, 
+because while there is good work on diverse solutions for NP 
+(Eiter et al. at ICLP, and Nadel at SAT), 
+the work on preferences is not like that 
+(only some parts of the Truzczynski LPNMR paper).
+
+I would say with 8 pages we can put all inside, 
+but maybe you have another idea\ldots
+
+In my opinion, if we justify the interest of the topic, 
+and this should not be a problem
+(specially given that we have real applications and there is relevant related work), it will be accepted.
+
+
+
+\subsection{A first try at a paper organization}
+
+\begin{itemize}
+\item
+Introduction (1 page): ASP, asprin, similarities, applications, related work\ldots
+\item
+Background (1 page): possibly including a complexity analysis.
+Maybe, example of maxmin and pareto preference type implementations.
+\item
+Methods for dissimilar solutions (1 page): complete and approximations.
+\item
+Techniques for complete methods (1 page)
+$n$ copies, and all enumeration. \texttt{metasp.py}, \texttt{asprin} translation using \texttt{metasp.py}, and application to the problem.
+\item
+Techniques for approximation methods (1-2 pages)
+maxmin optimization, minimization and enumeration. 
+Queries, preferences over \texttt{asprin} optimal models, heuristics.
+\item
+Experiments (2 pages)
+\item
+Discussion (half page)
+\end{itemize}
+
+
+\subsection{Experiments}
+
+Questions:
+\begin{itemize}
+\item
+What is the efficiency of the different query methods?
+\item
+What is the quality of the solutions and the efficiency of 
+every method for computing dissimilar solutions?
+\footnote{Maybe we want to say diverse (as in Eiter et al., and Nadel) instead of dissimilar.}
+\end{itemize}
+
+Given that there are so many possible experiments to do, 
+I suggest the following plan.
+
+\begin{enumerate}
+\item
+\textbf{Comparing query methods.}
+For queries, we may run the approximation method with all 8 query options, 
+just until solving the first query.
+
+We can measure the overall time \emph{and} the time taken to solve the query.
+It would be interesting to analyze separately the cases where the query holds and those with not
+(I think good methods for one case may be bad for the other). 
+
+If there are not enough cases of one type, I could try to make something up. 
+
+After this, it would make things easier to decide for one query for the rest of the experiments.
+
+\item
+\textbf{Comparing approximation methods.}
+Compare the approximation methods with the previous selected query (or queries).
+Try maxmin optimization, minimization with random, pguide, ASP computed solution, and the three ``different than last'' options.
+Also, try the minimization ones with the corresponding sign heuristics, 
+and try the simple enumeration with the sign heuristics alone.
+This makes $1 + 6 + 6 + 6 = 19$ configurations (a lot).
+
+We should fix some parameters here:
+    \begin{itemize}
+    \item
+    Number of solutions to compute: I would compute $10$, and analyze the cases of $3$ and $10$ models in more detail.
+    (Eiter et al. did 3 to 6, and Nadel 100).
+    \item
+    Timeout for the computation of every new element to add to $\mathcal{X}$. 
+    I think in many cases it will be difficult to prove the UNSAT query
+    saying that there is no optimal model closer to the others in $\mathcal{X}$, 
+    given that for this the methods may have to enumerate all optimal stable models.
+    For this reason, we may set a timeout for each of these computations, 
+    and we add to $\mathcal{X}$ the best optimal model we have computed so far.
+    At this point, I have no idea about what would be a good value.
+    A first try could be setting the general timeout divided by half the number of solutions to compute.
+    \end{itemize}
+
+
+\item
+At this point we could make a selection comprising the maxmin optimization, 
+the best method for minimization without heuristics, the best for minimization with heuristics, 
+and the best method using heuristics alone.
+
+\item
+\textbf{Evaluation of the dynamic heuristic.}
+For each method of the selection, add the dynamic heuristic.
+
+\item
+\textbf{Evaluation of computing $k$ ($k > n$) solutions.}
+If before we computed $10$ solutions, now for the selected methods we could compute $20$ solutions, 
+and evaluate the quality achieved when only half of the computed models are used.
+For example, after computing $4$ models, find the $2$ most dissimilar; after $6$, find $3$\ldots
+This way we will have the qualities for $1$ to $10$ solutions, as in the basic case, 
+and we could measure the improvement (and the extra time taken).
+
+\item
+\textbf{Evaluating the efficiency of complete methods, and the loss of quality of the approximations.}
+We should run the $n$ copies method and the enumerate all method on some or all instances.
+There will be lots of timeouts here, so if we lack time we could try the simplest ones, 
+or we could also make them (somehow) artificially.
+The goal here is to get the real quality of the most dissimilar solutions, 
+and compare them with the values obtained by the approximations, 
+to get an idea on how much quality do we lose approximating.
+
+\item
+\textbf{Evaluating approximations with metasp.}
+I am not sure about this one\ldots
+The approximation methods can be applied translating the logic program with preferences
+with \texttt{asprin} to a disjunctive logic program, 
+and then adding \texttt{asprin} optimization and/heuristics. 
+We could run some options here, but I guess we will get lots of timeouts.
+
+\item
+\textbf{Default sign heuristic.} 
+Maybe we want to try this. 
+\end{enumerate}
+
+Next step: what benchmarks should we use? (Here probably Philipp knows better)
+\begin{itemize}
+\item
+\texttt{asprin} paper benchmarks with cardinality and subset.
+\item
+Those instances adding pareto.
+Question: how many pareto groups do we take? $2, 4, 8, 16\ldots$?
+Do we combine them as in the AAAI paper?
+I would go simply for $8$ (not too few, not too many) groups with no combination.
+Maybe at the end, with the selected methods, we could try all pareto groupings ($2, 4, 8, 16\ldots$).
+\footnote{
+I think we have agreed on using pareto, 
+but I think it would also be good to run the instances without pareto, for comparison, 
+unless we see at the beginning that the results are the same.
+With respect to weight optimization, I just wanted to note here that 
+after computing the first optimal model, the next stable models computed will be all optimal
+(this is because weight optimization defines a total order, 
+and for total orders, once you have an optimal model, 
+deleting all models worse than it, as in \texttt{asprin} implementation, there are only optimal models left)
+}
+\item
+Some design exploration instances, and maybe more timetabling instances.
+Here I am just guessing, maybe we could have these special sets that we claim to be real-world problems?
+\item
+For the journal, maybe we could also try tautological programs or random ones, 
+but for now I think we have more than enough.
+\end{itemize}
+
+One final issue with pareto. 
+In our problems we have a vector of values and we optimize over all the elements of the vector via pareto.
+In the applications, I think we are interested in solutions that differ in the values of that vector.
+However, in our implementations, we obtain diverse solutions that may not be different with respect to that vector.
+For this reason, it would be interesting to measure how do the diversity of the solutions we compute correlate 
+with the diversity in the vector values. 
+I think this should not be much work, and I hope results are good ;)
+
+
+
+\section{Old Notes}\label{sec:oldnotes}
+
+\subsection{Algorithms} 
+
+The following iterative algorithm covers all the algorithms of the relevant related work, 
+and of Philipp's thesis:
+
+\begin{algorithm}[ht]\caption{$\mathit{iterative}(P,n,k)$\label{algo:solve:oldopt}}
+  \input{$P$ may be a CNF formula, a logic program, or a logic program with preferences. 
+         Parameters $n$ and $k$ are optional parameters, $n$ represents the number of solutions to compute, and $k$ stands for the distance.}
+  \output{A set of solutions of $P$, or $\bot$}
+  \BlankLine
+  $X \leftarrow \mathit{solve}(P)$\;
+  \lIf{$X = \bot$}{\Return $\bot$}\;
+  $\mathcal{X} = \{ X \}$\;
+  \Repeat{$\mathit{test}(\mathcal{X})$}{%
+    $addQuery(P,\mathcal{X})$\;
+    $addHeuristics(P,\mathcal{X})$\;
+    $X  \leftarrow \mathit{solve}(P)$\;
+    $\mathcal{X} = \mathcal{X} \cup \{ X \}$\;
+  }
+  \Return $\mathit{solution}(\mathcal{X})$\;
+\end{algorithm}%
+
+The procedure $solve(P)$ enumerates solutions of the program $P$.
+If some query is added by $addQuery(P,\mathcal{X})$, then the next solution returned by $solve(P)$ satisfies that query.
+The query typically says: solutions must be $k$-dissimilar from those in the set $\mathcal{X}$.
+Note that for programs with preferences this makes the problem $\Sigma^P_2$-hard.
+$addHeuristics(P,\mathcal{X})$ may modify the heuristics for the next $solve(P)$ call.
+$test$ decides when to stop the iteration, and $solution$ returns a subset of $\mathcal{X}$.
+
+\begin{itemize}
+\item
+\textbf{Algorithm 1: enumerate $n$ solutions.}
+Simply enumerates $n$ solutions of $P$ 
+($addQuery$ and $addHeuristics$ do nothing, 
+$test$ returns true if $|\mathcal{X}|=n$, 
+and $solution$ returns $\mathcal{X}$).
+\item
+\textbf{Algorithm 1h: enumerate $n$ solutions, with heuristics.}
+Like 1, but $addHeuristics$ modifies the heuristics. 
+Presented in (A. Nadel, SAT 2011) for SAT. 
+Implemented by Philipp for clingo and asprin.
+\item
+\textbf{Algorithm 2: enumerate $n$ solutions, with queries.}
+Like 1, but at every step we impose the query that the next solution should be $k$-dissimilar from those in $\mathcal{X}$.
+Implemented by (Eiter et al., ICLP 2009) in two ways: adding ASP code and adding a postpropagator in clasp.
+Implemented by Philipp for clingo, adding ASP code.
+The $solve$ call is implemented by (Y. Zhu and M. Truszczyinski, LPNMR 2013) for programs with aso preferences.
+They propose 3 implementations:
+\begin{itemize}
+    \item
+    The first one enumerates optimal stable models of $P$ and checks whether they satisfy the query.
+    \item
+    The second one enumerates (non-necessarily optimal) stable models of $P$ that satisfy the query (this is one $NP$ call), 
+    and checks whether they are optimal (another $NP$ call).
+    \item
+    Translated the problem to a disjunctive logic program, so that stable models correspond to solutions satisfying the query.
+\end{itemize}
+\item
+\textbf{Algorithm 2h: enumerate $n$ solutions, with queries and heuristics.}
+Implementing by Philipp for clingo, in ASP code.
+\item
+\textbf{Algorithm 2': enumerate $n$ solutions, with optimization and heuristics.}
+Instead of adding a query, an optimization statement is added.
+Implementing by Philipp for clingo, in ASP code.
+\item
+\textbf{Algorithm 3: enumerate and test.}
+Enumerate solutions until they pass the $test$.
+The $test$ determines whether some subset of $\mathcal{X}$ is dissimilar enough (and $solution$ returns that subset).
+Implemented by Philipp. The test is independent of the underlying system).
+\item
+\textbf{Algorithm 3h: enumerate and test, with heuristics.}
+Like 3, but with heuristics. Implemented by Philipp.
+\item
+\textbf{Algorithm 3': enumerate all and test.}
+Like 3, but enumerating all solutions. 
+Implemented by (Eiter et al., ICLP 2009) and by Philipp.
+Heuristics make no sense here.
+\end{itemize}
+
+For finding $n$ $k$-dissimilar solutions:
+\begin{itemize}
+\item
+1 and 1h are neither correct nor complete.
+\item
+2, 2h and 2' are correct but not complete.
+\item
+3, 3h and 3' are correct and complete.
+\end{itemize}
+
+Do we need all?
+\begin{itemize}
+\item
+2h generalizes 2.
+\item
+3h generalizes 1, 1h, 3 and 3', depending on how do you implement the test.
+\end{itemize}
+So we have 2h, 3h and 2' (One could think about combining 2h and 3h...)
+
+What else is out there?
+\begin{itemize}
+\item
+(Eiter et al., ICLP 2009) do $n$ copies of the original problem,
+and impose that the solutions for each copy should be $k$-dissimilar.
+\item
+Literature on sampling. 
+Sampling is different than finding diverse solutions, 
+but maybe we can borrow some techniques form there.
+Example of the difference. 
+Suppose there are 1000000 stable models near stable model A, and stable models B, C and D are very distant to each other and to A. 
+Suppose those are all the stable models.
+Then sampling 4 stable models, we should get 4 near A, while finding 4 diverse solutions, we should get A, B, C and D.
+\end{itemize}
+
+What else can we do now, easily?
+\begin{itemize}
+\item
+Try more heuristics.
+\item
+Implement 2 and 2' with asprin. 
+This uses the new functionalities of asprin for queries on preferences.
+What are these functionalities?
+\begin{itemize}
+    \item
+    With option \verb|--query=<class>|, asprin returns optimal stable models that contain atom \verb|_query|.
+    For this computation, different strategies are implemented, and more can be easily implemented 
+    (each one in a given class, that is selected by command line with \verb|<class>|, this will be changed later):
+    \begin{itemize}
+    \item
+    Strategy 1. (1) Search for a stable model that satisfies the query. 
+    (2) If there is none, stop and return UNSAT.
+    Else (3) search for a better stable model that does not satisfy the query. 
+    If there is none, stop and return SAT (the query holds in an optimal stable model).
+    Else, search for a better stable model that satisfies the query.
+    If there is none, go back to (1).
+    Else, go to (3).
+    \item
+    Strategy 2. Compute an optimal stable model of $P \cup \_query$.
+    Test whether there is a better stable model of $P \cup \neg \_query$.
+    If there is none, stop and return SAT. 
+    Else, return to the start.
+    \item
+    First two implementations of (Y. Zhu and M. Truszczyinski, LPNMR 2013) are not there yet.
+    \end{itemize}
+    With option \verb|--mode=metaspq| asprin generates two files, $base$ and $tester$, 
+    that are sent to the script \verb|metasp.py|, 
+    so that the solutions given by the script are the optimal stable models of $P$ that satisfy $\_query$.
+    The script, given two programs $B$ and $T$, returns the stable models $X$ of $B$ such that 
+    $\{ holds(Y) \in X\} \cup T$ is unsatisfiable.
+\end{itemize}
+\end{itemize}
+
+\subsection{Paper Organization} 
+
+\begin{itemize}
+\item
+Similarity for clingo
+\begin{itemize}
+    \item
+    Algorithm 2h
+    \item
+    Algorithm 2'
+    \item
+    Algorithm 3h
+    \item
+    Try different heuristics (dynamic?)
+    \item
+    Compare with A. Nadel in SAT, and with Eiter et al. in ASP.
+\end{itemize}
+\item
+Similarity for asprin
+\begin{itemize}
+    \item
+    Algorithm 2h. Methods:
+    \begin{itemize}
+        \item
+        Queries: Different strategies.
+        \item
+        Metasp: Introduce \verb|metasp.py|, and explain method.
+    \end{itemize}
+    \item
+    Algorithm 3h
+    \item
+    Try different heuristics (dynamic?)
+    \item
+    Compare with (Y. Zhu and Mirek)
+\end{itemize}
+\end{itemize}
+
+Contributions:
+\begin{itemize}
+\item
+System for computing dissimilar solutions in clingo and asprin.
+\item
+Application of heuristic rules for clingo and asprin.
+\item
+Algorithms 2' and 3h.
+\item
+Method for solving queries in asprin.
+\item
+Generalization of metasp method, and application for solving queries in asprin.
+\item
+Experimental evaluation.
+\end{itemize}
+
+Novelty?:
+\begin{itemize}
+\item
+We generalize previous work to asprin setting.
+\item
+Heuristics have already been applied in SAT (and also in CP).
+But maybe we get something extra with dynamic ones.
+\item
+Algorithms 2' and 3h are simple extensions of 2 and 3' of Eiter et al.
+But we could get specially good results with them.
+\item
+The methods for solving queries probably are already in the literature.
+\item
+The generalization of metasp is easy.
+\end{itemize}
+
+
+Issues that could be investigated:
+\begin{itemize}
+\item
+Borrowing stuff from sampling literature.
+\item
+Theoretical study. What results can we guarantee using heuristics?
+\item
+Theoretical study. How to enumerate distant solutions of a tautology?
+How would a method for that extend to our setting?
+\end{itemize}
+
+
+
+\subsection{Another Perspective} 
+
+
+\textbf{Goal: } 
+Compute $n$ most dissimilar solutions.
+
+\textbf{Methods: } 
+
+\begin{itemize}
+\item
+Complete methods:
+\begin{itemize}
+    \item
+    Enumerate all solutions. Then find the $n$ most dissimilar.
+    \item
+    Do $n$ copies of the same program, and maximize the distance between the $n$ copies.
+\end{itemize}
+\item
+Incomplete methods (or approximations):
+\begin{itemize}
+    \item
+    They do Algorithm \ref{algo:solve:opt}:  
+    \verb|while (!done){ sols += solve(sols) }.|
+    \begin{itemize}
+        \item
+        Measure improvement computing more than $n$ solutions ($n+1$, $n+2$\ldots).
+        \item
+        The solving call intends to give a solution most distant to the previous 
+        set of solutions. Measure the lost of distance wrt. the complete methods.
+    \end{itemize}
+    \item
+    Implementations:
+    \begin{itemize}
+        \item
+        Optimize distance to previous set. %(using \verb|maximize|).
+        \item
+        Approximate the previous implementation. 
+        Targeting a partial interpretation $A$ supposed to be distant, 
+        and optimizing the distance to it.% (using \verb|minimize|).
+        Measure the lost of distance wrt to the previous method.
+        \begin{itemize}
+            \item
+            $A$ may be chosen at random.
+            \item
+            $A$ may be selected following \verb|pguide| heuristic.
+            \item
+            $A$ may be the most distant to the previous solutions. Computed with ASP.
+            Note: $A$ probably will not be a stable model.
+            \item
+            $A$ is a partial solution different from the last one computed 
+            (considering only positive literals, or negative literals, or both)
+        \end{itemize}
+        \item
+        Approximate the previous implementation. 
+        Do not optimize the distance to $A$, 
+        just apply heuristics modifying the sign of the atoms to come close to $A$.
+        \item
+        Dynamic heuristics: Apply our dynamic heuristics alone and on top of the others.
+        \item
+        Optimizations with heuristics: 
+        Combine the optimizations with the heuristics.
+    \end{itemize}
+    Variations on the implementations:
+    \begin{itemize}
+        \item
+        Try different default sign options. 
+        We could implement option \verb|random|.
+        \item
+        Consider adding \verb|level|s to the variables. 
+        For example: give level $1$ to shown variables, 
+        or to variables modified by the heuristics, 
+        or give a level according to the pguide value.
+        \item
+        Target a partial interpretation $A$ for a given number of conflicts, 
+        and then target another, and so on.
+    \end{itemize}
+\end{itemize}
+\end{itemize}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End: 

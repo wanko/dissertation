@@ -1,0 +1,83 @@
+
+\section{Background}\label{sec:background}
+
+We assume some basic familiarity with ASP, its semantics as well as its basic language constructs,
+like normal rules, cardinality constraints, and optimization statements.
+Although our examples are self-explanatory, we refer the reader for details to~\cite{gekakasc12a}.
+%
+For illustrating our approach, 
+we consider selected rules of a simple planning encoding, following~\cite{lifschitz02a}.
+We use predicates \texttt{action} and \texttt{fluent} to distinguish the corresponding entities.
+The length of the plan is given by the constant \texttt{l}, which is used to fix all time points via
+the statement \lstinline{time(1..l).}
+Moreover, suppose our ASP encoding contains the rule
+\begin{lstlisting}
+1 { occ(A,T) : action(A) } 1 :- time(T).
+\end{lstlisting}
+stating that exactly one action occurs at each time step.
+Also, it includes a frame axiom of the following form.%
+\footnote{We use `\texttt{-}/1' to stand for classical negation.}
+\begin{lstlisting}
+holds(F,T) :- holds(F,T-1), not -holds(F,T).
+\end{lstlisting}
+In such a setting, actions and fluents are prime subjects to planning-specific heuristics.
+As we show below, these can be elegantly expressed by heuristic statements about atoms formed from
+predicates \texttt{occ} and \texttt{holds}, respectively.
+
+For computing the stable models of a logic program, we use
+a Boolean assignment, that is, a (partial) function mapping propositional variables in $\mathcal{A}$
+to truth values \true\ and \false.
+We represent such an assignment \ass\ as a set of signed literals of form $\Tsigned{a}$ or $\Fsigned{a}$,
+standing for $a\mapsto\true$ and $a\mapsto\false$, respectively.
+%
+We access the true and false variables in \ass\ via
+\(
+\tlits{\ass}
+=
+\{a\in\mathcal{A}\mid\Tsigned{a}\in\ass\}
+\)
+and
+\(
+\flits{\ass}
+=
+\{a\in\mathcal{A}\mid\Fsigned{a}\in\ass\}
+\), respectively.
+%
+\ass\ is conflicting, if $\tlits{\ass}\cap\flits{\ass}\neq\emptyset$;
+\ass\ is total, if it is non-conflicting and $\tlits{\ass}\cup\flits{\ass}=\mathcal{A}$.
+%
+For generality, we represent Boolean constraints by \emph{nogoods}~\cite{dechter03}.
+A nogood is a set $\{\sigma_1,\dots,\sigma_m\}$ of signed literals,
+expressing that any assignment containing $\sigma_1,\dots,\sigma_m$ is inadmissible.
+Accordingly,
+a total assignment \ass\ is a \emph{solution} for a set~$\Delta$ of nogoods
+if $\delta\not\subseteq\ass$ for all $\delta\in\Delta$.
+%
+While clauses can be directly mapped into nogoods,
+logic programs are subject to a more involved translation.
+For instance, 
+an atom $a$ defined by two rules $a\,\texttt{:-}\,b,\naf{c}$ and $a\,\texttt{:-}\,d$
+gives rise to three nogoods:
+$\{\Tsigned{a},\Fsigned{x_{\{b,\naf{c}\}}},\Fsigned{x_{\{d\}}}\}$,
+$\{\Fsigned{a},\Tsigned{x_{\{b,\naf{c}\}}}\}$, and
+$\{\Fsigned{a},\Tsigned{x_{\{d\}}}\}$,
+where $x_{\{b,\naf{c}\}}$ and $x_{\{d\}}$ are auxiliary variables for the bodies of the two previous rules.
+Similarly, the body ${\{b,\naf{c}\}}$ leads to nogoods
+$\{\Fsigned{x_{\{b,\naf{c}\}}},\Tsigned{b},\Fsigned{c}\}$,
+$\{\Tsigned{x_{\{b,\naf{c}\}}},\Fsigned{b}\}$, and
+$\{\Tsigned{x_{\{b,\naf{c}\}}},\Tsigned{c}\}$.
+See~\cite{gekakasc12a} for full details.
+%
+Note that translating logic programs into nogoods adds auxiliary variables.
+For simplicity, we restrict our formal elaboration to atoms in $\mathcal{A}$
+(also because our approach leaves such internal variables unaffected anyway).
+
+% Finally, we mention that
+% we use \textit{max} to give the maximum value in a set and 
+% \textit{argmax} to give the set of elements having the maximum value.
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End: 

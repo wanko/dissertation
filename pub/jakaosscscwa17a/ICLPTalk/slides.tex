@@ -1,0 +1,659 @@
+\documentclass[t,fleqn]{beamer}
+
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+
+\usepackage{listings}
+\lstset{basicstyle=\ttfamily,escapechar=\%,escapeinside={\#(}{\#)}}
+\usepackage{lstlinebgrd}
+
+\input{lstrange}
+
+\usepackage{tikz}
+\usetikzlibrary{arrows,chains,positioning,automata,decorations,shapes,calc,matrix,fit,backgrounds} % CHECK!!
+\usepackage{pgfpages}
+%\usepackage{tikz-uml}
+\usepackage[boxed,vlined]{algorithm2e}
+\SetNlSty{bfseries}{\color{black}}{} %% make linenumbers black, as a sometimes highlight code in different colors
+\newlength{\commentWidth}
+\setlength{\commentWidth}{5cm}
+\newcommand{\atcp}[1]{\tcp*[r]{\makebox[\commentWidth]{#1\hfill}}}
+
+\lstnewenvironment{Examplecode}{}{}
+
+\usepackage{threeparttable}
+
+\title[Clingo goes Linear Constraints]{Clingo goes Linear Constraints over Reals and Integers}
+\author[Six dudes]{%
+  Tomi~Janhunen
+  \and 
+  Roland~Kaminski
+  \and
+  Max~Ostrowski
+  \and 
+  Torsten~Schaub
+  \and
+  Sebastian~Schellhorn
+  \and
+  Philipp~Wanko}
+
+\institute[]{%
+  Aalto~University
+  \and
+  INRIA~Rennes 
+  \and
+  University~of~Potsdam\\\bigskip\bigskip\includegraphics[scale=0.07]{potassco_logo_lightblue}}
+\date{}
+
+\usetheme{Pittsburgh}
+\useinnertheme{rectangles}
+\mode<beamer>{\usecolortheme{albatross}}
+\mode<beamer>{\setbeamercolor{alerted text}{fg=yellow}}
+\mode<handout>{\usecolortheme{seagull}}
+\mode<handout>{\setbeamercolor{alerted text}{fg=blue}}
+\useoutertheme{infolines}
+\setbeamertemplate{navigation symbols}{\vspace{-5pt}} % to lower the logo
+\setbeamercovered{dynamic}
+\setbeamertemplate{bibliography item}[text]
+
+\AtBeginSection{
+  \begin{frame}{Outline}
+    \bigskip
+    \vfill
+    \tableofcontents[currentsection]
+  \end{frame}
+}
+\AtBeginSubsection{
+  \begin{frame}{Outline}
+    \vfill
+    \tableofcontents[currentsubsection]
+  \end{frame}
+}
+
+\newcommand{\backupbegin}{
+   \newcounter{framenumbervorappendix}
+   \setcounter{framenumbervorappendix}{\value{framenumber}}
+}
+\newcommand{\backupend}{
+   \addtocounter{framenumbervorappendix}{-\value{framenumber}}
+   \addtocounter{framenumber}{\value{framenumbervorappendix}} 
+}
+
+
+\usepackage{pifont}
+\newcommand{\itarrow}{{\Pisymbol{pzd}{229}}}
+
+\input{macro}
+\newcommand{\cmark}{\ding{51}}%
+\newcommand{\xmark}{\ding{55}}%
+
+\begin{document}
+% ----------------------------------------------------------------------
+\frame{\titlepage}
+\pgfdeclareimage[height=0.5cm]{potasscologo}{potassco_logo_blue}
+\logo{\pgfuseimage{potasscologo}}
+% ----------------------------------------------------------------------
+\begin{frame}{Outline}
+  \bigskip
+  \vfill
+  \tableofcontents[hideallsubsections]
+\end{frame}
+% ----------------------------------------------------------------------
+\section{Motivation}
+% ----------------------------------------------------------------------
+\begin{frame}{Motivation}
+  \bigskip
+  \begin{itemize}
+  \item Extend the range of applicability of ASP by combining it\\
+    with linear constraints
+    \uncover<2->{while preserving}
+    \smallskip
+    \begin{itemize}\normalsize
+    \item<2-> declarative nature of ASP
+    \smallskip
+    \item<2-> performance of CDCL
+    \end{itemize}
+    \bigskip
+  \item<3-> Builds on ``Theory Solving made easy with Clingo~5'' (ICLP'16) 
+    \medskip
+  \item<4-> Discuss 3 systems: \clingo[DL], \clingo[LP], \clingcon\uncover<5>{ (aka \clingo[CP])}
+    \begin{itemize}
+    \item<6-> semantic issues
+    \item<6-> computaional impacts
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+% ----------------------------------------------------------------------
+\begin{frame}[c,fragile,shrink=20]{Example: Job Shop}
+\smallskip
+\begin{lstlisting}
+% et(T,M,Time) --- execution time for a task
+%  s(T,M,S)    --- order of machines for a task
+
+ task(T)    :- et(T,_,_).
+ machine(M) :- et(_,M,_).
+
+ seq((T,M),(T,M'),Time)  :- s(T,M,S), s(T,M',S+1),
+                            et(T,M,Time).
+
+{seq((T,M),(T',M),Time)} :- s(T,M,S), s(T',M,S'), T<T',
+                            et(T,M,Time), et(T',M,Time').
+
+ seq((T',M),(T,M),Time') :- s(T,M,S), s(T',M,S'), T<T',
+                            et(T,M,Time), et(T',M,Time'),
+                            not seq((T,M),(T',M),Time).
+
+#(\textcolor<2->{red}{start(T,M) + Time <= start(T',M')} :- seq((T,M),(T',M'),Time).
+\end{lstlisting}
+\end{frame}
+% ----------------------------------------------------------------------
+\section{Semantics}
+% ----------------------------------------------------------------------
+\begin{frame}[fragile]{Logic Programs}
+  \begin{itemize}
+  \item A logic program with linear constraints over $\mathcal{A}$ and $\mathcal{L}$ is a set of rules
+    \smallskip
+\begin{lstlisting}[mathescape,numbers=none]
+   a$_1$;...;a$_m$ :- a$_{m+1}$,...,a$_n$,not$\,$a$_{n+1}$,...,not$\,$a$_o$
+\end{lstlisting}
+    \smallskip
+  \item [] where each \lstinline[mathescape]{a$_i$} is either
+    \begin{itemize}\normalsize
+    \item  a regular atom in $\mathcal{A}$ or
+    \item an {lc-atom} in $\mathcal{L}$ of form
+      `\lstinline[mathescape]@&sum{c$_1$*v$_1$;$\dots$;c$_l$*v$_l$}<=b@'
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+% ----------------------------------------------------------------------
+\begin{frame}[fragile]{LC-atoms}
+  \begin{itemize}
+  \item<1-> External Atoms
+    \begin{itemize}
+    \item $\mathcal{L}\setminus\head{P}$ \uncover<2->{ --- only dependent on theory}
+    \end{itemize}
+  \item<1-> Defined Atoms
+    \begin{itemize}
+    \item $\mathcal{L}\cap\head{P}$ \uncover<3->{ --- need to be deriveable by rules}
+    \end{itemize}
+    \medskip
+  \item<4-> Strict Atoms
+    \begin{itemize}
+    \item $\mathcal{L}^\leftrightarrow$ \uncover<5->{ --- atom is true \emph{iff}\/  constraint satisfied}
+    \end{itemize}
+  \item<4-> Non-strict Atoms
+    \begin{itemize}
+    \item $\mathcal{L}^\rightarrow$ \uncover<6->{ --- atom is true \emph{only if}\/ constraint satisfied}
+    \end{itemize}
+    \medskip
+  \item<7-> Sensible combinations for linear constraints
+    \begin{itemize}
+    \item Defined-Nonstrict
+    \item External-Strict
+    \end{itemize}
+    See paper for details
+  \end{itemize}
+\end{frame}
+% ----------------------------------------------------------------------
+\begin{frame}[fragile]{LC-solution}
+  \begin{itemize}
+  \item A set
+    \(
+    \mathcal{S}\subseteq\mathcal{L}
+    \)
+    of lc-atoms
+    is a \emph{linear constraint solution}
+    \smallskip
+  \item []
+    if there is an assignment of reals (or integers) to all real (integer) valued variables represented in $\mathcal{L}$ that
+    \medskip
+    \begin{itemize}\normalsize
+    \item satisfies all linear constraints associated with\par strict and non-strict lc-atoms in $\mathcal{S}$ and
+    \medskip
+    \item falsifies all linear constraints associated with\par strict                lc-atoms in $\mathcal{L}^\leftrightarrow\setminus\mathcal{S}$.
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+% ----------------------------------------------------------------------
+\begin{frame}[fragile]{LC-stable model}
+  \begin{itemize}
+  \item 
+    A set $X\subseteq\mathcal{A}\cup\mathcal{L}$ of atoms
+    is an \emph{lc-stable model} of an lc-program~$P$
+    \smallskip
+  \item []
+    if there is some lc-solution $\mathcal{S}\subseteq\mathcal{L}$ such that
+    $X$ is a (regular) stable model of the logic program
+    \pause
+    \smallskip
+\newcommand{\code}[1]{\text{\texttt{#1}}}
+\begin{align*}
+P\pause
+&{}\cup
+\{\code{a.}       \mid \code{a}\in (\mathcal{L}^\leftrightarrow\setminus\head{P})\cap \mathcal{S}\}\\
+&{}\cup
+\{\code{:- not a.}\mid \code{a}\in (\mathcal{L}^\leftrightarrow\cap\head{P})\cap \mathcal{S}\}
+\\\pause
+&{}\cup
+\{\code{\{a\}.}   \mid \code{a}\in (\mathcal{L}^\rightarrow\setminus\head{P})\cap \mathcal{S}\}\\
+&{}\cup
+\{\code{:- a.}    \mid \code{a}\in (\mathcal{L}\cap\head{P})\setminus \mathcal{S}\}\rlap{.}
+\end{align*}
+\smallskip
+\item<5-> See paper for formal elaboration
+\end{itemize}
+\end{frame}
+% ----------------------------------------------------------------------
+\begin{frame}[fragile,containsverbatim]{Examples}
+\vspace{-\baselineskip}%
+\begin{columns}[t]
+\begin{column}[t]{0.48\linewidth}
+%\leavevmode
+\begin{block}{Defined-Nonstrict}
+\texttt{\{a\}.}\newline
+\texttt{\&sum\{x\} > 7 :- a.}
+\end{block}
+\end{column}
+\begin{column}[t]{0.48\linewidth}
+%\leavevmode
+\begin{block}{External-Strict}
+\visible<3->{
+\texttt{\{a\}.}\newline
+\texttt{:- a, not \&sum\{x\} > 7.}}
+\end{block}
+\end{column}
+\end{columns}
+%
+\begin{columns}
+\begin{column}[t]{0.48\linewidth}
+%\leavevmode
+\begin{block}{Solutions\hfill\small ($\mathtt{x}\in\{1,\dots,10\}$)}
+\visible<2->{%
+\begin{tabular}{l|ll}
+\texttt{a} & & \\
+\texttt{\&sum\{x\}>7} & &\\
+\texttt{x=8..10} & \texttt{x=1..10} &
+\end{tabular}}
+%
+\end{block}
+\end{column}
+\begin{column}[t]{0.48\linewidth}
+%\leavevmode
+\begin{block}{Solutions\hfill\small ($\mathtt{x}\in\{1,\dots,10\}$)}
+\visible<4->{
+ \begin{tabular}{l|l|l}
+\texttt{a} & & \\ 
+\texttt{\&sum\{x\}>7} & \texttt{\&sum\{x\}>7} & \\
+\texttt{x=8..10} & \texttt{x=8..10} & \texttt{x=1..7}
+\end{tabular}}
+\end{block}
+\end{column}
+\end{columns}
+\vspace{\baselineskip}
+\begin{columns}<5->
+\begin{column}[t]{0.48\linewidth}
+Allows for compact representation
+
+%Eg.\
+\clingo[DL],
+\clingo[LP]
+
+\end{column}
+\begin{column}[t]{0.48\linewidth}
+Allow for constraints in the body
+
+%Eg.\
+\clingo[DL],
+\clingo[LP],
+\clingcon, 
+\dlvhex[CP],
+\inca, 
+\dingo, 
+\mingo
+\end{column}
+\end{columns}
+\smallskip
+\visible<6->{\structure{External-Nonstrict}: \ezcsp{}, \ezsmt}
+
+\end{frame}
+% ----------------------------------------------------------------------
+\section{Theory Solving with clingo}
+\begin{frame}[c]{ASP solving process\only<2->{ \alert<2>{modulo theories}}}
+  \begin{center}
+    \small
+    \setlength{\unitlength}{.75pt}
+    \begin{picture}(420,200)(-210,-35)
+      \put(-200,110){{\framebox(80,40){Problem}}}
+      \put(-200,-20){\alert<2->{\framebox(80,40){\shortstack{\textbf<2->{Logic}\\\textbf<2->{Program}}}}}
+      \put(-80,-15){\alert<2->{\framebox(60,30){\textbf<2->{Grounder}}}}
+      \put(  20,-15){\alert<2->{\framebox(60,30){\textbf<2->{Solver}}}}
+      \put( 120,-20){\alert<2->{\framebox(80,40){\shortstack{\textbf<2->{Stable}\\\textbf<2->{Models}}}}}
+      \put( 120,110){\framebox(80,40){Solution}}
+      \put(-120,0){\vector(1,0){40}}
+      \put( -20,0){\vector(1,0){40}}
+      \put(  80,0){\vector(1,0){40}}
+      \put(-160,110){\vector(0,-1){90}}
+      \put( 160, 20){\vector(0, 1){90}}
+      \put(-217, 62.5){{Modeling}}
+      \put( 165, 62.5){{Interpreting}}
+      \alt<3->{\put(   0,-42.5){{\makebox(0,0){Solving}}}}% MULTI-SHOT
+              {\put(   0,-32.5){{\makebox(0,0){Solving}}}}
+      % \only<7>{
+      % \put(-160,-50){\vector(0, 1){30}}
+      % \put( 160,-20){\line(0,-1){30}}
+      % \put(-160,-50){\line(1,0){320}}
+      % \put(   0,-65){\alert<7>{\makebox(0,0){\alert{Elaborating}}}}
+      % }
+      \only<3->{\put(-90,-30){\alert<3>{\framebox(180,60){}}}%
+                \put( 20,0){\vector(-1,0){40}}}
+    \end{picture}
+  \end{center}
+\end{frame}
+% ----------------------------------------------------------------------
+\begin{frame}[c]{\clingo's approach}
+  \begin{center}
+  \thicklines\small
+  \setlength{\unitlength}{1.25pt}
+    \begin{picture}(280,60)
+    \put(  2, 20){\dashbox(35,30){\small\shortstack{{T-ASP}\\Program}}}
+    \put( 50, 10){\framebox(170,50){}}
+    \put( 65, 20){\framebox(60,30){\normalsize\gringo\ \qquad}}
+    \put(145, 20){\framebox(60,30){\normalsize\clasp\ \qquad}}      
+    \put(100, 25){\framebox(20,10){\small{\alert<2>{\textbf<2>{T}}}}}
+    \put(180, 25){\framebox(20,10){\small{\alert<3>{\textbf<3>{T}}}}}
+    \put(235, 20){\dashbox(35,30){\small\shortstack{{T-}ASP\\Solution}}}
+%    \put(120, 35){\vector(1,0){30}}
+    \put( 37, 35){\vector(1,0){13}}
+    \put(220, 35){\vector(1,0){15}}
+    \put(  2, 55){\dashbox(35,30){\small\shortstack{{Theory \alert<2>{\textbf<2>{T}}}\\Grammar}}}
+    \put( 37, 72){\line(1,0){3}}
+    \put( 40, 72){\line(0,-1){37}}    
+    \put(  2,-15){\dashbox(35,30){\small\shortstack{Theory \alert<3>{\textbf<3>{T}}\\\footnotesize{Propagator}}}}
+    \put( 37,  2){\line(1,0){3}}
+    \put( 40,  2){\line(0,1){33}}
+  \end{picture}
+  \end{center}
+\end{frame}
+% ----------------------------------------------------------------------
+\subsection{Theory Grammar}
+% ----------------------------------------------------------------------
+\begin{frame}[fragile]{\clingo[DL]}
+  \small
+\begin{lstlisting}
+ #theory dl {
+     constant  { - : 1, unary};
+     diff_term { - : 1, binary, left};
+
+     &diff/0 : diff_term, {<=}, constant, any
+ }.    
+\end{lstlisting}
+
+  \only<2>{\normalsize{\bigskip\structure{Example} \ `$(x_1-x_2)\leq k$' is represented as `\lstinline{&diff \{ x(1)-x(2) \} <= k}'}}%
+  \begin{onlyenv}<3>
+\begin{lstlisting}
+ #const n=2. 
+ task(1..n).  
+
+ duration(T,200*T) :- task(T). 
+
+ &diff{end(T)-beg(T)} <= D :- duration(T,D). 
+\end{lstlisting}
+  \end{onlyenv}
+  \begin{onlyenv}<4>
+\begin{lstlisting}
+
+ task(1).  task(2).   
+
+ duration(1,200).  duration(2,400).
+
+ &diff{end(1)-beg(1)}<=200.  &diff{end(2)-beg(2)}<=400.
+\end{lstlisting}
+  \end{onlyenv}
+\end{frame}
+% ----------------------------------------------------------------------
+\begin{frame}[fragile,shrink=1]{clingcon}
+\begin{lstlisting}
+#theory csp {
+    linear_term {                      show_term {            
+      + : 5, unary;                      / : 1, binary, left  
+      - : 5, unary;                    };                     
+      * : 4, binary, left;             
+      + : 3, binary, left;             
+      - : 3, binary, left              minimize_term {        
+    };                                   + : 5, unary;        
+                                         - : 5, unary;        
+    dom_term {                           * : 4, binary, left; 
+      + : 5, unary;                      + : 3, binary, left; 
+      - : 5, unary;                      - : 3, binary, left; 
+      .. : 1, binary, left               @ : 0, binary, left  
+    };                                 };                     
+
+    &dom/0 : dom_term, {=}, linear_term, any;
+    &sum/0 : linear_term, {<=,=,>=,<,>,!=}, linear_term, any;
+    &distinct/0 : linear_term, any;
+    &show/0 : show_term, directive;
+    &minimize/0 : minimize_term, directive
+}.    
+\end{lstlisting}
+\end{frame}
+% ----------------------------------------------------------------------
+\begin{frame}[fragile,shrink=20]{send+more=money}
+\begin{lstlisting}
+#include <csp>.
+
+letter(s;e;n;d;m;o;r;y).
+&dom {0..9} = X :- letter(X).
+
+&sum {           1000*s;  100*e;  10*n;  1*d;
+                 1000*m;  100*o;  10*r;  1*e;
+      -10000*m; -1000*o; -100*n; -10*e; -1*y} = 0.
+&sum {m} != 0.
+
+&distinct {X : letter(X)}.
+
+&show {X : letter(X)}.
+\end{lstlisting}
+\end{frame}
+% ----------------------------------------------------------------------
+\begin{frame}[fragile,shrink=20]{\clingo[LP]}
+\begin{lstlisting}
+#theory lp {
+    lin_term {                     bounds{               
+      - : 2, unary;                  - : 4, unary;         
+      * : 1, binary, left;           * : 3, binary, left;  
+      + : 0, binary, left;           / : 2, binary, left;  
+      - : 0, binary, left            + : 1, binary, left;  
+    };                               - : 1, binary, left;  
+                                    .. : 0, binary, left  
+                                   };
+
+    &sum/0   : lin_term, {<=,>=,>,<,=,!=}, bounds, any;
+    &minimize/0 : lin_term, head;
+    &maximize/0 : lin_term, head;
+    &dom/0 : bounds, {=}, lin_term, head
+}.
+\end{lstlisting}
+\end{frame}
+% ----------------------------------------------------------------------
+\begin{frame}[fragile,shrink=20]{Example}
+\begin{lstlisting}
+#include "linprog.lp".
+
+node(1).    in(1,"3.14",e1).                  out(1,3,e2).
+node(2).    in(2,3,e2).       in(2,"4.2",e3). out(2,5,e4).
+
+target(e4).
+
+&dom{0..100}=E :-  in(_,_,E).
+&dom{0..100}=E :- out(_,_,E).
+
+&sum{ IW*IE   :  in(N,IW,IE) ;
+     -OW*OE   : out(N,OW,OE) } = 0 :- node(N).
+
+&maximize{ T : target(T) }.
+\end{lstlisting}
+\end{frame}
+% ----------------------------------------------------------------------
+\subsection{Theory Propagators}
+% ----------------------------------------------------------------------
+\begin{frame}[c]{Architecture of \textit{clasp}}
+\setbeamercovered{transparent}
+\input{../../../Talks/Theory/arch_clasp2_mt_overview}
+\end{frame}
+% ----------------------------------------------------------------------
+\begin{frame}[fragile,shrink=1]{The \textit{dot} propagator}
+\begin{lstlisting}[linebackgroundcolor={%
+      \btLstHL<1>{26-28}%
+      \btLstHL<2>{7-10}%
+      \btLstHL<3>{12-17}%
+      \btLstHL<4>{19-23}%
+    }]
+#script (python)
+
+import sys
+import time
+
+class Propagator:
+    def init(self, init):
+        self.sleep = .1
+        for atom in init.symbolic_atoms:
+            init.add_watch(atom.literal)
+
+    def propagate(self, ctl, changes):
+        for l in changes:
+            sys.stdout.write(".")
+            sys.stdout.flush()
+            time.sleep(self.sleep)
+        return True
+
+    def undo(self, solver_id, assign, undo):
+        for l in undo:
+            sys.stdout.write("\b \b")
+            sys.stdout.flush()
+            time.sleep(self.sleep)
+
+def main(prg):
+    prg.register_propagator(Propagator())
+    prg.ground([("base", [])])
+    prg.solve()
+    sys.stdout.write("\n")
+
+#end.
+\end{lstlisting}
+\end{frame}
+% ----------------------------------------------------------------------
+\begin{frame}{Our propagators}
+  \smallskip
+  \begin{itemize}
+  \item \clingo[DL]
+    \begin{itemize}
+    \item Difference constraints over reals and integers
+    \item Stateless and stateful propagator (Python, C++)
+    \item Design space exploration 
+    \end{itemize}
+    \smallskip
+  \item \clingo[LP]
+    \begin{itemize}
+    \item Linear constraints over reals and integers
+    \item Interface to \textit{cplex}, \textit{lpsolve} (Python)
+    \item Hybrid metabolic network completion
+    \end{itemize}
+    \smallskip
+  \item \clingcon-3
+    \begin{itemize}
+    \item Linear constraints over integers
+    \item Stateful propagator (C++)
+    \item Planning and scheduling
+    \end{itemize}
+  \item See paper for empirical analysis (incl.\ \dingo, \mingo, \ezcsp, \ezsmt)
+  \end{itemize}
+\end{frame}
+% ----------------------------------------------------------------------
+\section{Multi-Shot Theory Solving}
+% ----------------------------------------------------------------------
+\begin{frame}[fragile,shrink=20]{Spoiled Yale Shooting Problem}
+\begin{lstlisting}[linebackgroundcolor={%
+      \btLstHL<1>{1-1}%
+      \btLstHL<2>{3-9}%
+      \btLstHL<3>{11-12}%
+      \btLstHL<4>{14-23}%
+    }]
+#include "incmode_lc.lp".
+
+#program base.
+
+  action(load).       action(shoot).      action(wait).
+duration(load,25).  duration(shoot,5).  duration(wait,36).
+
+&sum {    at(0) } = 0.                  unloaded(0).
+&sum { armed(0) } = 0.
+
+#program step(n).
+[...]
+
+#program check(n).
+
+:- not dead(n), query(n).
+:- not &sum { at(n) } <= 100, query(n).
+:- do(shoot,n), not &sum { at(n) } > 35.
+\end{lstlisting}
+\end{frame}
+% ----------------------------------------------------------------------
+\begin{frame}[fragile,shrink=20]{Spoiled Yale Shooting Problem}
+\begin{lstlisting}[linebackgroundcolor={%
+      \btLstHL<1>{1-1}%
+      \btLstHL<2>{3-4}%
+      \btLstHL<3>{6-8}%
+      \btLstHL<4>{10-12}%
+      \btLstHL<5>{13-16}%
+    }]
+#program step(n).
+
+ { do(X,n) : action(X) } = 1.
+&sum { at(n); -at(n-1) } = D :- do(X,n), duration(X,D).
+
+loaded(n)   :-   loaded(n-1), not unloaded(n).
+unloaded(n) :- unloaded(n-1), not   loaded(n).
+dead(n)     :-     dead(n-1).
+
+&sum { armed(n)              } = 0 :- unloaded(n-1).
+&sum { armed(n); -armed(n-1) } = D :- do(X,n), duration(X,D),
+                                      loaded(n-1).
+loaded(n)   :- do(load,n).
+unloaded(n) :- do(shoot,n).
+dead(n)     :- do(shoot,n), &sum { armed(n) } <= 35.
+            :- do(shoot,n), unloaded(n-1).
+\end{lstlisting}
+\end{frame}
+% ----------------------------------------------------------------------
+\section{Summary}
+% ----------------------------------------------------------------------
+\begin{frame}{Summary}
+  \begin{itemize}
+  \item  ASP with Linear Constraints
+    \smallskip
+    \begin{itemize}
+    \item Theory language via ASP-oriented grammars
+    \item Theory reasoning via propagators (or translation)
+    \item Theory APIs (Lua, Python, C++)
+    \item Multi-Shot Solving
+    \end{itemize}
+    \medskip
+  \item <2-> \clingo~5 \ = \ ASP $+$ \alert<3-4>{Control} $+$ \alert<3-4>{Theories}
+    \smallskip
+    \begin{itemize}\normalsize
+    \item <2-> \alert<4>{Control} and \alert<4>{Theories} are \alert<4>{door openers} for ASP\par as regards embedded and complex applications
+      \smallskip
+    \item <2-> Open infrastructure for customized hybridization of ASP
+    \end{itemize}
+    \bigskip
+  \item <3-> Have fun at\ \alert{\url{potassco.org}}~!
+  \end{itemize}
+\end{frame}
+\end{document}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% TeX-PDF-mode: t 
+%%% End: 

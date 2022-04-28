@@ -1,0 +1,157 @@
+\newcommand{\head}[1]{\ensuremath{\mathit{head}(#1)}} % {\ensuremath{h(#1)}}
+\newcommand{\naf}[1]{\ensuremath{{\sim}{#1}}}
+
+\newcommand{\Tsign}{\ensuremath{\mathbf{T}}}
+\newcommand{\Fsign}{\ensuremath{\mathbf{F}}}
+
+\newcommand{\Bss}{\ensuremath{\mathbf{B}}}
+\newcommand{\Css}{\ensuremath{\mathbf{C}}}
+\newcommand{\Tass}[1]{\ensuremath{#1^{\Tsign}}}
+\newcommand{\Fass}[1]{\ensuremath{#1^{\Fsign}}}
+
+
+% - systems ----------------------------------------------------------------------
+%
+\newcommand{\sysfont}{\textit}
+\newcommand{\acthex}{\sysfont{acthex}}
+\newcommand{\adsolver}{\sysfont{adsolver}}
+\newcommand{\asparagus}{\sysfont{asparagus}}
+\newcommand{\aspartame}{\sysfont{aspartame}}
+\newcommand{\aspic}{\sysfont{aspic}}
+\newcommand{\aspmt}{\sysfont{aspmt}}
+\newcommand{\asprin}{\sysfont{asprin}}
+\newcommand{\assat}{\sysfont{assat}}
+\newcommand{\berkmin}{\sysfont{berkmin}}
+\newcommand{\claspD}{\sysfont{claspD}}
+\newcommand{\claspar}{\sysfont{claspar}}
+\newcommand{\claspfolio}{\sysfont{claspfolio}}
+\newcommand{\clasp}{\sysfont{clasp}}
+\newcommand{\clingcon}{\sysfont{clingcon}}
+\newcommand{\clingo}{\sysfont{clingo}}
+\newcommand{\cmodels}{\sysfont{cmodels}}
+\newcommand{\coala}{\sysfont{coala}}
+\newcommand{\dingo}{\sysfont{dingo}}
+\newcommand{\dlvhex}{\sysfont{dlvhex}}
+\newcommand{\dlv}{\sysfont{dlv}}
+\newcommand{\gasp}{\sysfont{gasp}}
+\newcommand{\ezcsp}{\sysfont{ezcsp}}
+\newcommand{\ezsmt}{\sysfont{ezsmt}}
+\newcommand{\ftolp}{\sysfont{f2lp}}
+\newcommand{\gecode}{\sysfont{gecode}}
+\newcommand{\gidl}{\sysfont{gidl}}
+\newcommand{\gnt}{\sysfont{gnt}}
+\newcommand{\gringo}{\sysfont{gringo}}
+\newcommand{\iclingo}{\sysfont{iclingo}}
+\newcommand{\idp}{\sysfont{idp}}
+\newcommand{\inca}{\sysfont{inca}}
+\newcommand{\jdlv}{\sysfont{jdlv}}
+\newcommand{\lctocasp}{\sysfont{lc2casp}}
+\newcommand{\lparse}{\sysfont{lparse}}
+\newcommand{\lptodiff}{\sysfont{lp2diff}}
+\newcommand{\lptosat}{\sysfont{lp2sat}}
+\newcommand{\mchaff}{\sysfont{mchaff}}
+\newcommand{\metasp}{\sysfont{metasp}}
+\newcommand{\mingo}{\sysfont{mingo}}
+\newcommand{\minisat}{\sysfont{minisat}}
+\newcommand{\nomorepp}{\sysfont{nomore++}}
+\newcommand{\oclingo}{\sysfont{oclingo}}
+\newcommand{\omiga}{\sysfont{omiga}}
+\newcommand{\piclasp}{\sysfont{piclasp}}
+\newcommand{\picosat}{\sysfont{picosat}}
+\newcommand{\plasp}{\sysfont{plasp}}
+\newcommand{\quontroller}{\sysfont{quontroller}}
+\newcommand{\rosoclingo}{\sysfont{rosoclingo}}
+\newcommand{\sag}{\sysfont{sag}}
+\newcommand{\satz}{\sysfont{satz}}
+\newcommand{\siege}{\sysfont{siege}}
+\newcommand{\smodelscc}{\sysfont{smodels$_{\!cc}$}}
+\newcommand{\smodelsr}{\sysfont{smodels}$_r$}
+\newcommand{\smodels}{\sysfont{smodels}}
+\newcommand{\sugar}{\sysfont{sugar}}
+\newcommand{\unclasp}{\sysfont{unclasp}}
+\newcommand{\wasp}{\sysfont{wasp}}
+\newcommand{\zchaff}{\sysfont{zchaff}}
+\newcommand{\zzz}{\sysfont{z3}}
+
+\RestyleAlgo{algoruled}
+\DontPrintSemicolon
+%\LinesNumbered
+\SetAlgoVlined
+\SetFuncSty{textsc}
+
+\SetKwInOut{Global}{Global}
+\SetKwInOut{Input}{Input}
+\SetKwInOut{Output}{Output}
+\SetKw{Backtrack}{return}
+\SetKw{Print}{print}
+\SetKw{Return}{return}
+\SetKw{Exit}{exit}
+\SetKw{Or}{or}
+\SetKw{Continue}{continue}
+\SetKwFunction{Select}{Select}
+\SetKwFunction{Conflict}{Conflict}
+\SetKwFunction{RootConflict}{RootConflict}
+\SetKwFunction{Backtrack}{Backtrack} \newcommand{\BacktrackArg}[2]{\ensuremath{\textsc{Backtrack}_{#1}(#2)}}
+\SetKwFunction{Complete}{Complete}
+%\SetKwFunction{Propagation}{Propagation} \newcommand{\PropagationArg}[2]{\ensuremath{\textsc{Propagation}_{#1}(#2)}}
+\SetKwFunction{Propagation}{Propagation} \newcommand{\PropagationArg}[2]{\ensuremath{\textsc{Propagation}(#2)}}
+\SetKwFunction{Translate}{Translate} \newcommand{\TranslateArg}[2]{\ensuremath{\textsc{Translate}(#2)}}
+\SetKwFunction{Print}{Print} \newcommand{\PrintArg}[2]{\ensuremath{\textsc{Print}_{#1}(#2)}}
+\SetKwFunction{Split}{Split} \newcommand{\SplitArg}[2]{\ensuremath{\textsc{Split}_{#1}(#2)}}
+\SetKwFunction{Select}{Select}
+\SetKwFunction{UnitPropagation}{UnitPropagation}  \newcommand{\UnitPropagationArg}[2]{\ensuremath{\textsc{UnitPropagation}_{#1}(#2)}}
+\SetKwFunction{UfsPropagation}{UfsPropagation}  \newcommand{\UfsPropagationArg}[2]{\ensuremath{\textsc{UfsPropagation}_{#1}(#2)}}
+%\SetKwFunction{CspPropagation}{CspPropagation}  \newcommand{\CspPropagationArg}[2]{\ensuremath{\textsc{CspPropagation}_{#1}(#2)}}
+\SetKwFunction{CspPropagation}{CspPropagation}  \newcommand{\CspPropagationArg}[2]{\ensuremath{\textsc{CspPropagation}(#2)}}
+\SetKwFunction{Reduce}{Reduce} \newcommand{\ReduceArg}[2]{\ensuremath{\ReduceFunction_{#1}(#2)}}
+\SetKwFunction{ConflictAnalysis}{Con\-flict\-Ana\-ly\-sis}  \newcommand{\ConflictAnalysisArg}[2]{\ensuremath{\textsc{ConflictAnalysis}_{#1}(#2)}}
+\SetKwFunction{NonTight}{NonTight}
+\SetKwFunction{UnFoundedSet}{UnfoundedSet}
+\SetKwFunction{LoopFormula}{LoopNogood}
+\SetKwFunction{CDNL}{CDNL-ASP}
+\SetKwFunction{Enum}{CDNL-ENUM-ASP} % {CDNL-ASP-enum}
+\SetKwFunction{Translate}{Translate}
+\SetKwFunction{Create}{Create}
+\SetKwFunction{Labeling}{Labeling} \newcommand{\LabelingArg}[2]{\ensuremath{\textsc{Labeling}_{#1}(#2)}}
+\SetKw{Continue}{continue}
+\SetKwFunction{size}{size}
+\SetKwFunction{remove}{remove}
+\SetKwFunction{vars}{vars}
+%\SetKwFor{Let}{let}{in}{tel}
+\SetKwIF{Let}{}{}{let}{in}{}{}{tel}
+\SetKw{SuchThat}{such that}
+\SetKw{ForSome}{for some}
+\SetKw{ForAll}{for all}{}{}
+\SetKwFor{Such}{let}{\SuchThat}{tel}
+\SetKwFor{IN}{}{in}{tel}
+\SetKwFor{Loop}{loop}{}{}
+\SetKwFor{While}{while}{}{}
+\SetCommentSty{textit}
+
+\newcommand{\clingod}[1]{\clingo\textnormal{[}\textsc{#1}\textnormal{]}}
+\newcommand{\ASPm}[1]{ASP\raisebox{.7pt}{[\textsc{#1}]}}
+\newcommand{\T}{\textsc{t}}
+\newcommand{\TO}{\textsc{to}}
+\newcommand{\dl}{\textsc{dl}}
+\newcommand{\lc}{\textsc{lc}}
+\newcommand{\tsp}{\textsc{2sp}}
+\newcommand{\fs}{\textsc{fs}}
+\newcommand{\js}{\textsc{js}}
+\newcommand{\os}{\textsc{os}}
+\newcommand{\is}{\textsc{is}}
+\newcommand{\rf}{\textsc{rf}}
+\newcommand{\ws}{\textsc{ws}}
+\newcommand{\class}{\textsc{class}}
+\newcommand{\clingolc}[3]{\textsc{#1}/\textsc{#2}/\textsc{#3}}
+\newcommand{\atomtype}[1]{\textsc{#1}}
+\newcommand{\lcatype}[2]{#1+#2}
+\newcommand{\na}{--}
+\newcommand{\PS}[2]{\ensuremath{#1|_{\mathcal{#2}}}}
+\newcommand{\smset}[1]{\ensuremath{\mathcal{X}(#1)}}
+\newcommand{\smsetlc}[1]{\ensuremath{\mathcal{X}_{\textsc{lc}}(#1)}}
+\newcommand{\union}[2]{\ensuremath{\bigcup_{#1, #2}}} 
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

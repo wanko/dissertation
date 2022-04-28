@@ -1,0 +1,108 @@
+
+\paragraph{USA-Advisor}
+\begin{itemize}
+\item Description copied from \cite{balduccini10a}:
+Problem instances from the task of planning for the Reaction Control System of the Space Shuttle \cite{balgelnog06a,nogueira03a}. 
+A collection of problem instances from the domain of the RCS is publicy available, at 
+http://www.krlab.cs.ttu.edu/Software/Download/,
+together with the ASP encodings of the model of the RCS and of various reasoning modules.
+The interesed reader may refer to \cite{nogueira03a} for a description of the instances.
+\item 
+For our evaluation, we used the public instances (2000) and for each 
+one we consider plan lenghts 1 to 10. In total, 20000 runs. 
+\item
+First heuristic (Forward): Forward search on actions:
+\begin{lstlisting}
+_h(occurs(A,T),true,l-T) :- 
+	 action_of(A,R), time(T).
+\end{lstlisting}
+\item
+Second heuristic (Forward-Sub): The RCS is divided in three subsystems, 
+fwd\_rcs, left\_rcs and right\_rcs, of which only the last two are interconnected.
+With this heuristic we do forward search on actions subsystem by subsystem, in order. 
+First we solve subsystem fwd\_rcs, then subsystem left\_rcs and finally subsystem right\_rcs:
+\begin{lstlisting}
+_heuristic(occurs(A,T),true,3*l-T) :- 
+           action_of(A,R), time(T), R=fwd_rcs.
+_heuristic(occurs(A,T),true,2*l-T) :- 
+           action_of(A,R), time(T), R=left_rcs.
+_heuristic(occurs(A,T),true,1*l-T) :- 
+           action_of(A,R), time(T), R=right_rcs.
+\end{lstlisting}
+If the systems $R$ were represented by numbers 1, 2 and 3, we could simply write:
+\begin{lstlisting}
+_heuristic(occurs(A,T),true,R*l-T) :- 
+           action_of(A,R), time(T).
+\end{lstlisting}
+\item All instances are solved very fast. 
+I give for the 20000 runs the average for:
+runsolver time, 
+solving time that appears in clasp output, 
+number of conflicts and number of choices. 
+I also give the same data for satisfiable instances, 
+and for unsatisfiable ones.
+In Table \ref{tab:usa-advisor} i put a sample table with data of all instances  
+and of satisfiable instances.
+\item 
+Follows the data so that a macro can be applied for formatting
+\item
+X,time,solve,conflicts,choices,time-sat,solve-sat,conflicts-sat,choices-sat,time-unsat,solve-unsat,conflicts-unsat,choices-unsat
+clasp,0.2234,0.0087,40.8,1043.2,0.319,0.0215,98,2561.4,0.1632,0.0006,4.8,87.1
+hclasp-forward,0.2241,0.0031,8.4,21.1,0.31,0.0017,5.7,21.8,0.17,0.004,10.1,20.6
+hclasp-forward-sub,0.2223,0.0015,6.5,14.1,0.3096,0.0019,6.6,22.3,0.1673,0.0013,6.5,9
+\item
+Results for all instances:
+Similar runsolver time, 
+forward three times less solving-time than vsids, 
+and forward-sub six times less solving-time than vsids. 
+Forward much less conflicts and choices than vsids
+(1 and 2 orders of magnitude, respectively), 
+and forward-sub even improves a bit Forward.
+\item
+Results for satisfiable instances:
+Similar runsolver time, 
+forward and forward-sub one order of magnitude less solving-time than vsids.
+For conflicts and choices the differences now are bigger, 
+keeping 1 and 2 orders of magnitude.
+\item
+Results for unsatisfiable instances:
+Similar runsolver time,
+forward-sub double solving-time than vsids, 
+and forward six times more solving-time than vsids.
+For conflicts forward-sub does a bit more than vsids, 
+and forward doubles vsids.
+For choices forward-sub does the least (9) then forward does 20 and vsids moves to 90.
+So vsids does more choices but less conflicts. 
+forward and forward-sub one order of magnitude less solving-time than vsids.
+For conflicts and choices the differences now are bigger, 
+keeping 1 and 2 orders of magnitude.
+\item Summary of the results: 
+\begin{itemize}
+\item
+for runsolving time there are no differences because solving is extremely fast
+\item 
+for clasp-solving time on SAT instances hclasp in both cases wins by one order of magnitude,
+while for UNSAT vsids is better, 2 times faster than forward-sub and six times faster than forward
+\item 
+hclasp does less conflicts on SAT instances (one order of magnitude) and does more conflicts on UNSAT instances
+\item 
+hclasp does always less choices, two orders of magnitude less for SAT instances, and one for UNSAT
+\item forward is just a bit better than forward-sub on SAT, 
+but forward-sub is better on UNSAT (three times less solving time, half choices and conflicts).
+\end{itemize}
+\item With tetris i got no improvements.
+
+\end{itemize}
+
+ \begin{table*}[ht]
+   \centering
+   \begin{tabular}{|c|cc|}
+     \hline
+system & SAT (time/solving time/conflicts/choices) & SAT (time/solving time/conflicts/choices) \\ \hline     
+clasp & 0.2234/0.0087/40.8/1043.2 & 0.319/0.0215/98/2561.4/0.1632 \\ \hline
+hclasp-forward & 0.2241/0.0031/8.4/21.1 & 0.31/0.0017/5.7/21.8/0.17 \\ \hline
+hclasp-forward-subsystems & 0.2223/0.0015/6.5/14.1 & 0.3096/0.0019/6.6/22.3/0.1673 \\ \hline
+   \end{tabular}
+   \caption{}
+   \label{tab:usa-advisor}
+ \end{table*}

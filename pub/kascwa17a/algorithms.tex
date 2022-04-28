@@ -1,0 +1,143 @@
+\subsection{Algorithmic aspects}
+\label{sec:algo}
+
+The algorithmic approach to ASP solving modulo theories of \clingo, 
+or more precisely that of its underlying ASP solver \clasp, 
+follows the lazy approach to solving in Satisfiability Modulo Theories (SMT~\cite{baseseti09a}).
+We give below an abstract overview that serves as light algorithmic underpinning for the description of \clingo's implementation
+given in the next section.
+
+As detailed in~\cite{gekasc09c}, a ground program~$P$ induces
+\emph{completion} and \emph{loop nogoods}, called $\Delta_P$ or $\Lambda_P$, respectively,
+that can be used for computing stable models of $P$.
+%
+Nogoods represent invalid partial assignments and can be thought of as negative Boolean constraints.
+%
+We represent (partial) assignments as consistent sets of literals.
+%
+An assignment is total if it contains either the positive or negative literal of each atom.
+We say that a nogood is violated by an assignment if the former is contained in the latter;
+a nogood is unit if all but one of its literals are in the assignment. 
+%
+Each total assignment not violating any nogood in $\Delta_P\cup\Lambda_P$
+yields a regular stable model of~$P$, and such an assignment is called a solution
+(for $\Delta_P\cup\Lambda_P$).
+%
+To accommodate theories,
+we identify a theory $T$ with a set $\Delta_T$ of \emph{theory nogoods},%
+\footnote{See \cite{gekakaosscwa16a} for different ways of associating theories with nogoods.}
+and extend the concept of a solution in the straightforward way.
+
+The nogoods in $\Delta_P\cup\Lambda_P\cup\Delta_T$ provide the
+logical fundament for the Conflict-Driven Constraint Learning (CDCL) procedure
+(cf.\ \cite{malyma09a,gekasc09c})
+outlined in Figure~\ref{fig:cdcl}.
+While the completion nogoods in~$\Delta_P$ are usually made explicit and subject to
+unit propagation,%
+\footnote{Unit propagation extends an assignment with literals complementary to the ones missing in unit nogoods.}
+the loop nogoods in~$\Lambda_P$ as well as theory nogoods in~$\Delta_T$ are typically
+handled by dedicated propagators and particular members are selectively recorded.
+
+\begin{figure}[t]
+  \newcounter{cddl}
+  \setcounter{cddl}{8}
+  \renewcommand{\thecddl}{\Alph{cddl}}
+  \begin{tabbing}
+   (XX)  \= XX \= XX \= XX \= \kill%
+   \refstepcounter{cddl}(\thecddl)\label{fig:cdcl:init}
+         \> \textit{initialize} \` // register theory propagators and initialize watches \\
+         \> \textbf{loop} \\
+         \> \> \textit{propagate} completion, loop, and recorded nogoods
+               \` // deterministically assign literals \\
+         \> \> \textbf{if} no conflict \textbf{then} \\
+         \> \> \> \textbf{if} all variables assigned \textbf{then} \\
+   \setcounter{cddl}{2}%
+   \refstepcounter{cddl}(\thecddl)\label{fig:cdcl:check}
+         \> \> \> \> \textbf{if} some $\delta\in\Delta_T$ is violated \textbf{then} record $\delta$
+                     \` // theory propagators check $\Delta_T$ \\
+         \> \> \> \> \textbf{else} \textbf{return} variable assignment
+                   \`// theory-based stable model found \\
+         \> \> \> \textbf{else} \\
+   \setcounter{cddl}{15}%
+   \refstepcounter{cddl}(\thecddl)\label{fig:cdcl:propagate}
+         \> \> \> \> \textit{propagate} theories
+                     \`// theory propagators may record theory nogoods from $\Delta_T$ \\
+         \> \> \> \> \textbf{if} no nogood recorded \textbf{then} \textit{decide}
+                     \`// non-deterministically assign some literal \\
+         \> \> \textbf{else} \\
+         \> \> \> \textbf{if} top-level conflict \textbf{then} \textbf{return} unsatisfiable \\
+         \> \> \> \textbf{else} \\
+         \> \> \> \> \textit{analyze} \`// resolve conflict and record a conflict constraint \\
+   \setcounter{cddl}{20}%
+   \refstepcounter{cddl}(\thecddl)\label{fig:cdcl:undo}
+         \> \> \> \> \textit{backjump} \`// undo assignments until conflict constraint is unit
+ \end{tabbing}
+\caption{Basic algorithm for Conflict-Driven Constraint Learning (CDCL) modulo theories}
+\label{fig:cdcl}
+\end{figure}%
+%
+While a dedicated propagator for loop nogoods is built-in in systems like \clingo,
+those for theories are provided via the interface \textbf{Propagator} in Figure~\ref{fig:interface}.
+To utilize custom propagators,
+the algorithm in Figure~\ref{fig:cdcl} includes an \emph{initialization} step in line~(\ref{fig:cdcl:init}).
+In addition to the ``registration'' of a propagator for a theory
+as an extension of the basic CDCL procedure,
+common   tasks performed in this step include setting up internal data structures and
+so-called watches for (a subset of) the theory atoms,
+so that the propagator will be invoked (only) when some watched literal gets assigned.
+
+As usual,
+the main CDCL loop starts with unit propagation on completion and loop nogoods,
+the latter handled by the respective built-in propagator, as well as any nogoods
+already recorded.
+If this results in a non-total assignment without conflict,
+theory propagators for which some of their watched literals have been assigned
+are invoked in line~(\ref{fig:cdcl:propagate}).
+A propagator for a theory~$T$ can then inspect the current assignment,
+update its data structures accordingly, and most importantly,
+perform \emph{theory propagation} determining theory nogoods $\delta\in\Delta_T$ to record.
+Usually, any such nogood~$\delta$ is unit in order to trigger a conflict or unit propagation,
+although this is not a necessary condition.
+The interplay of unit and theory propagation continues until a conflict or
+total assignment arises,
+or no (further) watched literals of theory propagators get assigned by unit propagation.
+In the latter case, some non-deterministic decision is made to extend the partial
+assignment at hand and then to proceed with unit and theory propagation.
+
+If no conflict arises and an assignment is total,
+in line~(\ref{fig:cdcl:check}), theory propagators are called, one by one,
+for a final \emph{check}.
+The idea is that, e.g., a ``lazy'' propagator for a theory~$T$
+that does not exhaustively test violations of its theory nogoods by partial assignments
+can make sure that the assignment is indeed a solution for~$\Delta_T$, or record some
+violated nogood(s) from $\Delta_T$ otherwise.
+Even in case theory propagation on partial assignments is exhaustive and a final
+check is not needed to detect conflicts,
+the information that search led to a total assignment can be useful in practice, e.g.,
+to store values for integer variables like
+\lstinline{start(1)},
+\lstinline{start(2)},
+\lstinline{end(1)}, and
+\lstinline{end(2)} in Listing~\ref{prg:grd:diff}
+that witness the existence of a solution for $T$.
+
+Finally, in case of a conflict, i.e., some completion or recorded nogood is violated by
+the current assignment,
+provided that some non-deterministic decision is involved in the conflict,
+a new conflict constraint is recorded and utilized to guide backjumping
+in line~(\ref{fig:cdcl:undo}), as usual with CDCL.
+In a similar fashion as the assignment of watched literals serves as
+trigger for theory propagation, theory propagators are informed when they become
+unassigned upon backjumping.
+This allows the propagators to \emph{undo} earlier operations, e.g., internal data structures can be
+reset to return   to a state taken prior to the assignment of watches.
+
+In summary, the basic CDCL procedure is extended in four places to account for
+custom propagators: initialization, propagation of (partial) assignments,
+final check of total assignments, and undo steps upon backjumping.
+% The next section presents the corresponding interface of \clingo.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End:

@@ -1,0 +1,104 @@
+%% $Id:  $
+%% $HeadURL:  $
+\documentclass[fleqn]{new_tlp}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{newtxtext,newtxmath} % \usepackage{times,helvet,courier}
+\usepackage{url}
+\usepackage{listings}
+\usepackage{microtype}
+\DisableLigatures{encoding = T1, family = tt*}
+
+\lstset{basicstyle=\ttfamily\small}
+\usepackage[boxruled,vlined,linesnumbered]{algorithm2e}
+\SetKwInOut{Input}{Input}
+\SetKwInOut{Output}{Output}
+\SetKwInOut{Internal}{Internal}
+\SetKwFor{Loop}{loop}{}{}
+\SetKwRepeat{Repeat}{repeat}{until}
+\usepackage{enumitem}
+\usepackage{hhline}
+\usepackage{graphicx} 
+
+% \newlist{qenumerate}{enumerate}{1}
+% \setlist[UR]{label=Q-\arabic*:}
+
+
+\input{macro} 
+\newtheorem{definition}{Definition}
+\newtheorem{proposition}{Proposition}
+\newcommand{\mysubsection}[2]{\smallskip\noindent\textbf{#1.}}
+\newcommand{\myparagraph}[1]{\smallskip\noindent\textit{#1.}}
+\newcommand{\mysubparagraph}[1]{\par\textit{#1}}
+
+%\usepackage{comments} % https://svn.cs.uni-potsdam.de/svn/reposWV/TeXInputs/trunk/comments.sty
+%\def\SVNREVISION{$LastChangedRevision: 42 $} % <== is automatically inserted by svn
+
+\sloppy
+
+\title[Computing Diverse Optimal Stable Models]{Computing Diverse Optimal Stable Models\\[4pt]\small{---System Description---}}
+
+\author[Javier Romero, Torsten Schaub, Philipp Wanko]{%
+  Javier Romero$^1$
+  \quad
+  Torsten Schaub$^{1,2}$% \thanks{Affiliated with the
+                      %         School of Computing Science at
+                      %         Simon Fraser University,
+                      %         Burnaby, Canada,
+                      %         and the
+                      %         Institute for Integrated and Intelligent Systems
+                      %         at
+                      %         Griffith University,
+                      %         Brisbane, Australia.}
+  \quad
+  Philipp Wanko$^1$
+  \\
+  $^1$Universit\"at Potsdam
+  \quad
+  $^2$INRIA Rennes}
+
+\submitted{6 May 2016}
+\revised{[n/a]}
+\accepted{[n/a]}
+
+\pdfinfo{
+/Title (Computing Diverse Optimal Stable Models)
+/Author (Javier Romero, Torsten Schaub, Philipp Wanko) }
+
+\begin{document}
+
+\maketitle
+%
+\input{abstract}
+%
+%\comment{JR: Add Theorems}
+%\comment{JR: Add Complexity}
+\input{introduction}
+\input{background}
+\input{overview}
+\section{Basic solving techniques}\label{sec:basic}
+\input{maxmin}
+\input{generate}
+\input{queries}
+\input{preferences}
+\section{Advanced diversification techniques}\label{sec:advanced}
+\input{complete}
+\input{approximation}
+%
+\input{experiments}
+\input{discussion}
+
+\bibliographystyle{acmtrans}
+\input{bbl}%\bibliography{lit,akku,local,misc,procs} % https://svn.cs.uni-potsdam.de/svn/reposWV/Papers/bibfiles/trunk
+\clearpage
+\appendix
+\input{complexity}
+\input{tables}
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

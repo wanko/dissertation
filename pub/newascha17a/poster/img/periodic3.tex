@@ -1,0 +1,53 @@
+\begin{tikzpicture}[>=stealth,scale=2.7]
+    \tikzstyle{axis} = [->, black, line width = 0.12cm]
+    \tikzstyle{task} = [anchor=west,shape=rectangle,thick,text=white, draw=black, fill=myblue, align=center, rounded corners=2,inner sep=0, minimum height=1.35cm]
+    \tikzstyle{difftask} = [shape=circle,thick,text=white,minimum height=0.5cm, draw=black, fill=myblue, align=center,inner sep=2]
+    \draw[dashed, black!30] (-2.5,0) node[below, black]{\footnotesize 0};
+    \foreach \i in {1,...,6}
+    {
+    	\draw[dashed, black!30, line width = 0.12cm] (\i*0.5-2.5,0) node[below, black]{\footnotesize\i}-- (\i*0.5-2.5,2.5);
+    }
+    \foreach \i in {8,...,10}
+    {
+    	\draw[dashed, black!30, line width=0.12cm] (\i*0.5-2.5,0) node[below, black]{\footnotesize\i}-- (\i*0.5-2.5,2.5);
+    }
+    	\draw[dashed, black!30, line width=0.12cm] (11*0.5-2.5,0) node[below, black]{}-- (11*0.5-2.5,2.5);
+    	\draw[dashed, black!30, line width=0.12cm] (13*0.5-2.5,0) node[below, black]{}-- (13*0.5-2.5,2.5);
+    \foreach \i in {14,...,15}
+    {
+    	\draw[dashed, black!30, line width=0.12cm] (\i*0.5-2.5,0) node[below, black]{\footnotesize\i}-- (\i*0.5-2.5,2.5);
+    }
+    
+    \draw[black, line width = 0.12cm] (-2.5,0.5) --  (-2.7,0.5) node[left]{$r_1$};
+    \draw[black, line width = 0.12cm] (-2.5,1.5) --  (-2.7,1.5) node[left]{$r_3$};
+    \draw[dashed, black!40!green, line width = 0.12cm] (1,0) node[below, black]{\small P=7}-- (1,2.5);
+    \draw[dashed, red, line width = 0.12cm] (3.5,0) node[below, black]{\small D=12}-- (3.5,2.5);
+    \draw [axis] (-2.5,2.5) -- (-2.5,0) -- (5.5,0);
+%    \node[task, minimum width=4.05cm] at (-2.5,0.5) {$t_1$};
+%    \node[task, minimum width=2.7cm] at (-0.5,0.5) {$t_2$};
+%    \node[task, minimum width=2.7cm] at (0.5,1.5) {$t_3$};
+%    \node[task, minimum width=1.35cm,text width=1.35cm] at (2.5,0.5) {$t_4$};
+    
+    \node [difftask] (v1) at (-8.5,1) {$t_1$};
+    \node [difftask] (v2) at (-7,1) {$t_2$};
+    \node [difftask] (v3) at (-5.5,1) {$t_3$};
+    \node [difftask] (v4) at (-4,1) {$t_4$};
+    \draw [axis,black!40!red] (v1) edge node[above]{\footnotesize$-3$} (v2);
+    \draw [axis,black!40!red] (v2) edge node[above]{\footnotesize$-2$}(v3);
+    \draw [axis,black!40!red] (v3) edge node[above]{\footnotesize$-2$}(v4);
+    \draw [axis,black!40!red] (v4) edge[bend left] node[below]{\footnotesize$-1+P=6$} (v1);
+    \draw [axis] (v4) edge[bend right=45] node[above]{\footnotesize$-1+P=+6$} (v2);
+    
+    
+%    \node[task, minimum width=4.05cm,fill=orange] at (1,0.5) {$t_1$};
+%    \node[task, minimum width=2.7cm,fill=orange] at (3,0.5) {$t_2$};
+%    \node[task, minimum width=2.7cm,fill=orange] at (4,1.5) {$t_3$};
+%    \node[task, minimum width=1.35cm,fill=black!40!green,text width=1.35cm] at (-1,0.5) {$t_4$};
+    
+    \node[anchor=west] at (-9,2) {\footnotesize$t_4\succ t_2$};
+    \node[anchor=west] at (-9,0) {\color{black!40!red}\footnotesize$t_4\succ t_1$};
+    \node[anchor=north] at (5.45,-0.1) {\footnotesize{time}};
+    
+    \node[minimum width=1cm, fill=white] at (1.25,1.5) {\textsc{not schedulable}};
+    \node[minimum width=1cm, fill=white] at (1.25,0.5) {\small negative cycle: $t_1\rightarrow t_2\rightarrow t_3\rightarrow t_4\rightarrow t_1$};
+\end{tikzpicture}

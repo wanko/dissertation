@@ -1,0 +1,43 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb}
+\usepackage{times,helvet,courier}
+\usepackage[graphics,tightpage,active]{preview}
+\PreviewEnvironment{tabular}
+\newlength{\imagewidth}
+\newlength{\imagescale}
+\pagestyle{empty}
+\thispagestyle{empty}
+
+\begin{document}
+
+\begin{table}
+\begin{tabular}{|l|r||r|r|r|r|r|r||r|}
+
+\hline
+Class & S &  CTT & DSE & card-4 & sub-4 & card-8 & sub-8 & avg\\ 
+\hline
+A1 & \textbf{15} & 0 &  0.17 & 0.09 & 0.16 & 0.12 & 0.16 & 0.13\\
+A2-dist-to & 14 & 0 &  \textbf{0.21} & 0.09 & 0.17 & 0.12 & 0.17 & 0.14\\ 
+A2-pg & 13 & 0 & 0.18 & \textbf{0.10} & \textbf{0.35} & \textbf{0.16} & \textbf{0.28} & \textbf{0.18}\\ 
+A3-pg-l & 11 & 0 &  0.15 & 0.08 & 0.24 & 0.08 & 0.24 & 0.17\\
+A3-pg-l-rd & 10 & 0 & 0.15 & 0.08 & 0.23 & 0.08 & 0.24 & 0.16 \\
+A2-all & 10 & 0 &  0.16 & 0.08 & 0.24 & 0.12 & 0.27 & 0.15\\ 
+A2-dist & 8 & 0 &  0.00 & 0.06 & 0.00 & 0.14 & 0.00 & 0.07\\ 
+A2-false & 8 & 0 &  0.16 & 0.09 & 0.22 & 0.12 & 0.26 & 0.15\\ 
+A2-true & 7 & 0 &  0.16 & 0.08 & 0.17 & \textbf{0.16} & 0.11 & 0.12\\ 
+A3-false & 6 & 0 &  0.13 & 0.07 & 0.23 & 0.09 & 0.22 & 0.16\\ 
+A2-rd & 5 & 0 &  0.14 & 0.08 & 0.17 & 0.10 & 0.15 & 0.12\\ 
+A3-all & 5 & 0 &  0.17 & 0.04 & 0.10 & 0.05 & 0.10 & 0.08 \\ 
+A3-true & 4 & 0 &  0.17 & 0.04 & 0.11 & 0.05 & 0.10 & 0.08 \\ 
+A3-rd & 2 & \textbf{$\approx$0} &  0.13 & 0.05 & 0.11 & 0.08 & 0.11 & 0.09 \\ 
+A3-pg & 1 & 0 &  0.12 & 0.07 & 0.10 & 0.06 & 0.09 & 0.09\\
+%A3-Hdyn & 1 & 0 &  0.13 & 0.07 & 0.09 & 0.06 & 0.09 & 0.09\\ 
+A3 & 0 & \textbf{$\approx$0} &  0.12 & 0.03 & 0.09 & 0.03 & 0.09 & 0.06\\
+
+\hline
+\end{tabular} 
+\end{table}
+
+\end{document}

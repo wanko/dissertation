@@ -1,0 +1,44 @@
+\begin{table}%
+\newcommand{\mc}[3]{\multicolumn{#1}{#2}{#3}}%
+\caption{Comparison of different systems for ASP with linear constraints\label{tab:systems}}%
+\centering%
+\begin{tabular}{@{}r@{\!}@{\!}r@{\!}
+  @{\ }r@{\hspace{-5pt}}@{\hspace{-5pt}}r@{\,}
+  @{\ }r@{\hspace{-5pt}}@{\hspace{-5pt}}r@{\,}
+  @{\ }r@{\hspace{-1pt}}@{\hspace{-1pt}}r@{\,}
+  @{\ }r@{\hspace{-1pt}}@{\hspace{-1pt}}r@{\,}
+  @{\ }r@{\hspace{-1pt}}@{\hspace{-1pt}}r@{\,}
+  @{\ }r@{\hspace{-1pt}}@{\hspace{-1pt}}r@{\,}
+  @{\ }r@{\hspace{-1pt}}@{\hspace{-1pt}}r@{}}
+\toprule
+       &        & \mc{2}{@{}c@{}}{\clingolc{dl}{dns}{cpp}} 
+                & \mc{2}{@{}c@{}}{\clingolc{lp}{dns}{py}} 
+                & \mc{2}{@{}c@{}}{\clingcon} 
+                & \mc{2}{@{}c@{}}{\dingo} 
+                & \mc{2}{@{}c@{}}{\mingo} 
+                & \mc{2}{@{}c@{}}{\ezsmt} 
+                & \mc{2}{@{}c@{}}{\ezcsp}                  \\
+\class & \#inst &          \T  &        \TO  &   \T & \TO & \T & \TO & \T & \TO & \T & \TO & \T & \TO & \T & \TO\\
+\midrule
+\tsp   &    38  &         148  &          3  & 1346 & 23 & \textbf{3}    & \textbf{0}  & 403  & 7  & 292  & 5  & 318  & 6  & 1800 & 38\\
+\fs    &    35  & \textbf{465} &  \textbf{5} & 1221 & 21 & 1022 & 19 & 1047 & 20 & 1040 & 16 & 1667 & 32 & 735  & 9\\
+\js    &    24  &         534  &          4  & 1800 & 24 & \textbf{277}  & \textbf{3}  & 1258 & 15 & 1423 & 18 & 1315 & 15 & 1800 & 24 \\
+\os    &    13  &   \textbf{0} &  \textbf{0} &  963 & 6  & 1    & \textbf{0}  & 4    & \textbf{0}  & 76   & \textbf{0}  & 24   & \textbf{0}  & 1044 & 7 \\
+\midrule
+\dl    &    110 & \textbf{316} & \textbf{12} & 1360 & 74 & 387  & 22 & 765  & 42 & 743  & 39 & 930  & 52 & 1372 & 78 \\
+\midrule
+\is    &    20  &         \na  &         \na & 1800 & 20 & \textbf{582}  & \textbf{5}  & \na & \na & 649  & 7  & 648  & 7  & 1620 & 18\\
+\rf    &    15  &         \na  &         \na & 1680 & 14 & \textbf{21}   & \textbf{0}  & \na & \na & 542 & 1 & 121  & \textbf{0}  & 1013 & 7\\
+\ws    &    20  &         \na  &         \na & 1800 & 20 & 27   & \textbf{0}  & \na  & \na & 90   & \textbf{0}  & \textbf{12}   & \textbf{0}  & 1800 & 20 \\
+\midrule
+\lc    &    55  &         \na  &         \na & 1767 & 54 & \textbf{227}  & \textbf{5}  & \na  & \na & 416  & 8 & 273  & 7  & 1520 & 45\\
+\midrule
+all    &    165 &         \na  &         \na & 1564 & 128 & \textbf{307}  & \textbf{27} & \na  & \na & 580  & 47 & 602  & 59 & 1446 & 123\\
+\bottomrule
+\end{tabular}
+\end{table}
+%
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../paper"
+%%% End:

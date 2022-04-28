@@ -1,0 +1,64 @@
+\section{Proof of Proposition \ref{prop:sound}}\label{sec:proof}
+\addtocounter{proposition}{-1}
+
+\begin{proposition}
+Let $P$ be a % ground 
+program, % over $\mathcal{A}\cup\mathcal{T}$,
+$\mathbb{T}$ be 
+a collection of theories,
+% such that $\mathcal{T}\subseteq\bigcup_{T\in\mathbb{T}}\mathcal{T}^T$,
+$X\subseteq\mathcal{A}\cup\mathcal{T}$, and
+$B\subseteq\body{P}$ % be 
+the set of rule bodies that hold w.r.t.~$X$.
+Then, we have that $X$ is a $\mathbb{T}$-stable model of~$P$ iff
+$\Ass=\{\Tlit{v}\mid v\in X\cup B\}\cup\{\Flit{v}\mid v\in ((\mathcal{A}\cup\mathcal{T})\setminus X)\cup(\body{P}\setminus B)\}$
+is a solution for
+$(\Delta_P\cup\Lambda_P)\cup\bigcup_{T\in\mathbb{T}}\Delta_T$.
+\end{proposition}
+
+\begin{proof}[Proof (Sketch)]
+As detailed in \cite[Lemma 3.1]{gekasc09c}, $\Ass$ is the unique solution
+for $\Delta_{\body{P}}$ such that $\{a\in\mathcal{A}\cup\mathcal{T}\mid\Tlit{a}\in\Ass\}=X$.
+For any $\mathbb{T}$-solution~$\mathcal{S}$ and theory $T\in\mathbb{T}$,
+let $\mathcal{S}^T=\mathcal{S}\cap\mathcal{T}^T$ below.
+
+($\Rightarrow$)
+Let $\mathcal{S}$ be some $\mathbb{T}$-solution such that $X$ is a stable model
+of the program in \eqref{eq:stable:strict} and \eqref{eq:stable:non-strict}.
+Since all rules in~$P$ are satisfied by~$X$ and there is no non-empty unfounded subset of
+$X\cap(\mathcal{A}\cup(\mathcal{T}\cap\head{P}))$ for~$P$ w.r.t.~$X$,
+we have that $\Ass$ is a solution for $\Delta_P\cup\Lambda_P$.
+In view of the rules added to~$P$ in \eqref{eq:stable:strict} and \eqref{eq:stable:non-strict},
+for any $T\in\mathbb{T}$,
+$X$ is such that
+$X\cap \mathcal{T}^T_e=\mathcal{S}\cap\mathcal{T}^T_e$ and
+$X\cap \mathcal{T}^T_i\subseteq\mathcal{S}\cap\mathcal{T}^T_i$.
+Thus,
+$\mathcal{S}^T$ is a $T$-solution satisfying
+$\{a\in\mathcal{T}^T\mid\Tlit{a}\in\nolinebreak\Ass\}=X\cap \mathcal{T}^T\subseteq\mathcal{S}^T$ and
+$\{a\in\mathcal{T}^T_e\mid\Flit{a}\in\nolinebreak\Ass\}\cap\mathcal{S}^T=(\mathcal{T}^T_e\setminus X)\cap \mathcal{S}^T=\emptyset$,
+so that $\Ass$ is a solution for $\Delta_T$ as well.
+
+($\Leftarrow$)
+Let $\Ass$ be a solution for $(\Delta_P\cup\Lambda_P)\cup\bigcup_{T\in\mathbb{T}}\Delta_T$.
+Then, there is some $\mathbb{T}$-solution~$\mathcal{S}$ such that, for any $T\in\mathbb{T}$,
+$\{a\in\mathcal{T}^T\mid\Tlit{a}\in\nolinebreak\Ass\}=X\cap \mathcal{T}^T\subseteq\mathcal{S}^T$ and
+$\{a\in\mathcal{T}^T_e\mid\Flit{a}\in\nolinebreak\Ass\}\cap\mathcal{S}^T=(\mathcal{T}^T_e\setminus X)\cap \mathcal{S}^T=\emptyset$.
+Thus,
+$X\cap \mathcal{T}^T_e=\mathcal{S}\cap\mathcal{T}^T_e$ and
+$X\cap \mathcal{T}^T_i\subseteq\mathcal{S}\cap\mathcal{T}^T_i$,
+which yields that $X$ satisfies all rules added to~$P$
+in \eqref{eq:stable:strict} and \eqref{eq:stable:non-strict} for~$\mathcal{S}$,
+where
+atoms in $X\cap(\mathcal{T}\setminus\head{P})$ do not belong to any unfounded set
+for the program in \eqref{eq:stable:strict} and \eqref{eq:stable:non-strict} w.r.t.~$X$.
+Since $\Ass$ is a solution for $\Delta_P\cup\Lambda_P$, we also have that
+all rules in~$P$ are satisfied by~$X$ and no non-empty subset of
+$X\cap(\mathcal{A}\cup(\mathcal{T}\cap\head{P}))$ is unfounded for~$P$ w.r.t.~$X$,
+so that $X$ is indeed a stable model of the program in~\eqref{eq:stable:strict} and~\eqref{eq:stable:non-strict}.%
+\end{proof}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End:

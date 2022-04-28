@@ -1,0 +1,49 @@
+% S1.RoomCapacity
+penalty("RoomCapacity",assigned(C,R,D,P),(N-Cap)*weight_of_s1) :- 
+        assigned(C,R,D,P), course(C,_,_,_,N,_), room(R,Cap,_), N > Cap.
+
+% S2.MinWorkingDays
+working_day(C,D) :- assigned(C,D,P).
+penalty("MinWorkingDays",course(C,MWD,N),(MWD-N)*weight_of_s2) :- 
+	course(C,_,_,MWD,_,_), N = { working_day(C,D) }, N < MWD.
+
+% S3.IsolatedLectures
+scheduled_curricula(Cu,D,P) :- assigned(C,D,P), curricula(Cu,C).
+penalty("IsolatedLectures",isolated_lectures(Cu,D,P),weight_of_s3) :- 
+	scheduled_curricula(Cu,D,P),
+	not scheduled_curricula(Cu,D,P-1), not scheduled_curricula(Cu,D,P+1).
+
+% S4.Windows
+penalty("Windows",windows(Cu,D,P1,P2),(P2-P1-1)*weight_of_s4) :-
+        scheduled_curricula(Cu,D,P1), scheduled_curricula(Cu,D,P2), P1 + 1 < P2, 
+        not scheduled_curricula(Cu,D,P) : P = P1+1..P2-1.
+
+% S5.RoomStability
+using_room(C,R) :- assigned(C,R,D,P).
+penalty("RoomStability",using_room(C,N),(N-1)*weight_of_s5) :- 
+	c(C), N = { using_room(C,R) }, N > 1.
+
+% S6.StudentMinMaxLoad
+penalty("StudentMinMaxLoad",student_min_max_load(Cu,D,N,many),(N-Max)*weight_of_s6) :- 
+	cu(Cu),	d(D), N = { scheduled_curricula(Cu,D,P) },
+	min_max_daily_lectures(Min,Max), N > Max.
+penalty("StudentMinMaxLoad",student_min_max_load(Cu,D,N,few),(Min-N)*weight_of_s6) :- 
+	cu(Cu), d(D), N = { scheduled_curricula(Cu,D,P) },
+	min_max_daily_lectures(Min,Max), 0 < N, N < Min.
+
+% S7.TravelDistance
+penalty("TravelDistance",instantaneous_move(Cu,C1,C2,D,P,P+1),weight_of_s7) :- 
+	curricula(Cu,C1), curricula(Cu,C2), assigned(C1,R1,D,P), assigned(C2,R2,D,P+1),
+	room(R1,_,BLG1), room(R2,_,BLG2), BLG1 != BLG2.
+
+% S8.RoomSuitability
+penalty("RoomSuitability",assigned(C,R,D,P),weight_of_s8) :- 
+	assigned(C,R,D,P), room_constraint(C,R).
+
+% S9.DoubleLectures
+penalty("DoubleLectures",non_grouped_lecture(C,R,D,P),weight_of_s9) :- 
+	course(C,_,_,_,_,1), d(D), 2 { assigned(C,D,PPD) },
+	assigned(C,R,D,P), not assigned(C,R,D,P-1), not assigned(C,R,D,P+1).
+
+% Objective function
+#minimize { P,C,S : penalty(S,C,P) }.

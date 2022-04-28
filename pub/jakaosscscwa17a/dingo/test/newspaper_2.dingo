@@ -1,0 +1,41 @@
+% Schedule the persons to read the newspaper so that each person read all of the newspaper before a given deadline.
+% Guohua Liu 2011.
+
+int(zero).
+int(s(P,N)) :- read(P,N,D).
+int(e(P,N)) :- read(P,N,D).
+
+% No one should start too early.
+
+:- dl_lt(s(P,N),zero,0), read(P,N,_).
+
+% Everyone read a paper long enough.
+
+:-
+  dl_ne(e(P,N),s(P,N),D),
+  read(P,N,D).
+
+% Everyone must end by the deadline.
+
+:-
+   dl_gt(e(P,N), zero, deadline),
+   read(P,N,D).
+
+% No person can read more than one paper at a time.
+
+:- 
+  dl_le(s(P,N1),s(P,N2),0), 
+  dl_le(s(P,N2),e(P,N1),0), 
+  read(P,N1,D1), 
+  read(P,N2,D2),
+  N1!=N2.
+
+% No newspaper can be read by more than one person at a time.
+
+:- 
+  dl_le(s(P1,N), s(P2,N), 0), 
+  dl_le(s(P2,N), e(P1,N), 0), 
+  read(P1,N,D1), 
+  read(P2,N,D2),
+  P1!=P2.
+

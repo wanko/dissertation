@@ -1,0 +1,76 @@
+
+\section{Answer Set Programming}\label{sec:background}
+
+As usual, a {logic program} consists of {rules} of the form
+\begin{lstlisting}[mathescape,numbers=none]
+   a$_1$;...;a$_m$ :- a$_{m+1}$,...,a$_n$,not a$_{n+1}$,...,not a$_o$
+\end{lstlisting}
+where each \lstinline[mathescape]{a$_i$} is
+an {atom} of form \lstinline[mathescape]{p(t$_1$,...,t$_k$)}
+and all \lstinline[mathescape]{t$_i$} are terms,
+composed of function symbols and variables.
+%
+Atoms \lstinline[mathescape]{a$_1$} to \lstinline[mathescape]{a$_m$} are often called head atoms,
+while \lstinline[mathescape]{a$_{m+1}$} to \lstinline[mathescape]{a$_n$}
+and \lstinline[mathescape]{not a$_{n+1}$} to \lstinline[mathescape]{not a$_o$}
+are also referred to as positive and negative body literals, respectively.
+%
+An expression is said to be {ground}, if it contains no variables.
+%
+As usual, \lstinline[mathescape]{not} denotes (default) {negation}.
+A rule is called a {fact} if $m=o=1$, 
+normal if $m=1$, and 
+an integrity constraint if $m=0$.
+%
+Semantically, a logic program induces a set of {stable models},
+being distinguished models of the program determined by the stable models semantics;
+see \cite{gellif91a} for details.
+
+To ease the use of ASP in practice, 
+several extensions have been developed. 
+First of all, rules with variables are viewed as shorthands for the set of their ground instances.
+Further language constructs include
+{conditional literals} and {cardinality constraints} \cite{siniso02a}.
+The former are of the form
+\lstinline[mathescape]{a:b$_1$,...,b$_m$},
+the latter can be written as\footnote{More elaborate forms of aggregates can be obtained by explicitly using function (eg.\ \texttt{\#count}) and
+  relation symbols (eg.\ \texttt{<=}).}
+\lstinline[mathescape]+s{d$_1$;...;d$_n$}t+,
+where \lstinline{a} and \lstinline[mathescape]{b$_i$} are possibly default-negated (regular) literals  % for $0\leq i\leq m$,
+and each \lstinline[mathescape]{d$_j$} is a conditional literal; % for $1\leq i\leq n$;
+\lstinline{s} and \lstinline{t} provide optional lower and upper bounds on the number of satisfied literals in the cardinality constraint.
+We refer to \lstinline[mathescape]{b$_1$,...,b$_m$} as a {condition}.
+%
+The practical value of both constructs becomes apparent when used with variables.
+For instance, a conditional literal like
+\lstinline[mathescape]{a(X):b(X)}
+in a rule's antecedent expands to the conjunction of all instances of \lstinline{a(X)} for which the corresponding instance of \lstinline{b(X)} holds.
+%
+Similarly,
+\lstinline[mathescape]+2{a(X):b(X)}4+
+is true whenever at least two and at most four instances of \lstinline{a(X)} (subject to \lstinline{b(X)}) are true.
+%
+Finally, objective functions minimizing the sum of a set of weighted tuples $(w_i,\boldsymbol{t}_i)$ subject to condition $c_i$ are expressed as
+\lstinline[mathescape]!#minimize{$w_1$@$l_1$,$\boldsymbol{t}_1$:$c_1$;$\dots$;$w_n$@$l_n$,$\boldsymbol{t}_n$:$c_n$}!.
+Lexicographically ordered objective functions are (optionally) distinguished via levels indicated by $l_i$.
+An omitted level defaults to 0.
+
+As an example, consider the rule in Line~9 of Listing~\ref{fig:toh:opt:enc}:
+% --------------------------------------------------------------------------------------------------------------------------------------------
+% \lstinputlisting[numbers=none,firstline=9,lastline=9,literate={\%\%}{}{0},escapeinside={\#(}{\#)},language=clingo]{example/opt/tohB.lp}%
+\begin{lstlisting}[numbers=none,basicstyle=\ttfamily\small]
+1 { move(D,P,T) : disk(D), peg(P) } 1 :- ngoal(T-1), T<=n.
+\end{lstlisting}
+% --------------------------------------------------------------------------------------------------------------------------------------------
+This rule has a single head atom consisting of a cardinality constraint;
+it comprises all instances of \lstinline{move(D,P,T)} where \lstinline{T} is fixed by the two body literals and \lstinline{D} and \lstinline{P} vary
+over all instantiations of predicates \lstinline{disk} and \lstinline{peg}, respectively.
+Given 3 pegs and 4 disks as in Listing~\ref{fig:toh:opt:ins}, this results in 12 instances of \lstinline{move(D,P,T)} for each valid replacement of
+\lstinline{T}, among which exactly one must be chosen according to the above rule.
+
+Full details on the input language of \clingo{} along with various examples can be found in~\cite{PotasscoUserGuide}.
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End: 

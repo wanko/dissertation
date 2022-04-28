@@ -1,0 +1,34 @@
+#!/bin/bash
+#
+
+cat </dev/stdin > input.tmp
+
+files=$3
+instance=$4
+
+mem=20000
+gwatcher=g.runsolver.watcher
+gsolver=g.runsolver.solver            
+
+if [ `echo $files | grep "solitaire" | wc -l` -gt 0 ] ; then    
+  nr=`expr match "$instance" '.*solitaire-\([[:digit:]]*\)-0.asp'`
+  files=${files}" -c parallel=no --ifixed="$nr
+fi
+
+let to=$1/2
+echo $to
+echo $files
+echo $instance
+shift
+if [ $1 = "clasp-2.1.0" ] ; then
+  runsolver -M $mem -w $gwatcher -o $gsolver -W $to gringo $files $instance
+  runsolver -M $mem -w runsolver.watcher -o runsolver.solver -W $to clasp --heu=vsids --stats -q < $gsolver
+elif [ $1 = "hclasp-vsids" ] ; then
+  runsolver -M $mem -w $gwatcher -o $gsolver -W $to gringo $files $instance
+  runsolver -M $mem -w runsolver.watcher -o runsolver.solver -W $to hclasp-6 --heu=vsids --stats -q < $gsolver
+elif [ $1 = "hclasp" ] ; then 
+  runsolver -M $mem -w $gwatcher -o $gsolver -W $to gringo $files $instance
+  runsolver -M $mem -w runsolver.watcher -o runsolver.solver -W $to hclasp-6 --heu=domain --stats -q < $gsolver
+fi
+rm -f $gsolver   
+rm input.tmp  

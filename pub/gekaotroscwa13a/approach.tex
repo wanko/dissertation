@@ -1,0 +1,289 @@
+
+\section{Heuristic language elements}\label{sec:approach}
+
+We express heuristic modifications via a set $\mathcal{H}$ of \emph{heuristic atoms} 
+disjoint from $\mathcal{A}$.
+Such a heuristic atom is formed from a dedicated predicate \hpredicate\ along with four arguments:
+a (reified) atom $a\in\mathcal{A}$,
+a heuristic modifier $m$,
+and two  integers $v,p\in\mathbb{Z}$.
+A heuristic modifier is used to manipulate the heuristic treatment of an atom $a$ via the 
+modifier's value given by $v$.
+The role of this value varies for each modifier.
+We distinguish four primitive heuristic modifiers:
+\begin{description}
+\item [\texttt{init}] for initializing the heuristic value of $a$ with $v$,
+\item [\texttt{factor}] for amplifying the heuristic value of $a$ by factor $v$,
+\item [\texttt{level}] for ranking all atoms; the rank of $a$ is $v$,
+\item [\texttt{sign}] for attributing the sign of $v$ as truth value to $a$.
+\end{description}
+While $v$ allows for changing an atom's heuristic behavior relative to \emph{other} atoms,
+the second integer $p$ allows us to express a priority for disambiguating similar
+heuristic modifications to the \emph{same} atom.
+This is particularly important in our dynamic setting, where varying heuristic atoms may be obtained
+in view of the current assignment.
+For instance, the heuristic atoms
+\hpred{b}{\mathtt{sign}}{1}{3}
+and
+\hpred{b}{\mathtt{sign}}{-1}{5}
+aim at assigning opposite truth values to atom $b$.
+This conflict can be resolved by preferring the heuristic modification with the higher priority,
+viz.\ 5 in \hpred{b}{\mathtt{sign}}{-1}{5}.
+Obviously such priorities can only support disambiguation but not resolve conflicting values sharing the same priority.
+
+For accommodating priorities,
+we define for an assignment \ass\ the \emph{preferred values} for modifier $m$ on atom $a$ as
+\[
+V_{a,m}(\ass)=
+\textit{argmax}_{v\in\mathbb{Z}}\{p\mid\Tsigned{\hpred{a}{m}{v}{p}}\in\ass\}.
+\]
+Heuristic values are dynamic;
+they are extracted from the current assignment and may thus vary during solving.
+Note that $V_{a,m}(\ass)$ returns the singleton set $\{v\}$,
+if the current assignment \ass\ contains a single true heuristic atom \hpred{a}{m}{v}{p} 
+involving $a$ and $m$.
+$V_{a,m}(\ass)$ is empty whenever there are no such heuristic atoms.
+%
+And whenever all heuristic atoms regarding $a$ and $m$ have the same priority $p$,
+$V_{a,m}(\ass)$ is equivalent to
+\(
+\{v\mid\Tsigned{\hpred{a}{m}{v}{p}}\in\ass\}
+\).
+
+Here are a few examples.
+We obtain % the preferred values
+$V_{b,\mathtt{sign}}(\ass_1)=\{-1\}$
+and
+$V_{c,\mathtt{init}}(\ass_1)=\emptyset$
+from assignment
+\(
+\ass_1=\{\Fsigned{a},\Tsigned{\hpred{b}{\mathtt{sign}}{1}{3}},\Tsigned{\hpred{b}{\mathtt{sign}}{-1}{5}}\}
+\),
+while assignment
+\(
+\ass_2=\{\Tsigned{\hpred{b}{\mathtt{sign}}{1}{3}},\Tsigned{\hpred{b}{\mathtt{sign}}{-1}{3}}\}
+\)
+results in $V_{b,\mathtt{sign}}(\ass_2)=\{1,-1\}$.
+
+For ultimately resolving ambiguities among alternative values for heuristic modifiers, 
+we propose for a set $V\subseteq\mathbb{Z}$ of integers the function $\nu(V)$ as
+\[
+%\nu(V)=
+\mathit{max}\big(\{v\in V\!\mid v\geq 0\}\cup\{0\}\big)
++
+\mathit{min}\big(\{v\in V\!\mid v\leq 0\}\cup\{0\}\big).
+\]
+Note that $\nu(\emptyset)=0$, attributing 0 the status of a neutral value.
+Alternative options exist, like taking means or median of $V$ or even time specific criteria
+relating to the emergence of values in the assignment.
+%
+In the above examples,
+we get $\nu(V_{b,\mathtt{sign}}(\ass_1))=-1$ and $\nu(V_{b,\mathtt{sign}}(\ass_2))=0$.
+
+Given this, we proceed by defining the \emph{domain-specific extension} $d$ to the heuristic function $h$ 
+for $a\in\mathcal{A}$ as
+\[
+d_0(a)=\nu(V_{a,\mathtt{init}}(\ass_0))+h_0(a)
+\]
+and for $i\geq 1$
+\[
+d_i(a)=
+\left\{
+  \begin{array}{rl}
+    \nu(V_{a,\mathtt{factor}}(\ass_i))\times h_i(a)&\text{if } V_{a,\mathtt{factor}}(\ass_i)\neq\emptyset
+    \\
+                                             h_i(a)&\text{otherwise}
+  \end{array}
+\right.
+\]
+First of all, it is important to note that $d$ is merely a modification and not a replacement of the
+system heuristic $h$.
+In fact, $d$ extends the range of $h$ to $(-\infty,+\infty)$.
+Negative values serve as penalties.
+The values of the \texttt{init} modifiers are added to $h_0$ in $d_0$.
+The use of addition rather than multiplication allows us to override an initial value of 0.
+Also, the higher the absolute value of the \texttt{init} modifier, the longer lasts its effect
+(given the decay of heuristic values).
+Unlike this, \texttt{factor} modifiers rely on multiplication because they aim at de- or increasing
+conflict scores gathered during conflict analysis.
+In view of $h$'s range,
+a factor greater than 1 amplifies the score, a negative one penalizes the atom, and 0 resets the atom's score.
+Enforcing a factor of 1 
+% (for instance, through assigning a high priority)
+transfers control back to the system heuristic $h$.
+
+Heuristically modified logic programs are simply programs over $\mathcal{A}\cup\mathcal{H}$,
+the original vocabulary extended by heuristic atoms (without restrictions).
+As a first example,
+let us extend our planning encoding by a rule favoring atoms expressing action occurrences close to
+the goal situation.
+\begin{lstlisting}
+_h(occ(A,T),factor,T,0) :- action(A),time(T).
+\end{lstlisting}
+With \texttt{factor}, we impose a bias on the underlying heuristic function $h$.
+Rather than comparing, for instance,
+the plain values $h(\mathtt{occ(a,2)})$ and $h(\mathtt{occ(a,3)})$,
+a decision is made by looking at $2\times h(\mathtt{occ(a,2)})$ and  $3\times h(\mathtt{occ(a,3)})$,
+even though it still depends on $h$.
+A further refined strategy may suggest considering climbing actions as early as possible.
+\begin{lstlisting}
+_h(occ(climb,T),factor,l-T,1) :- time(T).
+\end{lstlisting}
+Clearly, this rule conflicts with the more general rule above.
+However, this conflict is resolved in favor of the more specific rule by attributing it a higher
+priority (viz.~1 versus 0).
+
+% Similar statements can be formulated with the \texttt{init} modifier in order to change the initial heuristic values.
+
+For capturing a \emph{domain-specific extension} $t$ to the sign heuristic $s$,
+we define for $a\in\mathcal{A}$ and $i\geq 0$:
+\[
+t_i(a)=
+\left\{
+  \begin{array}{rl}
+    \true &\text{if }
+           \nu(V_{a,\mathtt{sign}}(\ass_i))>0
+           % \text{ and }
+           % V_{a,\mathtt{sign}}(\ass_i)\neq\emptyset
+           \\
+    \false&\text{if }
+           \nu(V_{a,\mathtt{sign}}(\ass_i))<0
+           % \text{ and }
+           % V_{a,\mathtt{sign}}(\ass_i)\neq\emptyset
+           \\
+    s_i(a)&\text{otherwise}
+  \end{array}
+\right.
+\]
+As with $d$ above, the extension $t$ to the sign heuristic is dynamic.
+The sign of the modifier's preferred value determines the truth value to assign to an atom at hand.
+No \texttt{sign} modifier (or enforcing a value of 0) leaves sign selection with the system's sign heuristic $s$.
+%
+For example, the heuristic rule
+\begin{lstlisting}
+_h(holds(F,T),sign,-1,0) :- fluent(F),time(T).
+\end{lstlisting}
+tells the solver to assign false to non-deterministically chosen fluents.
+%
+The next pair of rules is a further refinement of our strategy on climbing actions,
+favoring their effective occurrence in the first half of the plan.
+\begin{lstlisting}
+_h(occ(climb,T),sign, 1,0) :- T<l/2,time(T).
+_h(occ(climb,T),sign,-1,0) :- T>l/2,time(T).
+\end{lstlisting}
+Thus, while the atom $\mathtt{occ(climb,1)}$ is preferably made true,
+false should rather be assigned to $\mathtt{occ(climb,l)}$.
+
+Finally, for accommodating rankings induced by \texttt{level} modifiers,
+we define for an assignment \ass\ and $\mathcal{A}'\subseteq\mathcal{A}$:
+\[
+\ell_\ass(\mathcal{A}')=\textit{argmax}_{a\in\mathcal{A}'}\nu(V_{a,\mathtt{level}}(\ass))
+\]
+The set $\ell_\ass(\mathcal{A}')$ gives all atoms in $\mathcal{A}'$ with the highest \texttt{level} values relative to
+the current assignment \ass.
+Similar to $d$ and $t$ above, this construction is also dynamic and the rank of atoms may vary during solving.
+The function $\ell_\ass$ is then used to modify the selection of unassigned atoms in the above elaboration of \textit{decide}.
+For this purpose, we replace Item~2 by
+\(
+U:=\ell_\ass(\mathcal{A}\setminus (\tlits{\ass}\cup\flits{\ass}))
+\)
+in order to restrict $U$ to unassigned atoms of (current) highest rank.
+Unassigned atoms at lower levels are only considered once all atoms at higher levels have been assigned.
+Atoms without an associated level default to level 0 because $\nu(\emptyset)=0$.
+Hence, negative levels act as a penalty since the respective atoms are only taken into account
+once all atoms with non-negative or no associated level have been assigned.
+
+For a complementary example, 
+consider a \texttt{level}-based formulation of the previous (\texttt{factor}-based) heuristic rule.
+\begin{lstlisting}
+_h(occ(A,T),level,T,0) :- action(A),time(T).
+\end{lstlisting}
+Unlike the above, $\mathtt{occ(a,2)}$ and $\mathtt{occ(a,3)}$ are now associated with different ranks,
+which leads to strictly preferring $\mathtt{occ(a,3)}$ over $\mathtt{occ(a,2)}$ 
+whenever both atoms are unassigned.
+Hence, \texttt{level} modifiers partition the set of atoms and restrict $h$ to unassigned atoms at the highest level.
+
+The previous replacement along with the above amendments of $h$ and $s$ through the domain-specific extensions $d$ and $t$
+yields the following elaboration of CDCL's heuristic choice operation \textit{decide} for $i\geq 1$ (and given $d_0$).$^{\ref{fn:ass}}$
+% --------------------------------------------------
+\begin{enumerate}\addtocounter{enumi}{-1}\itemindent 10pt
+\item $h_{i-1}(a) := d_{i-1}(a)$                         \hfill for each $a\in\mathcal{A}\qquad$
+\item $h_i(a) := \alpha_i\times h_{i-1}(a) + \beta_i(a)$ \hfill for each $a\in\mathcal{A}\qquad$
+\item $U:=\ell_{\ass_{i-1}}(\mathcal{A}\setminus (\tlits{\ass_{i-1}}\cup\flits{\ass_{i-1}}))$
+\item $C:= \textit{argmax}_{a\in U}d_i(a)$
+\item $a:= \tau(C)$
+\item $\ass_i := \ass_{i-1}\cup\{t_i(a)a\}$
+\end{enumerate}
+% --------------------------------------------------
+Although we formally model both $h$ and $d$ (as well as $s$ and $t$) as functions,
+there is a substantial conceptual difference in practice in that $h$ is a system-specific data structure while $d$ is an associated method.
+This is also reflected above, where $h$ is subject to assignments.
+%
+Item~0 makes sure that our heuristic modifications take part in the look-back based evolution in Item~1,
+and are thus also subject to decay.
+We added this as a separate line rather than integrating it into Item~1 in order to stress that our
+modifications are modular in leaving the underlying heuristic machinery unaffected.
+%
+Item~2 gathers in $U$ all unassigned atoms of highest rank.
+%
+Among them, Item~3 collects in $C$ all atoms $a$ with a maximum heuristic value $d_i(a)$.
+%
+Since this is not guaranteed to yield a unique element, the system-specific tie-breaking function
+$\tau$ is evoked to return a unique atom.
+%
+Finally, the modified sign heuristic $t_i$ determines a truth value for $a$, and the resulting
+signed literal ${t_i(a)a}$ is added to the current assignment.
+
+Note that so far all sample heuristic rules were \emph{static} in the sense that they are turned into
+facts by the grounder and thus remain unchanged during solving.
+Examples of dynamic heuristic rules are given at the end of next section.
+
+Our simple heuristic language is easily extended by further heuristic atoms.
+For instance, \hpred{a}{\mathtt{true}}{v}{p} and \hpred{a}{\mathtt{false}}{v}{p} have turned out to be useful in practice.
+\begin{lstlisting}
+_h(A,level,V,P) :- _h(A,true, V,P).
+_h(A,sign, 1,P) :- _h(A,true, V,P).
+_h(A,level,V,P) :- _h(A,false,V,P).
+_h(A,sign,-1,P) :- _h(A,false,V,P).
+\end{lstlisting}
+%
+For instance, the heuristic atom \hpred{a}{\mathtt{true}}{3}{3} expands to 
+\hpred{a}{\mathtt{level}}{3}{3} and \hpred{a}{\mathtt{sign}}{1}{3},
+expressing a preference for both making a decision on~$a$ and
+assigning it to true.
+On the other hand,
+\hpred{a}{\mathtt{false}}{-3}{3} expands to 
+\hpred{a}{\mathtt{level}}{-3}{3} and \hpred{a}{\mathtt{sign}}{-1}{3},
+thus suggesting not to make a decision on~$a$ but to
+assign it to false if there is no ``better'' decision variable.
+
+Another shortcut of pragmatic value is the abstraction from specific priorities.
+For this, we use the following rule.
+\begin{lstlisting}
+_h(A,M,V,#abs(V)) :- _h(A,M,V).
+\end{lstlisting}
+With it,
+we can directly describe the heuristic restriction used in \cite{rintanen11a} to simulate planning
+by iterated deepening $A^*$ \cite{korf85a} in SAT solving through limiting choices to action variables,
+assigning those for time \texttt{T} before those for time \texttt{T+1}, and always assigning truth
+value \texttt{true} (where \texttt{l} is a constant indicating the planning horizon):
+\begin{lstlisting}
+_h(occ(A,T),true,l-T) :- action(A), time(T).
+\end{lstlisting}
+
+Although we impose no restriction on the occurrence of heuristic atoms within logic programs,
+it seems reasonable to require that the addition of rules containing heuristic atoms does not alter
+the stable models of the original program.
+That is, given a logic program $P$ over $\mathcal{A}$ and a set of rules $H$ over $\mathcal{A}\cup\mathcal{H}$,
+we aim at a one-to-one correspondence between the stable models of $P$ and $P\cup H$ and
+their identity upon projection on $\mathcal{A}$.
+This property is guaranteed whenever heuristic atoms occur only in the head of rules and thus only
+depend upon regular atoms.
+In fact, so far, this class of rules turned out to be expressive enough to model all heuristics of interest,
+including the ones presented in this paper.
+It remains future work to see whether more sophisticated schemes, eg., involving recursion, are useful.
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End: 

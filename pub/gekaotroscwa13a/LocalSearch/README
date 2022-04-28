@@ -1,0 +1,13 @@
+Hola!
+
+I have the Local Search framework running, pretty simple thing.
+It goes slower than clasp, but i think it is enough for testing the idea,
+let's see...
+
+I am running it with:
+  $ python local.py l.queens.lp
+In local.py it is explained a bit how to use it.
+The idea is that everything is specified in asp in the l.queens.lp.
+
+Chao!
+Javier

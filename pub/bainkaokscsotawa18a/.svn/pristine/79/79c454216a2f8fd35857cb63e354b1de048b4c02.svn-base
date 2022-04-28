@@ -1,0 +1,188 @@
+\section{Answer Set Programming}\label{sec:asp}
+
+Answer Set Programming (ASP;~\citep{%
+  baral03:cambridge,%
+  DBLP:conf/iclp/GelfondL88,%
+  DBLP:journals/amai/Niemela99})
+is a popular tool for declarative problem solving due to its attractive combination of 
+a high-level modeling language with high-performance search engines.
+
+In ASP, problems are described as logic programs, which are sets of rules of the form:
+\begin{lstlisting}[basicstyle=\ttfamily\normalsize,mathescape=true,numbers=none]
+   a$_0$ :- a$_1$,...,a$_m$,not a$_{m+1}$,...,not a$_n$.
+\end{lstlisting}
+where $0\leq m\leq n$ and 
+each \lstinline[basicstyle=\ttfamily\normalsize,mathescape=true]{a$_i$}
+is a propositional atom for ${0}\leq{i}\leq{n}$.
+%
+The connectives `\code{:-}' and `\code{,}' stand for `if' and `and', respectively. 
+The connective `\code{not}' stands for \emph{default negation}.
+Each rule is terminated by a period `\code{.}'.
+A \emph{literal} is an atom \code{a} or 
+\lstinline[basicstyle=\ttfamily\normalsize,mathescape=true]{not a}.
+%
+The intuitive meaning of the rule is that 
+\lstinline[basicstyle=\ttfamily\normalsize,mathescape=true]{a$_0$}
+must be true if
+\lstinline[basicstyle=\ttfamily\normalsize,mathescape=true]{a$_1$}, 
+$\ldots$ , 
+\lstinline[basicstyle=\ttfamily\normalsize,mathescape=true]{a$_m$}
+are true and if 
+\lstinline[basicstyle=\ttfamily\normalsize,mathescape=true]{a$_{m+1}$}, 
+$\ldots$ , 
+\lstinline[basicstyle=\ttfamily\normalsize,mathescape=true]{a$_n$}
+are false.
+Semantically, a logic program induces a collection of so-called \emph{answer sets},
+which are distinguished models of the program determined by answer sets semantics;
+see \citep{DBLP:conf/iclp/GelfondL88} for details.
+
+We call a rule a \emph{fact} if the \emph{body} of the rule 
+(right of `\code{:-}') is empty, and we often skip `\code{:-}' when writing facts.
+A rule is called an \emph{integrity constraint} 
+if the \emph{head} of the rule (left of `\code{:-}') is empty.
+\begin{quote}
+\lstinline[basicstyle=\ttfamily\normalsize,mathescape=true]{a$_0$.} \\
+\lstinline[basicstyle=\ttfamily\normalsize,mathescape=true]{:- a$_1$,...,a$_m$,not a$_{m+1}$,...,not a$_n$.}
+\end{quote}
+A fact is unconditionally true, i.e., it belongs to every answer set.
+An integrity constraint is considered as a rule that filters solution candidates, 
+meaning that the conjunction of literals in its body must not hold. 
+%the literals in its body must not jointly be satisfied.
+
+To facilitate the use of ASP in practice, 
+several extensions have been developed. 
+First of all, rules with first-order variables are viewed as shorthand for the set of their ground instances.
+Further language constructs include
+\emph{conditional literals} and \emph{cardinality constraints} \citep{DBLP:journals/amai/Niemela99}.
+The former are of the form
+\lstinline[basicstyle=\ttfamily\normalsize,mathescape=true]{a:b$_1$,...,b$_m$},
+the latter can be written as
+\lstinline[basicstyle=\ttfamily\normalsize,mathescape=true]+s {c$_1$,...,c$_n$} t+,
+where \lstinline[basicstyle=\ttfamily\normalsize]{a} and \lstinline[basicstyle=\ttfamily\normalsize,mathescape=true]{b$_i$} are possibly default-negated literals  % for $0\leq i\leq m$,
+and each \lstinline[basicstyle=\ttfamily\normalsize,mathescape=true]{c$_j$} is a conditional literal; % for $1\leq i\leq n$;
+\lstinline[basicstyle=\ttfamily\normalsize]{s} and \lstinline[basicstyle=\ttfamily\normalsize]{t} provide lower and upper bounds on the number of satisfied literals in the cardinality constraint.
+%
+Note that either
+\lstinline[basicstyle=\ttfamily\normalsize]{s} or
+\lstinline[basicstyle=\ttfamily\normalsize]{t} 
+can be omitted.
+That is, 
+\lstinline[basicstyle=\ttfamily\normalsize,mathescape=true]+s {c$_1$,...,c$_n$}+ 
+and 
+\lstinline[basicstyle=\ttfamily\normalsize,mathescape=true]+{c$_1$,...,c$_n$} t+ 
+represent at-least-\lstinline[basicstyle=\ttfamily\normalsize]{s}
+and at-most-\lstinline[basicstyle=\ttfamily\normalsize]{t}
+constraints respectively.
+%
+The practical value of both constructs becomes apparent when used with variables.
+For instance, a conditional literal like
+\lstinline[basicstyle=\ttfamily\normalsize,mathescape=true]{a(X):b(X)}
+in a rule's antecedent expands to the conjunction of all instances of \lstinline[basicstyle=\ttfamily\normalsize]{a(X)} for which the corresponding instance of \lstinline[basicstyle=\ttfamily\normalsize]{b(X)} holds.
+%
+Similarly,
+\lstinline[basicstyle=\ttfamily\normalsize,mathescape=true]+2 {a(X):b(X)} 4+
+is true whenever at least two and at most four instances of \lstinline[basicstyle=\ttfamily\normalsize]{a(X)} (subject to \lstinline[basicstyle=\ttfamily\normalsize]{b(X)}) are true.
+%
+A useful\footnote{Care must be taken whenever such expressions are evaluated during solving (rather than grounding).} shortcut are expressions of the form
+\lstinline[basicstyle=\ttfamily\normalsize,mathescape=true]+N = {c$_1$,...,c$_n$}+
+that binds \lstinline[basicstyle=\ttfamily\normalsize]{N} to the number of satisfied conditional literals
+\lstinline[basicstyle=\ttfamily\normalsize,mathescape=true]{c$_j$}.
+%
+Finally, objective functions minimizing the sum of weights
+\lstinline[basicstyle=\ttfamily\normalsize,mathescape=true]{w$_j$}
+of conditional literals 
+\lstinline[basicstyle=\ttfamily\normalsize,mathescape=true]{c$_j$} are expressed as
+\lstinline[basicstyle=\ttfamily\normalsize,mathescape=true]+#minimize {w$_1$:c$_1$,$\dots$,w$_n$:c$_n$}+.
+\footnote{Syntactically, each $\mathtt{w_j}$ can be an arbitrary term.
+In fact, often tuples are used rather than singular weights to ensure a multi-set property;
+in such a case the summation only applies to the first element of selected tuples.}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{fig_graph}
+%
+\lstinputlisting[float=t,caption={%
+ASP facts representing the graph of Figure.~\ref{fig:graph} (\code{graph.lp})},%
+captionpos=b,frame=single,label=code:graph.lp,%
+numbers=none,%
+breaklines=true,%
+columns=fullflexible,keepspaces=true,%
+basicstyle=\ttfamily\scriptsize]{code_graph_lp.tex}
+%
+\lstinputlisting[float=t,caption={%
+ASP rules for graph coloring (\texttt{color.lp})},%
+captionpos=b,frame=single,label=code:color.lp,%
+%numbers=none,%
+breaklines=true,%
+columns=fullflexible,keepspaces=true,%
+basicstyle=\ttfamily\scriptsize]{code_color_lp.tex}
+%
+\lstinputlisting[float=t,caption={Solving a graph coloring problem (\code{graph.lp} and \code{color.lp})},%
+captionpos=b,frame=single,label=code:color.log,%
+numbers=none,%
+breaklines=true,%
+columns=fullflexible,keepspaces=true,%
+basicstyle=\ttfamily\scriptsize]{code_color_log.tex}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+For solving a problem instance of a problem class in ASP, 
+we encode the problem instance as a set of ASP facts and the problem
+class as a set of ASP rules.
+In turn, the facts are combined with the rules, 
+and the result is
+subsequently solved by an off-the-shelf ASP system that returns
+an answer set representing a solution to the original problem.
+
+As an example, let us consider a graph coloring problem.
+The problem consists in finding
+assignments of colors to nodes such that no two nodes connected by an
+edge have the same color. 
+A problem instance is given by a graph as in Figure~\ref{fig:graph}.
+%
+It is represented as facts of predicates
+\code{node/1} and \code{edge/2} in Listing~\ref{code:graph.lp}.
+The 3-colorability problem class is encoded in Listing~\ref{code:color.lp}.
+%
+Line 1 provides the available colors as facts.
+Line 3 and 4 express the actual colorability problem.
+The predicate \code{color(X,C)} is used to express that a node
+\code{X} is colored with \code{C}.
+%
+The rule in Line 3 generates for each node \code{X} a set of candidate assignments
+subject to the condition that there is exactly one color \code{C} such that \code{color(X,C)} holds.
+In detail, the conditional literal
+\code{color(X,C):col(C)}
+in the cardinality constraint
+expands to the conjunction of 
+\code{color(X,r)}, \code{color(X,b)}, and \code{color(X,g)}, since
+the facts \code{col(r)}, \code{col(b)}, and \code{col(g)} unconditionally hold.
+That is, line 3 expresses that each node \code{X} must be colored with
+exactly one color among red (\code{r}), blue (\code{b}), and green (\code{g}).
+%
+The integrity constraint in Line 4 expresses that all connected nodes
+\code{X} and \code{Y} must not be colored with the same color \code{C},
+since, as mentioned above, 
+the conjunction of literals in its body must not hold. 
+%
+Line 6 is a directive, that is, a meta statement advising the ASP system to project answer sets
+onto instances of predicate \code{color/2}.
+%
+An answer set computed by the ASP system {\clingo} is shown in
+Listing~\ref{code:color.log}; 
+it represents a coloring of node \code{1} with green,
+\code{2} and \code{3} with blue, 
+\code{4} with red, 
+\code{5} with green, and 
+\code{6} with red.
+
+Modern ASP systems like {\clingo} first translate
+user-defined logic programs (with variables) into 
+equivalent ground (that is, variable-free) programs, 
+and then compute the answer sets of the ground programs.
+Particularly, the former task is called \emph{grounding}.
+The foundations and algorithms underlying the technology of {\clingo}
+are described in detail in \citep{gekakasc12a}.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End:

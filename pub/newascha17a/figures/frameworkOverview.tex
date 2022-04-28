@@ -1,0 +1,137 @@
+%\begin{tikzpicture}[every text node part/.style={align=center},>=stealth]
+%		\tikzstyle{block} = [rounded corners=5,draw=black,fill]
+%		\tikzstyle{arrow} = [->,line width=1.0pt,black]
+%		\node [block, fill=black!30!yellow!05, rotate=90] (v1) at (-5.8,1) {Synthesis Problem Instance};
+%		\node (anchor) at (0.4,-2.9) {};
+%		
+%		\node[block, minimum width = 10.4cm, minimum height=4.4cm,fill=blue!05] (syn) at (0,1) {};
+%		
+%		\node[inner sep=0.0cm,anchor=west,rotate=90] at (5,-1.1) {\textbf {ASP Solver (Clingo)}};
+%		%\node[anchor=north west,inner sep=0.1cm] at (syn.north west) {\textbf {Answer Set Solver (Clingo)}};
+%		\node [block, text width=2cm, fill=blue!40] (v7) at (-4,1.5) {\small Decide binding or routing variable};
+%		\draw [block, fill=blue!40](4.4,2.8) -- (4.4,-0.9) -- (-1.8,-0.9) -- (-2.5,-0.9) -- (-2.5,0.4) -- (-2.5,2.8) -- (0.5,2.8) -- (0.6,2.8) -- cycle;
+%		\node[anchor=west,inner sep=0.0cm,rotate=90] at (4.2,-0.8) {\textbf{\small {Background Theory}}};
+%		
+%		\draw[block,fill=black!40!green!40]  (3.8,2.8) rectangle (-2.5,0.7);
+%		\node[anchor=west,inner sep=0.0cm,rotate=90,align=left] at (3.6,0.8) {\footnotesize {\textbf{QF--IDL}}};
+%		\node [draw, diamond, aspect=2,minimum width=3cm,minimum height=1.5cm, fill=myblue] (v2) at (-0.9,1.7) {} ;
+%		\node[anchor=center,inner sep=0.2cm, text width=2.3cm,text=white] at (v2.center) {\small negative\\ cycle?};
+%		
+%		\node [block, text width=2cm, fill=myblue,text=white] (v8) at (2.3,1.7) {\small (Partial) Schedule};
+%		\node [block,  fill=black!30!yellow!05,rotate=0] (v4) at (2.3,-1.6) {\small Feasible Implementation};
+%		\node [block, text width=2.2cm,  fill=black!10!red!30] (v5) at (-0.9,0.1) {\small restrict search space};
+%		\draw [arrow] (v1) edge (syn);
+%		\draw [arrow](v7) -- (-4,2.7) -- node[midway, auto]{\footnotesize partial assignment}(-0.9,2.7) -- (v2);
+%		
+%		\draw [arrow] (v2) edge node[midway, auto]{\footnotesize no}(v8);
+%		\draw [arrow](v2) -- node[midway, left]{\footnotesize yes}(-0.9,0.8) -- (v5);
+%		%\draw [arrow](v5);
+%		
+%		%\draw [arrow] (v5) edge (v4);
+%		\node [draw, diamond, aspect=2,minimum width=3cm,minimum height=1.5cm,text=white, fill=myblue] (v9) at (2.3,-0.1) {} ;
+%		\node[anchor=center,inner sep=0.2cm, text width=2.3cm,text=white] at (v9.center) {\small complete assignement?};
+%		
+%		\draw [arrow] (v9) -- node[midway,right]{\footnotesize yes}  (v4);
+%		%\draw [arrow] (v4) edge (v7);
+%		\draw [arrow](v9) -- (0.7,-0.1) -- (0.2,-0.5) node[midway,right]{\footnotesize no}-- (-4,-0.5) -- (v7);
+%		%\draw [arrow](v5) -- (-1.1,1.1)-- (-2.7,1.1)-- (-2.7,0.6) -- (-4,0.6) -- (v7);
+%		\draw [arrow] (v8) edge (v9);
+%		\draw [arrow] (v5) --(-3.1,0.1)-- (v7);
+%		
+%		\end{tikzpicture}
+
+%\begin{tikzpicture}[every text node part/.style={align=center},>=stealth]
+%\tikzstyle{block} = [rounded corners=5,draw=black,fill]
+%\tikzstyle{arrow} = [->,line width=1.0pt,black]
+%\node [block, fill=black!30!yellow!05, rotate=90] (v1) at (-5.8,1) {Synthesis Problem Instance};
+%
+%\node[block, minimum width = 13.2cm, minimum height=4.4cm,fill=blue!05] (syn) at (1.4,1) {};
+%
+%\node[inner sep=0.0cm,anchor=west,rotate=90] at (7.8,-1) {\textbf {ASP Solver (Clingo)}};
+%%\node[anchor=north west,inner sep=0.1cm] at (syn.north west) {\textbf {Answer Set Solver (Clingo)}};
+%\node [block, text width=2cm, fill=blue!40] (v7) at (-4,1.5) {\small Decide binding or routing variable};
+%\draw [block, fill=blue!40](7.5,2.8) -- (7.5,-0.9) -- (-1.8,-0.9) -- (-2.5,-0.9) -- (-2.5,0.4) -- (-2.5,2.8) -- (0.5,2.8) -- (0.6,2.8) -- cycle;
+%\node[anchor=west,inner sep=0.0cm,rotate=90] at (7.3,-0.7) {\textbf{\small {Background Theory}}};
+%
+%\draw[block,fill=black!40!green!40]  (3.5,2.8) rectangle (-2.5,0.7);
+%\draw[block,fill=black!40!green!40]  (7.1,2.8) rectangle (3.7,0.7);
+%\node[anchor=west,inner sep=0.0cm,align=left] at (2.2,0.9) {\footnotesize {\textbf{QF--IDL}}};
+%\node[anchor=west,inner sep=0.0cm,align=left] at (5.8,0.9) {\footnotesize {\textbf{Periodic}}};
+%\node [draw, diamond, aspect=2,minimum width=3cm,minimum height=1.5cm, fill=myblue] (v2) at (-0.9,1.7) {} ;
+%\node[anchor=center,inner sep=0.2cm, text width=2.3cm,text=white] at (v2.center) {\small negative\\ cycle?};
+%
+%\node [block, text width=2cm, fill=myblue,text=white] (v8) at (2.3,1.7) {\small (Partial) Schedule};
+%
+%\node [block,  fill=black!30!yellow!05,rotate=0] (v4) at (2.3,-1.6) {\small Feasible Implementation};
+%\node [block, text width=2.2cm,  fill=black!10!red!30] (v5) at (-0.9,0.1) {\small restrict search space};
+%\draw [arrow] (v1) edge (syn);
+%\draw [arrow](v7) -- (-4,2.7) -- node[midway, auto]{\footnotesize partial assignment}(-0.9,2.7) -- (v2);
+%
+%\draw [arrow] (v2) edge node[midway, auto]{\footnotesize no}(v8);
+%\draw [arrow](v2) -- node[midway, left]{\footnotesize yes}(-0.9,0.8) -- (v5);
+%%\draw [arrow](v5);
+%
+%%\draw [arrow] (v5) edge (v4);
+%\node [draw, diamond, aspect=2,minimum width=3cm,minimum height=1.5cm,text=white, fill=myblue] (v9) at (2.3,-0.1) {} ;
+%\node[anchor=center,inner sep=0.2cm, text width=2.3cm,text=white] at (v9.center) {\small complete assignement?};
+%
+%\node [draw, diamond, aspect=2,minimum width=3cm,minimum height=1.5cm,text=white, fill=myblue] (v19) at (5.4,1.7) {} ;
+%\node[anchor=center,inner sep=0.2cm, text width=2.3cm,text=white] at (v19.center) {\small periodic overlapping?};
+%\draw [arrow](v19) -- (5.4,2.7) node[very near start, auto]{\footnotesize yes} -- (-0.9,2.7) -- (v2);
+%\draw [arrow] (v9) -- node[midway,right]{\footnotesize yes}  (v4);
+%%\draw [arrow] (v4) edge (v7);
+%\draw [arrow](v9) -- (0.7,-0.1) -- (0.2,-0.5) node[midway,right]{\footnotesize no}-- (-4,-0.5) -- (v7);
+%%\draw [arrow](v5) -- (-1.1,1.1)-- (-2.7,1.1)-- (-2.7,0.6) -- (-4,0.6) -- (v7);
+%\draw [arrow] (v8) edge (v19);
+%\draw [arrow] (v5) --(-3.1,0.1)-- (v7);
+%
+%\draw [arrow] (v19) -- (5.4,-0.1) node[very near start,left]{\footnotesize no}  -- (v9);
+%\end{tikzpicture}
+
+\begin{tikzpicture}[every text node part/.style={align=center},>=stealth]
+\tikzstyle{block} = [rounded corners=5,draw=black,fill]
+\tikzstyle{arrow} = [->,line width=1.0pt,black]
+\node [block, fill=black!30!yellow!05, rotate=0] (v1) at (1.5,3.7) {Synthesis Problem Instance};
+
+\node[block, minimum width =10cm, minimum height=6.6cm,fill=blue!05] (syn) at (1.4,-0.1) {};
+
+\node[inner sep=0.0cm,anchor=west,rotate=90] at (6.2,-3.2) {\textbf {ASP Solver (Clingo)}};
+%\node[anchor=north west,inner sep=0.1cm] at (syn.north west) {\textbf {Answer Set Solver (Clingo)}};
+\node [block, text width=2cm, fill=blue!40] (v7) at (-2,-0.9) {\small Decide binding or routing variable};
+\draw [block, fill=blue!40](5.9,2.8) -- (5.9,-3.3) -- (-0.7,-3.3) -- (-0.7,0.0) -- (-2.5,0.0) -- (-2.5,2.8) -- (0.5,2.8) -- (0.6,2.8) -- cycle;
+\node[anchor=west,inner sep=0.0cm,rotate=90] at (5.7,-3.2) {\textbf{\small {Background Theory}}};
+
+\draw[block,fill=black!40!green!40]  (5,2.7) rectangle (-2.4,0.6);
+\draw[block,fill=black!40!green!40]  (5,0.4) rectangle (2,-1.4);
+\node[anchor=west,inner sep=0.0cm,align=left] at (3.8,0.8) {\footnotesize {\textbf{QF--IDL}}};
+\node[anchor=west,inner sep=0.0cm,align=left] at (3.8,-1.2) {\footnotesize {\textbf{Periodic}}};
+\node [draw, diamond, aspect=2,minimum width=3cm,minimum height=1.5cm, fill=myblue] (v2) at (-0.4,1.7) {} ;
+\node[anchor=center,inner sep=0.2cm, text width=2.3cm,text=white] at (v2.center) {\small negative\\ cycle?};
+
+\node [block, text width=2cm, fill=myblue,text=white] (v8) at (3.5,1.7) {\small (Partial) Schedule};
+
+\node [block,  fill=black!30!yellow!05,rotate=0] (v4) at (3.5,-4) {Feasible Implementation};
+\node [block, text width=2.2cm,  fill=black!10!red!30] (v5) at (0.6,-0.9) {\small restrict search space};
+\draw [arrow] (v1) edge (syn);
+\draw [arrow](v7) -- (-2,2.7) -- node[midway, auto]{\footnotesize partial assignment}(-0.4,2.7) -- (v2);
+
+\draw [arrow] (v2) edge node[midway, auto]{\footnotesize no}(v8);
+\draw [arrow](v2) -- node[midway, right]{\footnotesize yes}(-0.4,0.5) -- (0.6,0.5) -- (v5);
+%\draw [arrow](v5);
+
+%\draw [arrow] (v5) edge (v4);
+\node [draw, diamond, aspect=2,minimum width=3cm,minimum height=1.5cm,text=white, fill=myblue] (v9) at (3.5,-2.5) {} ;
+\node[anchor=center,inner sep=0.2cm, text width=2.3cm,text=white] at (v9.center) {\small complete assignement?};
+
+\node [draw, diamond, aspect=2,minimum width=3cm,minimum height=1.5cm,text=white, fill=myblue] (v19) at (3.5,-0.4) {} ;
+\node[anchor=center,inner sep=0.2cm, text width=2.3cm,text=white] at (v19.center) {\small periodic overlapping?};
+\draw [arrow](v19) -- (5.4,-0.4) node[midway,below]{\footnotesize yes} -- (5.4,2.7)  -- (-0.4,2.7) -- (v2);
+\draw [arrow] (v9) -- node[near end,right]{\footnotesize yes}  (v4);
+%\draw [arrow] (v4) edge (v7);
+\draw [arrow](v9) -- (1.1,-2.5) -- (-2,-2.5) node[midway,above]{\footnotesize no}-- (-2,-2.1) -- (v7);
+%\draw [arrow](v5) -- (-1.1,1.1)-- (-2.7,1.1)-- (-2.7,0.6) -- (-4,0.6) -- (v7);
+\draw [arrow] (v8) edge (v19);
+\draw [arrow] (v5) -- (v7);
+
+\draw [arrow] (v19) -- (3.5,-1.5) node[near start,left]{\footnotesize no}  -- (v9);
+\end{tikzpicture}

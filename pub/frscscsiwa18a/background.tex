@@ -1,0 +1,111 @@
+
+\section{Answer Set Programming with Linear Constraints}\label{sec:background}
+
+For encoding our hybrid problem,
+we rely upon the theory reasoning capacities of the ASP system \clingo\ that allows us to extend ASP with linear constraints over reals
+(as addressed in Linear Programming).
+We confine ourselves below to features relevant to our application and refer the interested reader for details to~\citep{gekakaosscwa16a}.
+
+As usual, a \emph{logic program} consists of \emph{rules} of the form
+\begin{lstlisting}[mathescape=true,numbers=none]
+   a$_0$ :- a$_1$,...,a$_m$,not a$_{m+1}$,...,not a$_n$
+\end{lstlisting}
+where each \lstinline[mathescape=true]{a$_i$} is either
+a \emph{(regular) atom} of form \lstinline[mathescape=true]{p(t$_1$,...,t$_k$)}
+where all \lstinline[mathescape=true]{t$_i$} are terms
+or
+a \emph{linear constraint atom} of form%
+\footnote{In \clingo, theory atoms are preceded by `\texttt{\&}'.}
+`\lstinline[mathescape=true]@&sum{w$_1$*x$_1$;$\dots$;w$_l$*x$_l$} <= k@'
+that stands for the linear constraint
+\(
+w_1\cdot x_1+\dots+w_l\cdot x_l\leq k
+\).
+All \lstinline[mathescape=true]{w$_i$} and \lstinline[mathescape=true]{k} are finite sequences of digits with at most one dot%
+\footnote{In the input language of \clingo, such sequences must be quoted to avoid clashes.}
+and represent real-valued coefficients $w_i$ and $k$.
+Similarly all \lstinline[mathescape=true]{x$_i$} stand for the real-valued variables $x_i$.
+%
+As usual, \lstinline[mathescape=true]{not} denotes (default) \emph{negation}.
+A rule is called a \emph{fact} if $n=0$.
+
+Semantically, a logic program induces a set of \emph{stable models},
+being distinguished models of the program determined by stable models semantics~\citep{gellif91a}.
+%
+Such a stable model $X$ is an \emph{LC-stable model} of a logic program $P$,%
+\footnote{This corresponds to the definition of $T$-stable models using a \emph{strict} interpretation of theory atoms~\citep{gekakaosscwa16a},
+  and letting $T$ be the theory of linear constraints over reals.}
+if there is an assignment of reals to all real-valued variables occurring in $P$ that
+(i)     satisfies all linear constraints associated with linear constraint atoms in $P$ being     in $X$
+and
+(ii) falsifies all linear constraints associated with linear constraint atoms in $P$ being not in $X$.
+%
+For instance, the (non-ground) logic program containing the fact
+`\lstinline[mathescape=true]{a("1.5").}'
+along with the rule
+`\lstinline[mathescape=true]@&sum{R*x} <= 7 :- a(R).@'
+has the stable model
+\par
+\lstinline[mathescape=true]@$\{$a("1.5")$,\;$&sum{"1.5"*x}<=7$\}$@.
+\\
+This model is LC-stable since there is an assignment,
+e.g.\ $\{x\mapsto 4.2\}$,
+that satisfies the associated linear constraint `$1.5*x\leq 7$'.
+We regard the stable model along with a satisfying real-valued assignment as a solution to a logic program containing linear constraint atoms.
+\review{For a more detailed introduction of ASP extended with linear constraints, illustrated with more complex examples, we refer the interested reader to~\citep{jakaosscscwa17a}.}
+
+To ease the use of ASP in practice,
+several extensions have been developed.
+First of all, rules with variables are viewed as shorthands for the set of their ground instances.
+Further language constructs include
+\emph{conditional literals} and \emph{cardinality constraints} \citep{siniso02a}.
+The former are of the form
+\lstinline[mathescape=true]{a:b$_1$,...,b$_m$},
+the latter can be written as
+\lstinline[mathescape=true]+s{d$_1$;...;d$_n$}t+,
+where \lstinline{a} and \lstinline[mathescape=true]{b$_i$} are possibly default-negated (regular) literals  % for $0\leq i\leq m$,
+and each \lstinline[mathescape=true]{d$_j$} is a conditional literal; % for $1\leq i\leq n$;
+\lstinline{s} and \lstinline{t} provide optional lower and upper bounds on the number of satisfied literals in the cardinality constraint.
+We refer to \lstinline[mathescape=true]{b$_1$,...,b$_m$} as a \emph{condition}.
+%
+The practical value of both constructs becomes apparent when used with variables.
+For instance, a conditional literal like
+\lstinline[mathescape=true]{a(X):b(X)}
+in a rule's antecedent expands to the conjunction of all instances of \lstinline{a(X)} for which the corresponding instance of \lstinline{b(X)} holds.
+%
+Similarly,
+\lstinline[mathescape=true]+2{a(X):b(X)}4+
+is true whenever at least two and at most four instances of \lstinline{a(X)} (subject to \lstinline{b(X)}) are true.
+%
+Finally, objective functions minimizing the sum of weights $w_i$ subject to condition $c_i$ are expressed as
+\lstinline[mathescape=true]!#minimize{$w_1$:$c_1$;$\dots$;$w_n$:$c_n$}!.
+% \lstinline[mathescape=true]!#minimize{$w_1$@$l_1$:$c_1$;$\dots$;$w_n$@$l_n$:$c_n$}!.
+% Lexicographically ordered objective functions are (optionally) distinguished via levels indicated by $l_i$.
+
+In the same way,
+the syntax of linear constraints offers several convenience features.
+As above,
+elements in linear constraint atoms can be conditioned,
+viz.\par
+`\lstinline[mathescape=true]@&sum{w$_1$*x$_1$:c$_1$;...;w$_l$*x$_l$:c$_n$} <= k@'
+\\
+where each \lstinline[mathescape=true]{c$_i$} is a condition.
+% Also, linear constraints can be formed with further relations, viz.\
+% \texttt{>=},
+% \texttt{<},
+% \texttt{>},
+% \texttt{=},
+% and
+% \texttt{!=}.
+Moreover, the theory language for linear constraints offers a domain declaration for real variables,
+`\lstinline[mathescape=true]@&dom{lb..ub} = x@'
+expressing that all values of \texttt{x} must lie between \texttt{lb} and \texttt{ub}.
+And finally the maximization (or minimization) of an objective function can be expressed with
+\lstinline[mathescape=true]@&maximize{w$_1$*x$_1$:c$_1$;...;w$_l$*x$_l$:c$_n$}@
+(by \texttt{minimize}).
+The full theory grammar for linear constraints over reals is available at~\url{https://potassco.org}.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End:

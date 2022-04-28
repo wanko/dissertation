@@ -1,0 +1,114 @@
+% -----------------------------------------------------------------------------------------------------------------------
+% -----------------------------------------------------------------------------------------------------------------------
+% -----------------------------------------------------------------------------------------------------------------------
+
+%\begin{frame}[fragile]{
+\begin{block}{Heuristics in ASP for PDDL planning}
+%}
+
+\dosubtitle{Simple STRIPS planner}
+
+\begin{columns} \begin{column}{.02\linewidth}\end{column}
+\begin{column}{.98\linewidth}
+
+
+\begin{semiverbatim}
+time(1..last).    
+
+holds(P,0) :- init(P).
+
+1 \{ occurs(A,T) : action(A) \} 1 :- time(T).
+:-  occurs(A,T), pre(A,F), not holds(F,T-1).
+
+holds(F,T)  :- holds(F,T-1), not nholds(F,T), time(T).
+holds(F,T)  :- occurs(A,T), add(A,F).
+nholds(F,T) :- occurs(A,T), del(A,F).
+
+:- query(F), not holds(F,last).
+
+\end{semiverbatim}
+
+\end{column} \end{columns}
+
+
+\dosubtitle{Heuristic rules}
+\begin{columns} \begin{column}{.02\linewidth}\end{column}
+\begin{column}{.98\linewidth}
+
+Add \verb|5| to the initial heuristic value of actions
+
+\verb|_heuristic(occurs(A,T),init,5) :- action(A), time(T).|
+
+\bigskip \bigskip
+
+Multiply the heuristic value of actions at \verb|T| by \verb|T|
+
+\verb|_heuristic(occurs(A,T),factor,T) :- action(A), time(T).|
+
+\bigskip \bigskip
+
+Decide first on actions
+
+\verb|_heuristic(occurs(A,T),level,1) :- action(A), time(T).|
+
+\bigskip \bigskip
+
+Do a forward search on actions
+
+\verb|_heuristic(occurs(A,T),level,last-T+1) :- action(A), time(T).|
+
+\bigskip \bigskip
+
+If deciding on actions, assign them to false
+
+\verb|_heuristic(occurs(A,T),sign,-1) :- action(A), time(T).|
+
+
+\end{column} \end{columns}
+
+\fourskip 
+
+\dosubtitle{New modifiers definition}
+\begin{columns} \begin{column}{.02\linewidth}\end{column}
+\begin{column}{.98\linewidth}
+
+Modifier \verb|true| gives a rank and a positive sign, 
+\verb|false| gives a rank and a negative sign
+
+\verb|_heuristic(X,level,Y) :- _heuristic(X,true,Y).|
+\verb|_heuristic(X,sign,1)  :- _heuristic(X,true,Y).|
+\verb|_heuristic(X,level,Y) :- _heuristic(X,false,Y).|
+\verb|_heuristic(X,sign,-1) :- _heuristic(X,false,Y).|
+
+\bigskip \bigskip
+
+Do a forward search on true actions
+
+\verb|_heuristic(occurs(A,T),true,last-T+1) :- action(A), time(T).|
+
+
+
+%_heuristic(occurs(A,T),factor,2) :- action(A), time(T).
+%_heuristic(occurs(A,T),factor,2) :- action(A), time(T).
+%\end{semiverbatim}
+
+%%}\only<5>{_heuristic(A,level,V) :- _heuristic(A,true, V).
+%%_heuristic(A,sign, 1) :- _heuristic(A,true, V).
+%%}\only<6>{_heuristic(A,level,V) :- _heuristic(A,false,V).
+%%_heuristic(A,sign,-1) :- _heuristic(A,false,V).
+%%}\only<7>{_heuristic(holds(F,T-1),true, t-T+1) :- holds(F,T).
+%%_heuristic(holds(F,T-1),false,t-T+1) :-
+%%                fluent(F), time(T), not holds(F,T).}
+
+\end{column} \end{columns}
+
+%%\end{frame}
+
+\end{block}
+
+
+
+% -----------------------------------------------------------------------------------------------------------------------
+% -----------------------------------------------------------------------------------------------------------------------
+% -----------------------------------------------------------------------------------------------------------------------
+

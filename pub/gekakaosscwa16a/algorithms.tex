@@ -1,0 +1,199 @@
+
+\section{Algorithmic Characterization}
+\label{sec:algo}
+
+As detailed in \cite{gekasc09c}, a ground program~$P$ induces
+\emph{completion} and \emph{loop nogoods},
+% formally defined
+given by % as
+\(
+  \Delta_P = \Delta_{\body{P}} \cup
+             \Delta_{\mathcal{A}\cup(\mathcal{T}\cap\head{P})}
+\)
+or
+\(
+  \Lambda_P = \mbox{$\bigcup_{\emptyset\subset U\subseteq \mathcal{A}\cup(\mathcal{T}\cap\head{P})}$}
+              \{ \lambda(a,U) \mid a\in U \}
+\),
+respectively,
+where $\body{P}$ is the set of rule bodies occurring in~$P$.
+Note that both sets of nogoods are restricted by regular atoms and defined theory atoms,
+while external theory atoms can a priori be assigned freely,
+although any occurrences in rule bodies are subject to evaluation
+via respective nogoods in~$\Delta_{\body{P}}$.
+% A \emph{literal} is of the form $\Tlit{v}$ or $\Flit{v}$ for
+% $v\in(\mathcal{A}\cup\mathcal{T})\cup\body{P}$.
+A (partial) \emph{assignment}~$\Ass$ is a consistent set
+of \emph{(signed) literals} of the form $\Tlit{v}$ or $\Flit{v}$ for
+$v\in(\mathcal{A}\cup\mathcal{T})\cup\body{P}$,
+i.e., $\{\Tlit{v},\Flit{v}\}\nsubseteq\Ass$
+for all $v\in(\mathcal{A}\cup\mathcal{T})\cup\body{P}$;
+$\Ass$ is \emph{total} if $\{\Tlit{v},\Flit{v}\}\cap\Ass\neq\emptyset$
+for all $v\in(\mathcal{A}\cup\mathcal{T})\cup\body{P}$.
+We say that some nogood $\delta$ is \emph{violated} by $\Ass$ if $\delta\subseteq\Ass$.
+%
+When $\mathbb{T}=\emptyset$, so that $\mathcal{T}=\emptyset$ as well,
+each total assignment~$\Ass$ that does not violate any nogood $\delta\in\Delta_P\cup\Lambda_P$
+yields a regular stable model of~$P$, and such an assignment~$\Ass$ is called a \emph{solution}
+(for $\Delta_P\cup\Lambda_P$).
+
+We now extend the concept of a solution to $\mathbb{T}$-stable models.
+To this end,
+we follow the idea of external propagators in \cite{drewal12a}
+and identify a theory $T\in\mathbb{T}$ with a set
+$\Delta_T\subseteq 2^{\{\Tlit{a}\mid a\in\mathcal{T}^T\}\cup\{\Flit{a}\mid a\in\mathcal{T}^T_e\}}$
+of \emph{theory nogoods} such that,
+given a total assignment $\Ass$,
+we have that $\delta\subseteq\Ass$ for some $\delta\in\Delta_T$
+iff
+there is no $T$-solution $\mathcal{S}^T$ such that
+$\{a\in\mathcal{T}^T\mid\Tlit{a}\in\nolinebreak\Ass\}\subseteq\mathcal{S}^T$
+and
+$\{a\in\mathcal{T}^T_e\mid\Flit{a}\in\nolinebreak\Ass\}\cap\mathcal{S}^T=\emptyset$.
+%
+That is, the nogoods in~$\Delta_T$ must reject $\Ass$ iff no $T$-solution
+(i)
+includes all theory atoms in $\mathcal{T}^T$ that are assigned to true by $\Ass$
+and
+(ii)
+excludes all strict theory atoms in $\mathcal{T}^T_e$ assigned to false by $\Ass$.
+This semantic condition establishes a (one-to-one) correspondence between
+$\mathbb{T}$-stable models of~$P$ and solutions for $(\Delta_P\cup\Lambda_P)\cup\bigcup_{T\in\mathbb{T}}\Delta_T$.
+%
+\begin{proposition}\label{prop:sound}
+Let $P$ be a % ground
+program, % over $\mathcal{A}\cup\mathcal{T}$,
+$\mathbb{T}$ be
+a collection of theories,
+% such that $\mathcal{T}\subseteq\bigcup_{T\in\mathbb{T}}\mathcal{T}^T$,
+$X\subseteq\mathcal{A}\cup\mathcal{T}$, and
+$B\subseteq\body{P}$ % be
+the set of rule bodies that hold w.r.t.~$X$.
+Then, we have that $X$ is a $\mathbb{T}$-stable model of~$P$ iff
+$\Ass=\{\Tlit{v}\mid v\in X\cup B\}\cup\{\Flit{v}\mid v\in ((\mathcal{A}\cup\mathcal{T})\setminus X)\cup(\body{P}\setminus B)\}$
+is a solution for
+$(\Delta_P\cup\Lambda_P)\cup\bigcup_{T\in\mathbb{T}}\Delta_T$.
+\end{proposition}
+%
+% A formal elaboration can be found in~\cite{gekakaosscwa16b}.
+
+The nogoods in $(\Delta_P\cup\Lambda_P)\cup\bigcup_{T\in\mathbb{T}}\Delta_T$ provide the
+logical fundament for the Conflict-Driven Constraint Learning (CDCL) procedure
+(cf.\ \cite{malyma09a,gekasc09c})
+outlined in Figure~\ref{fig:cdcl}.
+While the completion nogoods in~$\Delta_P$ are usually made explicit and subject to
+unit propagation,
+the loop nogoods in~$\Lambda_P$ as well as theory nogoods in~$\Delta_T$ are typically
+handled by dedicated propagators and particular members are selectively recorded, i.e.,
+when a respective propagator identifies some nogood~$\delta$ such that
+$|\delta\setminus\Ass|\leq 1$
+(and $(\{\Tlit{v}\mid\Flit{v}\in\nolinebreak\delta\}\cup\linebreak[1]\{\Flit{v}\mid\Tlit{v}\in\delta\})\cap\Ass=\emptyset$), and we say that such a nogood is \emph{unit}.
+In fact, a unit nogood~$\delta$ yields either a conflict, if $\delta$ is violated by $\Ass$,
+or otherwise a literal to be assigned by unit propagation.
+
+\begin{figure}[t]
+  \newcounter{cddl}
+  \setcounter{cddl}{8}
+  \renewcommand{\thecddl}{\Alph{cddl}}
+  \begin{tabbing}
+   (XX)  \= XX \= XX \= XX \= \kill%
+   \refstepcounter{cddl}(\thecddl)\label{fig:cdcl:init}
+         \> \textit{initialize} \` // register theory propagators and initialize watches \\
+         \> \textbf{loop} \\
+         \> \> \textit{propagate} completion, loop, and recorded nogoods
+               \` // deterministically assign literals \\
+         \> \> \textbf{if} no conflict \textbf{then} \\
+         \> \> \> \textbf{if} all variables assigned \textbf{then} \\
+   \setcounter{cddl}{2}%
+   \refstepcounter{cddl}(\thecddl)\label{fig:cdcl:check}
+         \> \> \> \> \textbf{if} some $\delta\in\Delta_T$ is violated for   $T\in\mathbb{T}$ \textbf{then} record $\delta$
+                     \` // theory propagators check $\Delta_T$ \\
+         \> \> \> \> \textbf{else} \textbf{return} variable assignment
+                   \`// $\mathbb{T}$-stable model found \\
+         \> \> \> \textbf{else} \\
+   \setcounter{cddl}{15}%
+   \refstepcounter{cddl}(\thecddl)\label{fig:cdcl:propagate}
+         \> \> \> \> \textit{propagate} theories $T\in\mathbb{T}$
+                     \`// theory propagators may record theory nogoods from $\Delta_T$ \\
+         \> \> \> \> \textbf{if} no nogood recorded \textbf{then} \textit{decide}
+                     \`// non-deterministically assign some literal \\
+         \> \> \textbf{else} \\
+         \> \> \> \textbf{if} top-level conflict \textbf{then} \textbf{return} unsatisfiable \\
+         \> \> \> \textbf{else} \\
+         \> \> \> \> \textit{analyze} \`// resolve conflict and record a conflict constraint \\
+   \setcounter{cddl}{20}%
+   \refstepcounter{cddl}(\thecddl)\label{fig:cdcl:undo}
+         \> \> \> \> \textit{backjump} \`// undo assignments until conflict constraint is unit
+ \end{tabbing}
+\caption{Basic algorithm for Conflict-Driven % Boolean
+         Constraint Learning (CDCL)
+         modulo theories}
+\label{fig:cdcl}
+\end{figure}%
+%
+While the dedicated propagator for loop nogoods is built-in in systems like \clingo~5,
+those for theories are provided via the interface detailed in Section~\ref{sec:system}.
+To utilize custom propagators,
+Figure~\ref{fig:cdcl} includes an \emph{initialization} step in Line~(\ref{fig:cdcl:init}).
+In addition to the ``registration'' of a propagator for a theory~$T$
+as an extension of the basic CDCL procedure,
+common   tasks performed in this step include setting up internal data structures and
+so-called watches for (a subset of) the theory atoms in $\mathcal{T}^T$,
+so that the propagator will be invoked (only) when some watched literal gets assigned.
+
+The main CDCL loop starts with unit propagation on completion and loop nogoods,
+the latter handled by the respective built-in propagator, as well as any nogoods
+already recorded.
+If this results in a non-total assignment without conflict,
+theory propagators for which some of their watched literals have been assigned
+are invoked in Line~(\ref{fig:cdcl:propagate}).
+A propagator for a theory~$T$ can then inspect the current assignment,
+update its data structures accordingly, and most importantly,
+perform \emph{theory propagation} determining theory nogoods $\delta\in\Delta_T$ to record.
+Usually, any such nogood~$\delta$ is unit in order to trigger a conflict or unit propagation,
+although this is not a necessary condition.
+The interplay of unit and theory propagation continues until a conflict or
+total assignment arises,
+or no (further) watched literals of theory propagators get assigned by unit propagation.
+In the latter case, some non-deterministic decision is made to extend the partial
+assignment at hand and then to proceed with unit and theory propagation.
+
+If no conflict arises and an assignment~$\Ass$ is total,
+in Line~(\ref{fig:cdcl:check}), theory propagators are called, one by one,
+for a final \emph{check} of~$\Ass$.
+The idea is that, e.g., a ``lazy'' propagator for a theory~$T$
+that does not exhaustively test violations of its theory nogoods by partial assignments
+can make sure that $\Ass$ is indeed a solution for~$\Delta_T$, or record some
+violated nogood(s) from $\Delta_T$ otherwise.
+Even in case theory propagation on partial assignments is exhaustive and a final
+check is not needed to detect conflicts,
+the information that search led to a total assignment can be useful in practice, e.g.,
+to store % theory-specific information such as
+values for integer variables like
+\lstinline{start(1)},
+\lstinline{start(2)},
+\lstinline{end(1)}, and
+\lstinline{end(2)} in Listing~\ref{prg:grd:diff}
+that witness the existence of a $T$-solution.
+
+Finally, in case of a conflict, i.e., some completion or recorded nogood is violated by
+the current assignment,
+provided that some non-deterministic decision is involved in the conflict,
+a new conflict constraint is recorded and utilized to guide backjumping
+in Line~(\ref{fig:cdcl:undo}), as usual with CDCL.
+In a similar fashion as the assignment of watched literals serves as
+trigger for theory propagation, theory propagators are informed when they become
+unassigned upon backjumping.
+This allows them to \emph{undo} earlier operations, e.g., internal data structures can be
+reset to return   to a state taken prior to the assignment of watches.
+
+In summary, the basic CDCL procedure is extended in four places to account for
+custom propagators: initialization, propagation of (partial) assignments,
+final check of total assignments, and undo steps upon backjumping.
+% The next section presents
+% the corresponding interface of \clingo~5.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End:

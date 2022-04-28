@@ -1,0 +1,49 @@
+\texttt{comp02} & UD3 & 4123.27\\
+\texttt{comp04} & UD3 & 1.19\\
+\texttt{comp06} & UD3 & 2.98\\
+\texttt{comp07} & UD3 & 16.11\\
+\texttt{comp08} & UD3 & 5.67\\
+\texttt{comp09} & UD3 & 267.69\\
+\texttt{comp10} & UD3 & 1.98\\
+\texttt{comp11} & UD3 & 0.44\\
+\texttt{comp14} & UD3 & 1.39\\
+\texttt{comp16} & UD3 & 1.76\\
+\texttt{comp17} & UD3 & 2.12\\
+\texttt{comp18} & UD3 & 2.12\\
+\texttt{comp20} & UD3 & 137.79\\
+\texttt{DDS6} & UD3 & 1.52\\
+\texttt{test2} & UD3 & 0.35\\
+\texttt{test3} & UD3 & 0.58\\
+\texttt{test4} & UD3 & 3827.19\\
+\texttt{toy} & UD3 & 0.02\\
+\texttt{Udine4} & UD3 & 15.65 \\\hline
+\#19 & UD3 & 442.54 \\\hline
+\texttt{comp04} & UD4 & 2.12\\
+\texttt{comp06} & UD4 & 48.63\\
+\texttt{comp07} & UD4 & 38.93\\
+\texttt{comp08} & UD4 & 15.87\\
+\texttt{comp10} & UD4 & 7.51\\
+\texttt{comp11} & UD4 & 0.92\\
+\texttt{comp14} & UD4 & 7.51\\
+\texttt{comp16} & UD4 & 5.85\\
+\texttt{comp17} & UD4 & 688.32\\
+\texttt{comp20} & UD4 & 3388.42\\
+\texttt{DDS6} & UD4 & 3.17\\
+\texttt{test2} & UD4 & 1.46\\
+\texttt{test3} & UD4 & 2.49\\
+\texttt{toy} & UD4 & 0.02\\
+\texttt{Udine4} & UD4 & 27.69\\\hline
+\#15 & UD4 & 282.59\\\hline
+\texttt{comp04} & UD5 & 32.62\\
+\texttt{comp08} & UD5 & 77.70 \\
+\texttt{comp11} & UD5 & 9.55 \\
+\texttt{DDS5} & UD5 & 137.60 \\
+\texttt{test2} & UD5 & 2365.18 \\
+\texttt{test3} & UD5 & 1142.12 \\
+\texttt{toy} & UD5 & 0.02 \\
+\texttt{Udine4} & UD5 & 140.63\\\hline
+\#8 & UD5 & 488.18\\
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../paper"
+%%% End:

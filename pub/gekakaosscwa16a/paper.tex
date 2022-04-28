@@ -1,0 +1,95 @@
+%% $Id: paper.tex 52728 2016-08-04 07:22:30Z torsten $
+%% $HeadURL: https://svn.cs.uni-potsdam.de/svn/reposWV/Papers/GrinGo/branches/Clingo5/paper.tex $
+\documentclass[fleqn,a4paper]{article}
+
+\usepackage[a4paper]{anysize}
+
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb}
+\usepackage{url}
+\usepackage{wrapfig}
+\usepackage{listings}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xcolor}
+\usepackage{graphicx}
+
+\lstset{xleftmargin=2\parindent,aboveskip=\smallskipamount,belowskip=\smallskipamount,captionpos=b}
+\lstset{numbers=left,numberblanklines=false,basicstyle=\ttfamily}
+\lstset{keywords=[1]{m,n},keywordstyle=[1]\usefont{OT1}{cmtt}{m}{n}}
+
+\lstdefinelanguage{clingo}{
+  keywordstyle=[1]\usefont{OT1}{cmtt}{m}{n},%
+  keywordstyle=[2]\textbf,%
+  keywordstyle=[3]\usefont{OT1}{cmtt}{m}{n},%\textit
+  alsoletter={\#,\&},%
+  keywords=[1]{not,from,import,def,if,else,return,while,break,and,or,for,in,del,and,class},%
+  keywords=[2]{\#const,\#show,\#minimize,\#base,\#theory,\#count,\#external,\#program,\#script,\#end,\#heuristic,\#edge,\#project,\#show},%
+  keywords=[3]{&,&dom,&sum,&diff,&show},%
+  morecomment=[l]{\#\ },%
+  morecomment=[l]{\%\ },%
+  commentstyle={\color{darkgray}}%
+}
+
+\newcommand{\blockcomment}[1]{}
+
+\newtheorem{proposition}{Proposition}
+\newtheorem{proof}{Proof}
+
+\input{macro}
+
+% \usepackage{comments} % https://svn.cs.uni-potsdam.de/svn/reposWV/TeXInputs/trunk/comments.sty
+% \def\SVNREVISION{$LastChangedRevision: 52728 $} % <== is automatically inserted by svn
+
+\sloppy
+
+\title{Theory Solving made easy with \textit{Clingo}~5\\[4pt] (Extended Version\thanks{Abridged version appeared in~\cite{gekakaosscwa16a}.}\;)}
+
+\author{%
+  Martin Gebser \and
+  Roland Kaminski \and
+  Benjamin Kaufmann \and
+  Max Ostrowski \and
+  Torsten Schaub \and %\thanks{Affiliated with the
+                %               School of Computing Science at
+                %               Simon Fraser University,
+                %               Burnaby, Canada,
+                %               and the
+                %               Institute for Integrated and Intelligent Systems
+                %               at
+                %               Griffith University,
+                %               Brisbane, Australia.}
+  Philipp Wanko
+  }
+\date{University of Potsdam, Germany}
+
+\pdfinfo{
+/Title (Theory Solving made easy with Clingo 5)
+/Author (Martin Gebser, Roland Kaminski, Benjamin Kaufmann, Max Ostrowski, Torsten Schaub, Philipp Wanko) }
+
+\begin{document}
+
+\maketitle
+
+\input{abstract}
+
+\input{introduction}
+\input{language}
+\input{approach}
+\input{algorithms}
+\input{system}
+% \input{implementation}
+\input{experiments}
+\input{discussion}
+\input{acknowledgments}
+\bibliographystyle{plain}
+\bibliography{lit,akku,local,procs}
+\clearpage
+\appendix
+\input{aspif}
+\input{proof}
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

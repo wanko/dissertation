@@ -1,0 +1,110 @@
+\section{Conclusion}\label{conclusion}
+
+We presented an ASP-based approach for solving the 
+curriculum-based course timetabling (CB-CTT) problems.
+The resulting system {\asap}~\footnote{%
+All source code is available from %
+\texttt{https://potassco.org/doc/apps/}}
+is built upon general-purpose ASP systems, in our case {\clingo}.
+That is, {\asap} relies on high-level ASP encodings presented in
+Section~\ref{sec:approach}, \ref{sec:ext}, and \ref{mpp}
+and delegates both the grounding
+and solving tasks to {\clingo}.
+
+The main features of our declarative approach are as follows:
+%
+\begin{list}{}{}
+\item \textbf{Expressiveness}. 
+The expressive power of ASP's modelling language enables us to compactly express
+a wide variety of hard and soft constraints of CB-CTT as demonstrated
+by a collection of {\asap} encodings. 
+Given new constraints (e.g., Manhattan distance), 
+all we have to do is adding ASP rules.
+
+\item \textbf{Flexibility}. 
+{\asap} provides flexible lexicographic optimization and easy
+composition of different formulations, since any combination of
+constraints can be represented as ASP facts. 
+Consequently, it enables a timetable keeper to experiment with
+different formulations as well as to optimize the obtained timetable 
+with different priority levels of soft constraints, 
+at a purely declarative level.
+
+\item \textbf{Efficiency}. 
+Our empirical analysis considers all instances in five different 
+formulations, which are publicly available from the CB-CTT portal. 
+% Many instances are based on real world data from several European
+% universities. 
+We have contrasted the performance of \asap\ with the best known
+bounds obtained so far via more dedicated implementations.
+\asap\ demonstrated that our declarative approach allows us to
+compete with state-of-the-art CB-CTT solving techniques.
+
+\item \textbf{Scalability}. 
+The optimized encoding drastically reduces the grounding time compared
+to the basic encoding.
+Consequently, our declarative approach scales to large instances in
+complex formulations, as demonstrated by the fact that
+{\asap} was able to find upper bounds for very
+large instances in the category \code{erlangen} with every
+formulation, and 24 of them were unsolvable before. 
+
+\item \textbf{Extensibility}. 
+The high-level approach of ASP facilitates extensions and variations
+of first-order encodings.
+From this viewpoint, 
+we extended the {\asap} system to solving multi-objective course
+timetabling problem combining CB-CTT and minimal perturbation problems
+with two criteria of optimality and stability.
+\end{list}
+
+Perhaps the most relevant related works are problem encodings in Integer Programming%
+~\citep{%
+      DBLP:journals/cor/BurkeMPR10,%
+      DBLP:journals/anor/BurkeMPR10,%
+      DBLP:journals/anor/BurkeMPR12,%
+      DBLP:journals/anor/LachL12}.
+These encodings use the binary variables $x_{C,D,P}$ and/or
+$x_{C,R,D,P}$ that correspond to the predicate
+\code{assigned/3} and/or \code{assigned/4} respectively.
+SAT/MaxSAT encodings~\citep{DBLP:journals/aicom/AchaN12} also 
+use the same binary variables.
+%
+The major advantage of our approach is not only
+the compact and flexible declarative representation gained by using
+ASP as a modeling language,
+but also the high performance gained from the recent advanced
+techniques in ASP solving.
+
+Our ASP-based approach can be applied to a wide range of timetabling
+problems such as
+\textit{school timetabling},
+\textit{examination timetabling}, and
+\textit{post-enrollment course timetabling}.
+Multi-objective optimization implemented in \asap\ can be further
+extended in selecting a promising subset of Pareto optimal solutions
+by using an advanced technique in MODOP solving based on P-minimal
+model generation~\citep{sbtl2017}.
+%
+ASP-based large neighborhood search (LNS) for course timetabling can
+be promising
+because a MaxSAT-based LNS has been recently shown to be effective for
+high school timetabling~\citep{DBLP:journals/cor/DemirovicM17}.
+For this, we developed a prototype implementing a simple neighborhood
+search using multi-shot ASP solving with {\asap}.
+In a preliminary experiment on some \code{comp} instances in UD5, 
+the prototype was able to find new bounds for 
+ 33 for \code{comp10},
+135 for \code{comp13},
+142 for \code{comp09}, and
+143 for \code{comp21}.
+%
+We will investigate these possibilities, and 
+the results will be applied to representing and reasoning more
+practical timetabling problems.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End:
+

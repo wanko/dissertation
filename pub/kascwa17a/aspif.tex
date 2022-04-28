@@ -1,0 +1,246 @@
+
+\section{Intermediate language}
+\label{sec:aspif}
+\newcommand\Space{\text{\textvisiblespace}}%
+
+To accommodate the richer input language, a more general grounder-solver interface is needed.
+Although this could be left internal to \clingo~5,
+it is good practice to explicate such interfaces via an intermediate language.
+This also allows for using alternative downstream solvers or transformations.
+
+Unlike the block-oriented \smodels\ format,
+the \aspif\footnote{ASP Intermediate Format} format is line-based.
+Notably, it abolishes the need of using symbol tables in \smodels' format\footnote{\url{http://www.tcs.hut.fi/Software/smodels}}
+for passing along meta-expressions and rather allows \gringo~5 to output information as soon as it is grounded.
+An \aspif\ file starts with a header, beginning with the keyword \lstinline{asp}
+along with version information and optional tags:
+\[\texttt{asp} \Space v_m \Space v_n \Space v_r \Space t_1 \Space \dots \Space t_k \]
+where $v_m,v_n,v_r$ are non-negative integers representing the version in terms of \textit{major}, \textit{minor}, and \textit{revision} numbers,
+and each $t_i$ is a tag for $k\geq 0$.
+Currently, the only tag is \lstinline{incremental}, meant to set up the underlying solver for multi-shot solving.
+An example header is given in line~1 of Listing~\ref{prg:ezy:a} and~\ref{aspif:diff}.
+%
+The rest of the file is comprised of one or more logic programs.
+Each logic program is a sequence of lines of \aspif\ statements followed by a \lstinline{0}, one statement or \lstinline{0} per line, respectively.
+%
+Positive and negative integers are used to represent positive or  negative literals, respectively.
+Hence, \lstinline{0} is not a valid literal.
+
+Let us now briefly describe the format of \aspif\ statements and illustrate them with a
+simple logic program in Listing~\ref{prg:ezy} as well as the result of grounding a subset of Listing~\ref{prg:lc}
+in Listing~\ref{aspif:diff}. % below.
+
+% ------------------------------------------------------------
+\begin{figure}
+\captionsetup{type=lstlisting}
+%\frame%
+{\begin{sublstlisting}[b]{0.4\linewidth}
+\lstinputlisting[numbers=left]{code/ezy.lp}%
+\caption{Logic program}
+\label{prg:ezy:a}
+\end{sublstlisting}}%
+\hfill%\frame%
+{\begin{sublstlisting}[b]{0.4\linewidth}
+\lstinputlisting[numbers=right]{code/ezy.aspif}%
+\caption{\aspif\ representation}
+\label{prg:ezy:b}
+\end{sublstlisting}}%
+\caption{Representing a simple logic program in \aspif{} format}
+\label{prg:ezy}
+\end{figure}
+% ------------------------------------------------------------
+%
+% --------------------------------------------------
+\newcounter{DUID}%
+\newcommand{\myparagraph}[1]{\par\emph{#1}}
+% --------------------------------------------------
+\myparagraph{Rule statements} have form
+\addtocounter{DUID}{1}
+\[\texttt{\theDUID} \Space H \Space B\]
+in which head $H$ has form
+\[h \Space m \Space a_1 \Space \dots \Space a_m\]
+where
+$h \in \{\texttt{0},\texttt{1}\}$ determines whether the head is a disjunction or choice,
+$m \geq 0$ is the number of head elements, and
+each $a_i$ is a positive literal.
+
+Body $B$ has one of two forms:
+\begin{itemize}
+\item Normal bodies have form
+  \[\texttt{0} \Space n \Space l_{1} \Space \dots \Space l_n\]
+  where
+  $n \geq 0$ is the length of the rule body, and
+  each $l_i$ is a literal.
+\item Weight bodies have form
+  \[\texttt{1} \Space l \Space n \Space l_1 \Space w_1  \Space \dots \Space l_n \Space w_n\]
+  where
+  $l$ is a positive integer to denote the lower bound,
+  $n \geq 0$ is the number of literals in the rule body, and
+  each $l_i$ and $w_i$ are a literal and a positive integer.
+\end{itemize}
+All types of ASP rules are included in the above rule format.
+Heads are disjunctions or choices, including the special case of singular disjunctions for representing normal rules.
+As in the \smodels\ format,
+aggregates are restricted to a singular body, just that in \aspif\ cardinality constraints are taken as special weight constraints.
+Otherwise, a body is simply a conjunction of literals.
+
+The three rules in Listing~\ref{prg:ezy:a} are represented by the statements in lines~2--4 of Listing~\ref{prg:ezy:b}.
+For instance, the four occurrences of \lstinline{1} in line~2 capture a rule with a choice in the head, having one element, identified by \lstinline{1}.
+The two remaining zeros capture a normal body with no element.
+For another example,
+lines~2--7 of Listing~\ref{aspif:diff} represent the four facts in lines~1 and~2 of Listing~\ref{prg:grd:diff}
+along with the ones (comprising theory atoms) in line~6 of Listing~\ref{prg:grd:diff}.
+
+\myparagraph{Minimize statements} have form
+\addtocounter{DUID}{1}
+\[\texttt{\theDUID} \Space p \Space n \Space l_1 \Space w_1 \Space \dots \Space l_n \Space w_n\]
+where
+$p$ is an integer priority,
+$n \geq 0$ is the number of weighted literals,
+each $l_i$ is a literal, and
+each $w_i$ is an integer weight.
+%
+Each of the above expressions gathers weighted literals sharing the same priority $p$
+from all \lstinline{#minimize} directives and weak constraints in a logic program.
+As before, maximize statements are translated into minimize statements.
+
+\myparagraph{Projection statements} result from \lstinline{#project} directives and have form
+\addtocounter{DUID}{1}
+\[\texttt{\theDUID} \Space n  \Space a_1 \Space \dots \Space a_n\]
+where
+$n \geq 0$ is the number of atoms, and
+each $a_i$ is a positive literal.
+
+\myparagraph{Output statements} result from \lstinline{#show} directives and have form
+\addtocounter{DUID}{1}
+\[\texttt{\theDUID} \Space m \Space s \Space n  \Space l_1 \Space \dots \Space l_n\]
+where
+$n \geq 0$ is the length of the condition,
+each $l_i$ is a literal, and
+$m\geq0$ is an integer indicating the length in bytes of string $s$
+(where $s$ excludes byte `\textbackslash0' and newline).
+%
+The output statements in lines~5--7 of Listing~\ref{prg:ezy:b} print the symbolic representation of atom
+\lstinline{a}, \lstinline{b}, or \lstinline{c}, whenever the corresponding atom is true. % , respectively.
+For instance, the string `\lstinline{a}' is printed  if atom `\lstinline{1}' holds.
+Unlike this,
+the statements in lines~8--11 of Listing~\ref{aspif:diff} unconditionally print the symbolic representation
+of the atoms stemming from the four     facts in line~1 and~2 of Listing~\ref{prg:grd:diff}.
+
+\myparagraph{External statements} result from \lstinline{#external} directives and have form
+\addtocounter{DUID}{1}
+\[\texttt{\theDUID} \Space a \Space v\]
+where
+$a$ is a positive literal, and
+$v \in \{0,1,2,3\}$ indicates free, true, false, and release.
+
+\myparagraph{Assumption statements} have form
+\addtocounter{DUID}{1}
+\[\texttt{\theDUID} \Space n \Space l_1 \Space \dots \Space l_n\]
+where
+$n\geq 0$ is the number of literals, and
+each $l_i$ is a literal.
+Assumptions instruct a solver to compute      stable models such that $l_1,\dots,l_n$ hold.
+They are only valid for a single solver call.
+
+\myparagraph{Heuristic statements} result from \lstinline{#heuristic} directives and have form
+\addtocounter{DUID}{1}
+\[\texttt{\theDUID} \Space m \Space a \Space k \Space p  \Space n  \Space l_1 \Space \dots \Space l_n\]
+where
+$m\in\{0,\dots,5\}$ stands for the ($m$+1)th heuristic modifier among % in the list
+\lstinline{level}, \lstinline{sign}, \lstinline{factor}, \lstinline{init}, \lstinline{true}, and \lstinline{false}, % respectively,
+$a$ is a positive literal,
+$k$ is % a term evaluating to 
+an integer,
+$p$ is a non-negative integer priority,
+$n \geq 0$ is the number of literals in the condition, and
+the literals $l_i$ are the condition under which the heuristic modification should be applied.
+
+\myparagraph{Edge statements} result from \lstinline{#edge} directives and have form
+\addtocounter{DUID}{1}
+\[\texttt{\theDUID} \Space u \Space v \Space n  \Space l_1 \Space \dots \Space l_n\]
+where
+$u$ and $v$ are integers representing an edge from node $u$ to node $v$,
+$n \geq 0$ is the length of the condition, and
+the literals $l_i$ are the condition for the edge to be present.
+
+Let us now turn to the theory-specific part of \aspif.
+% As mentioned, the grounder ignores the theory's semantics.
+Once a theory expression is grounded,
+\gringo~5 % confines itself with outputting 
+outputs a serial representation of its syntax tree.
+To illustrate this,
+we give in Listing~\ref{aspif:diff} the (sorted) result of grounding all lines of Listing~\ref{prg:lc} related to difference constraints,
+viz.\ lines~2/3, 11, 15/16, and 19, as well as lines~1 and~13.
+
+\myparagraph{Theory terms} are represented using the following statements:
+\addtocounter{DUID}{1}
+\begin{align}
+\texttt{\theDUID} \Space \texttt{0} & \Space u \Space w \label{eq:number}\\
+\texttt{\theDUID} \Space \texttt{1} & \Space u \Space n \Space s \label{eq:symbols}\\
+\texttt{\theDUID} \Space \texttt{2} & \Space u \Space t \Space n \Space u_1 \Space \dots \Space u_n \label{eq:compound-term}
+\end{align}
+where
+$n \geq 0$ is a length,
+index $u$ is a non-negative integer,
+integer $w$ represents a numeric term,
+% ------------------------------------------------------------
+\lstinputlisting[xleftmargin=0pt,label={aspif:diff},caption={\aspif\ format}]{code/d.aspif}
+% ------------------------------------------------------------
+%
+string $s$ of length $n$ represents a symbolic term (including functions) or an operator,
+integer $t$ is either \texttt{-1}, \texttt{-2}, or \texttt{-3} for tuple terms in parentheses, braces, or brackets, respectively, or an index of a symbolic term or operator, and
+each $u_i$ is an integer for a theory term.
+%
+Statements (\ref{eq:number}), (\ref{eq:symbols}), and (\ref{eq:compound-term})
+capture
+numeric terms,
+symbolic terms, % and function symbols, 
+as well as
+compound terms (tuples, sets, lists, and terms over theory operators).
+% respectively.
+
+Fifteen theory terms are given in lines~12--26 of Listing~\ref{aspif:diff}.
+Each of them is identified by a unique index in the third spot of each statement.
+While lines~12--20 stand for primitive entities of type (\ref{eq:number}) or (\ref{eq:symbols}),
+the ones beginning with '\lstinline[mathescape=t]{9$\Space$2}' represent compound terms.
+For instance, line~21 and 22 represent \lstinline{end(1)} or  \lstinline{start(1)}, respectively,
+and line~23 corresponds to \lstinline{end(1)-start(1)}.
+
+\myparagraph{Theory atoms} are represented using the following statements:
+\begin{align}
+\texttt{\theDUID} \Space \texttt{4} & \Space v \Space n \Space u_1 \Space \dots \Space u_n \Space m \Space l_1 \Space \dots \Space l_m \label{eq:theory-element}\\
+\texttt{\theDUID} \Space \texttt{5} & \Space a \Space p \Space n \Space v_1 \Space \dots \Space v_n \label{eq:theory-atom}\\
+\texttt{\theDUID} \Space \texttt{6} & \Space a \Space p \Space n \Space v_1 \Space \dots \Space v_n \Space g \Space u_1 \label{eq:theory-atom-bounded}
+\end{align}
+where
+$n \geq 0$ and $m \geq 0$ are lengths,
+index $v$ is a non-negative integer,
+$a$ is a positive literal or \texttt{0} for directives,
+each $u_i$ is an integer for a theory term,
+each $l_i$ is an integer for a literal,
+integer~$p$ refers to a symbolic term,
+each $v_i$ is an integer for a theory atom element, and
+integer~$g$ refers to a theory operator.
+%
+Statement (\ref{eq:theory-element}) captures elements of theory atoms and directives, and
+statements (\ref{eq:theory-atom}) and (\ref{eq:theory-atom-bounded}) refer to the latter.
+% capture theory atoms and directives.
+
+For instance,
+line~27 captures the (single) theory element  in `\lstinline+{ end(1)-start(1) }+',
+and
+line~29 represents the theory atom `\lstinline[morekeywords={&diff},alsoletter={\&}]+&diff { end(1)-start(1) } <= 200+'.
+
+\myparagraph{Comments} have form
+\addtocounter{DUID}{1}
+\[\texttt{\theDUID} \Space s\]
+where $s$ is a string not containing a newline.
+
+The \aspif\ format constitutes the default output of \gringo~5.
+With \clasp~3.2,
+ground logic programs can be read in both \smodels\ and \aspif\ format.
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End:

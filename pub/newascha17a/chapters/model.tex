@@ -1,0 +1,64 @@
+\section{Specification Model}
+\label{sec:model}
+The emphasis of this work is placed on the system synthesis of embedded systems. 
+%As characterized by the \emph{X-chart} approach \cite{Gerstlauer2009}, 
+%a behavioral description is therefore transformed into a structural representation under consideration of given constraints. 
+In this section, a mathematical description of the graph-based behavioral specification model consisting of deadline constrained periodic applications and a heterogeneous architecture template is presented. %\vspace*{-3mm}
+%\subsection{Application}
+
+\vspace*{.5mm}
+\textbf{Application: }
+The set of applications $A$ is composed of independent applications $A_i$. 
+Each application $A_i$ is defined as a directed graph encoded by the quintuple $A_i=(V_{A}^i,E_{A}^i,P_i,D_i,s_i)$. 
+Here, the vertices $V_A^i = T_i\cup C_i$ represent the union of computational tasks $T_i$ and communication messages $C_i$, 
+the edges $E_A^i\subseteq T_i\times C_i \cup C_i\times T_i$ represent dependencies between tasks and messages. 
+Each message $c\in C_i$ has exactly one predecessor task $pre(c)=t_x \text{ with } (t_x,c)\in E_A^i$ and one successor task $succ(c)=t_y \text{ with } (c,t_y)\in E_A^i$, 
+i.e. interprocess communication is characterized in a point-to-point fashion.
+A period $P_i\in\mathbb{N}$ determines the time after which the execution is repeated, 
+an absolute deadline $D_i\in\mathbb{N}$ sets the maximum latency, 
+and the function $s_i:C_i\mapsto\mathbb{N}$ assigns an index delay to each message. 
+%The index delay $s_i(c)=n$ of a message $c\in C_i$ encodes a maximum communication delay of $n$ iterations. 
+That is, the message $c$ sent by task $t_x=pre(c)$ in iteration $m$ must arrive at task $t_y=succ(c)$ at the latest in iteration $m+s_i$. 
+Note that cyclic graphs are only valid if the sum of index delays along a path $p=\langle t_x,c_y,\ldots,c_z,t_x\rangle$ is greater than zero: 
+$$\forall p\in\{\langle t_x,c_y,\ldots,c_z,t_x\rangle\mid (t_x, c_y), \ldots ,(c_z,t_x)\in E_A^i\}:\sum_{c_k\in p}s(c_k)> 0.$$ \par
+In Fig.\ \!\ref{fig:specmodel}, two sample applications $A_1$ and $A_2$ are shown on the left and right, respectively: $$A_1=(\{t_1,t_2,t_3,t_4\}\cup\{c_1,c_2,c_3\},E_A^1,7,12,\{c_x\mapsto 0\mid x=1,2,3\})$$% and
+$$A_2=(\{t_5,t_6\}\cup\{c_4,c_5\},E_A^2,10,8,\{c_4\mapsto 0,c_5\mapsto 1\}).$$
+%Note that cyclic graphs are only valid if the sum of index delays along a path $p=\langle t_i,c_j,\ldots,c_k,t_i\rangle$ is greater than zero: 
+%$$\forall p=\langle t_i,c_i,\ldots,c_j,t_i\rangle\mid t_i\in T,c_i,c_j\in C:\sum_{c_k\in p}s(c_k)> 0.$$ 
+The cycle $\langle t_5,c_4,t_6,c_5,t_5\rangle$ in application $A_2$ is validated by the index delay $s(c_5)=1$, indicating that the message $c_5$ sent by task $t_6$ must arrive at task $t_5$ in the next iteration.
+
+\vspace*{.5mm}
+%\subsection{Architecture Template}
+\textbf{Architecture Template: }
+The architecture, or \emph{platform} template is similarly modeled as a directed graph $P=(V_P,E_P,D_P)$. 
+The set of \mbox{vertices} $V_P=R_{t}\cup R_{rsu} $ is partitioned into tiles $R_{t}$, containing computational resources and router switching units (RSU) $R_{rsu}$. 
+Similar to \cite{Biewer2015}, each RSU internally consists of independent crossbar switches and corresponding input buffers to allow concurrent routing of messages. 
+That is, two (or more) messages may be routed simultaneously over one router if they have different destinations. 
+A directed edge $l\in E_P\subseteq V_P\times V_P$ models a link between two resources. 
+Finally, the routing delay $D_P\in\mathbb{N}$ determines the time for each message to get routed over one router. 
+A (simplified) platform template is depicted in the center of Fig.~\ref{fig:specmodel}. 
+It contains four tiles $R_t=\{r_1,\ldots,r_4\}$ and four RSUs $R_{rsu}=\{rsu_1,\ldots,rsu_4\}$. 
+Each tile is connected to one RSU whereas the RSUs are arranged and interconnected in a regular mesh topology. 
+Note that bidirectional arrows represent two separate links. 
+For example, the connection between $r_1$ and $rsu_1$ represents the directed edges $l_1=(r_1,rsu_1)$ and $l_2=(rsu_1,r_1)$.
+
+\vspace*{.5mm}
+%\subsection{Specification Model}
+\textbf{Specification Model: }
+The specification connects the set of applications and the platform template. 
+Formally, it is defined as the quadruple $S=(A,P,M,e)$. Here, $A,P$ and $M$ conform to a set of applications, a platform template and a set of mapping edges, respectively. 
+A mapping edge $m=(t,r)\in M\subseteq T\times R_t$ indicates that task $t\in T$ may be executed on resource $r\in R_t$. 
+The function $e:M\mapsto\mathbb{N}$ assigns a worst case execution time (WCET) to each mapping edge $m\in M$. 
+Note that specifying more than one mapping edge $m$ per task with different WCETs permits the modeling of heterogeneous architectures.
+In Fig.~\ref{fig:specmodel}, the mapping edges are displayed as dashed curved arrows. 
+For example, the task $t_1$ may be executed on tile $r_1$ and $r_2$ with worst case execution times of $3$ and $2$, respectively.
+\begin{figure}[tb]
+	\centering
+%	\resizebox{0.4\textwidth}{!}{%
+		\input{./figures/specExample}
+%	}
+	\vspace*{-8mm}
+	\caption{Example specification model containing two applications $A_1$ (left) and $A_2$ (right), an architecture template implementing an NoC with four computational resources and four RSUs (center), and nine mapping edges}
+	\label{fig:specmodel}
+	\vspace*{-6mm}
+\end{figure}

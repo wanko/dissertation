@@ -1,0 +1,41 @@
+\section{Experiments}
+\label{sec:experiments}
+\input{figures/table_results}
+In this section, we evaluate our proposed framework with a number of test instances. The focus is on the different search strategies presented in the previous section, namely \hybrid, \theory\textsubscript{depth}, and \theory\textsubscript{breadth}. %Both \hybrid\ and \theory\textsubscript{depth} are searching for one Pareto optimal solution at a time while \theory\textsubscript{breadth} explores the search space concurrently. That is, the former two strategies are configured to find solutions with a good convergence (i.e.~closeness to true Pareto front) and the latter is configured to find diverse (i.e.~distributed throughout the search space) solutions more quickly.\par
+\subsection{Experimental Setup}
+We randomly generated 30 test instances that are composed of series-parallel applications and a heterogeneous platform template organized in a regular grid. Each test instance consists of one to four applications $A$ that are comprised of $\lvert S\rvert$ series and $\lvert P\rvert$ parallel patterns, resulting into a number of $\lvert A\rvert + 2\cdot \lvert S\rvert+3\cdot\lvert P\rvert$ tasks and $2\cdot\lvert S\rvert+4\cdot\lvert P\rvert$ messages per instance. Depending on the number of applications, the platform template size is accordingly adjusted. For all test instances with up to two applications, a grid size of $3\times3\times1$ is chosen while for instances with three and four applications grid sizes of $3\times3\times2$ and $3\times3\times3$ are chosen, respectively. In this work, we consider test instance with up to 166 task and 200 messages. 
+%To allow for more realistic specifications, a task is defined by varying number of instructions randomly selected from four different instruction types. Simultaneously, \emph{cycles per instruction} (CPI) and \emph{energy per instruction} (EPI) values are assigned to each processing element for each type of instruction. These values are used to calculate the WCET and energy requirements for each mapping option. All remaining attributes such as area and static power requirements are generated randomly.\par 
+
+The design space exploration is conducted by our proposed framework with every possible combination of the presented search (i.e.~\hybrid, \theory\textsubscript{depth}, and \theory\textsubscript{breadth})  and routing (i.e.~\emph{arbitrary length routing} (ALR), \emph{shortest path routing} (SPR), and \emph{dimension order routing} (DOR)) strategies. That is, for each test instance, nine individual optimization runs have been conducted. To evaluate the performance of the variant strategies, we calculate the quality of found non-dominated solutions w.r.t.~convergence and diversity. To this end, we utilize the \mbox{\emph{$\varepsilon$-Dominance}} indicator from \cite{Zitzler2003} and the \emph{Entropy method} as presented in \cite{Farhang-Mehr2003}. The $\varepsilon$-Dominance indicator determines how close a solution is situated to the Pareto front. A lower \mbox{$\varepsilon$-Dominance} value corresponds to a better convergence towards the reference front with a minimum value of one. %indicating that all solutions from the approximation set are situated on the reference set
+The latter quality indicator evaluates the diversity of a Pareto front approximation. An approximation set with a high Entropy has a high diversity as well. \par
+%The $\varepsilon$-Dominance indicator determines how close a solution is situated to the Pareto front. As we do not know the true Pareto front, we create a \emph{combined non-dominated set} out of all optimization runs and use it as a reference. A lower \mbox{$\varepsilon$-Dominance} value corresponds to a better convergence towards the reference front with a minimum value of one indicating that all solutions from the approximation set are situated on the reference set. The latter quality indicator is based on Shannon's entropy for probability distribution functions. The objective space is divided into equally sized hyperboxes (cells) that are influenced by solutions of an approximation set according to an influence function that decreases with the distance between cell and solution. An approximation set with a high Entropy has a high diversity as well. \par
+All optimization runs were configured to use eight threads and have been executed on an Intel Core i7-4770 with 32 GiB RAM running Ubuntu 14.04. The timeout has been set to 1800 s.
+%\begin{itemize}
+%	\item Randomly generated test instances
+%	\item Series-parallel applications with a given number of series and parallel patterns 
+%	\item number of tasks $2\cdot \lvert S\rvert+3\cdot\lvert P\rvert+ 1$, number of message $2\cdot\lvert S\rvert+4\cdot\lvert P\rvert$
+%	\item 4 types of instructions, each instruction type has specific CPI and EPI
+%	\item each task has a mix of instructions
+%	\item not every processor can execute any instruction type
+%	\item at least 5 mapping options per task
+%	\item 30 test instances (27 of which are satisfiable) - from 1 to 4 applications
+%	\item platform: 1,2 application 3x3x1; 3 applications 3x3x2; 4 applications 3x3x3
+%	\item all three solving strategies with all three routing mechanisms: 9 runs per instance
+%	\item diversity and convergence tested with Entropy measure \cite{Farhang-Mehr2003} and Unary $\varepsilon$-dominance \cite{Zitzler2003}
+%\end{itemize}
+
+
+%\input{figures/table_quality_strategy}
+
+%\input{figures/table_quality_comm}
+\subsection{Results}
+For sake of brevity, the results of the optimization runs presented in Tab.~\ref{tab:results} only constitute a representative part of all optimization runs. In each line, the value in the upper row represents the \mbox{$\varepsilon$-Dominance} while the value in the lower row indicates the entropy.\par
+Regarding the diversity of the found non-dominated solutions, the search strategy \theory\textsubscript{breadth} that explores the search space on a wider range outperforms both strategies \hybrid\ and \theory\textsubscript{depth}. Due to the search strategy of the latter two, design points that are incomparable to previously found solutions are not considered until an optimal one on the front is found. In combination with the vast decision space, those two strategies were unable to find even one proven Pareto optimal solution (except for the first test instance, where \hybrid\ in combination with DOR found two Pareto optimal solutions). Hence, \hybrid\ and \theory\textsubscript{depth} stick to an Entropy value of around 2.47. \par
+With regard to the routing strategy, DOR and SPR achieve more diverse solutions than ALR. As expected, the strictly bounded search space of the former two enables faster exploration of larger regions in the design space.  \par
+As the \hybrid\ strategy is adjusted towards good convergence, it performs better in this category. Here, it even finds solutions for two test instances that are not dominated by any other solution of another optimization run. However, \theory\textsubscript{breadth} still outperforms the other approaches in most of the test instances. \par 
+The overall results are two fold. First, the achieved quality indicates that a search strategy which does not discard found incomparable design points explores the design space more efficiently. Second, a complex communication model hinders the exploration performance significantly. That is, ALR did not find any solution for 11 test instances and could exploit the advantages of more routing options only once.\par
+%We conclude that the concurrent exploration of the design space as implemented for \theory\textsubscript{breadth} is the best of our approaches to perform a system-level \ac{DSE}. Regarding the complexity of the communication model, \emph{dimension order routing} and \emph{shortest path routing} achieve comparable results.
+%\blindtext\blindtext
+
+
+

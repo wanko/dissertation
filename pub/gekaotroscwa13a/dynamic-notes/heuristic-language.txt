@@ -1,0 +1,376 @@
+
+[27Sep12]
+
+===========================================================================
+                                           HCLASP LANGUAGE SUMMARY
+===========================================================================
+ 
+ 
+Three main options:
+
+        1. formalize only the simplest useful thing: 
+             _heuristic(a,true,10).
+       and present the rest as other options not formalized
+           good points:
+             - simple
+                 - useful 
+                 - clear semantics for the static case (circumscription)
+                 - heuristic independent
+           bad points: 
+             - hclasp allows to do more, and it may be important
+
+        2. formalize current hclasp adding dynamic behavior for factor option:
+           good points:
+             - what we intuitively have done
+                 - improved over vsids in many cases (philipp thesis)
+           bad points: 
+             - more complicated: f.e., factor affects the heuristic scoring
+                 
+        3. formalize a heuristic language that models completely the heuristic
+           good: power to the programmer
+           bad: mess to the programmer, too much to begin with, we dont know how to go with it
+           
+           
+Semantics:
+        Static case for _heuristic(a,true,10) corresponds to circumscription
+        Dynamic case semantics are dependent on the solving algorithm, so right now: no way
+        
+        
+Conflict between _heuristic atoms:
+        1. Let the user define some function to solve those situations, or add some command line option...
+        2. Two main ideas: get the value that has higher absolute value (so that negative info is accepted)
+                           or get the latest value (so that it is veryvery dynamic)
+
+
+ ===========================================================================
+                                                        HCLASP LANGUAGE
+===========================================================================
+ 
+Properties of a good language:
+- heuristic independent: i.e., should work with vsids and berkmin
+- static is a special case of dynamic
+- semantic counterpart: i.e., circumscription in the static case
+- simple
+- powerful: good results with it
+
+Hclasp options:
+  _heuristic(a,true|false|any,X) [dynamic]
+  _heuristic(a,level,X)
+  _heuristic(a,fix_sign,X)
+  _heuristic(a,def_sign,X)
+  _heuristic(a,init,X)
+  _heuristic(a,factor,X)
+  
+Notes: in the static case
+  level = any 
+  level and fix_sign = true|false
+
+Most basic language that works:
+  _heuristic(a,true|false,X)
+Satisfies all conditions:
+  - heuristic independent: although now it is implemented in vsids, could be (and should be) used by any clasp heuristic
+  - static is special case
+  - semantic counterpart in static case is circumscription
+  - simple
+  - powerful: pddl, bw in asp, hanoi in asp, mailbot in asp...  
+BUT has not all possibilities of hclasp:
+  - def_sign
+  - init 
+  - factor
+    
+Most complex language = total control over the heuristic 
+
+note: if static is prioritized circumscruiption (McCarthy) i think we should call levels, priorities.  
+  
+  
+====================================
+ CONFLICTS BETWEEN _heuristic ATOMS
+====================================
+
+Simplest case: true|false|any and positive priorities
+-----------------------------------------------------
+
+  We have _heuristic(a,V,10) and _heuristic(a,V',20)
+    where V and V' may be true, false, or any
+  what _heuristic atom should we take into account?
+
+Options:
+  - the highest priority: makes sense with the basic case, where _heuristic atoms point to
+                          different atoms
+  - the lowest priority: no sense, contradictory with basic case where _heuristic atoms 
+                         correspond to different variables
+  - the latest: makes sense, as you progress in the search you have more information and 
+                you may thus update your heuristic  
+  - the first: against the dynamic idea
+
+SO: 
+  - either take the highest or latest priority
+    right now this has not been a problem, 
+        because i havent had conflicts, but these may appear
+  - i think both possibilities shoulb be easily available, 
+    and if this is not relevant for the experiments (as in the current case)
+        in the paper should go the simplest one
+  - note that:
+    * choosing the latest is dependent on the order of the unit propagations
+        * choosing the highest is really simple to explain and formalize
+
+        
+Negative priorities
+-------------------
+
+Could be interesting in some cases:
+- in philipp experiments it improved vsids in solitaire, 
+  although level descending was better
+  
+Properties of a good approach: 
+- symmetry with positive priorities, 
+  i.e. if you set the priority of a to -2 
+  and then comes something that sets it to -4
+  you should set it to -4 as you would do if you had 2 and later 4
+
+Previous approaches: 
+- get the last: works straightforwardly
+- get the highest: then, how would you move it to less thatn 0?
+    (1) move it to less than 0 if it was 0, else, get the highest: not intuitive, not symmetrical!
+        (2) get the highest absolute value:
+              if you have -4 -2 3, then priority is 3
+                  else if you have -2 4 67, then priority is 67
+Both (get-the-last and get-the-highest-absolute) seem ok.
+
+Note: 
+      negative priorities with get-the-last method can be simulated by positive priorities, 
+      setting at start all atoms at a positive priority, e.g., 1000, 
+      and afterwards setting some of them to a lower value
+          
+          however, get-the-highest cannot be simulated that way, because we would always get the highest priority!
+                  
+
+Note with negative priorities:
+- no case of use for the paper
+- complicates a bit, but just a bit
+                  
+        
+SEMANTICS
+=========
+
+true|false|any in the static case correspond to circumscription
+
+In the dynamic case there is a problem to give a semantic interpretation.
+Consider program P:
+        {a,b}.
+        :- a, b.
+        c :- b.
+        c :- not b.
+        _heuristic(a,true,1).
+        _heuristic(b,true,10) :- c.
+Hclasp would run:
+        UnitPropagate: _heuristic(a,true,1)
+        Decide:            a
+        UP:            -b c _heuristic(b,true,10)
+Now consider that Hclasp also can do some reasoning by cases, 
+that allows it to propagate c at start given that either b or not b will be true in any answer set:
+    NewPropagation: _heuristic(a,true,1) c _heuristic(b,true,10)
+        Decide:         b
+        NewPropagation: -a
+SO:
+The answer set that is selected depends on the propagation method of the solver!
+Note that this is not the case in the static case.
+
+def_sign, init and factor affect the heuristic scoring and i see
+no way to give them semantic interpretation, 
+and their effect is heuristic dependent.
+
+
+SIMPLEST OPTION
+===============
+
+In the paper, present true|false only:
+- this satisfies all previous conditions, specially, it is simple and clear
+- even without negative priorities
+  note: _heuristic(a,any,3) is equivalent to _heuristic(a,true,3) and _heuristic(a,false,3)
+
+
+* specify this formally, as:
+  Decide(M) = { l | l, -l \notin M, and either max(M)=0 or 
+                    \exists _heuristic(l,true,max(M)) or 
+                    \exists _heuristic(-l,false,max(M) } 
+  where max(M) = max({0} \cup { P | _heuristic(A,V,P) \in M, and A, -A \notin M } )
+
+* to use the get-last method it becomes a bit more involved
+* some more changes would be needed for negative priorities
+
+Then, in an extensions section, specify other options that are included:
+ - negative priorities:
+    * simply say: and we allow negative, that works bla, bla...
+ - get-last option:
+    * by command line or adding fact _heuristic(get_last)
+ - def_sign
+ - init
+ - factor:
+    * as in hclasp, or, for simplicity
+          we can add option --factor that makes hclasp consider _heuristic atoms
+          refering to the factor and not to the priority, so that we keep the language simple...
+ NOTE: all these require to refer to the heuristic scoring to be specified
+
+More options (these shouldnt go in the paper, just future ideas):
+- combine vsids with domain:
+  --combine=0.4 
+    with probability 0.4 choose the best vsids variable independently of the domain score
+  --onrestart=0.1
+    start using vsids with probability 0, and use it with probability 0.1 after first restart, 
+    0.2 after second restart... (this could work to move to vsids to prove unsat on difficult instances, 
+    and use somain on simple ones)
+  --onconflicts=10000,0.1
+    at each restart init vsids to probability 0, 
+    and use it with probability 0.1 after 10000 conflicts, then with probability 0.2 after 20000 conflicts, etc...
+  PROBLEM: HOW TO IMPLEMENT THIS, FAST?
+        
+=====================================================
+                                CURRENT LANGUAGE
+=====================================================   
+
+We may model a heuristic using a pair of functions Score and Sign:
+        Score: Assignment x Variable -> [0,1]
+        Sign:  Assignment x Variable -> {-1,1}
+So that for each partial assignment the functions give a score and a sign to each variable.
+Note: really this is not a correct description, in the sense that the heuristic values maybe do not 
+      depend on the current partial assignment, as in vsids
+But: it is enough for presentation purposes, i would say.
+
+So, we can define the heuristic as follows:
+        H(M) = { a | a is a free atom, not exists x free s.t. Score(M,x) > Score(M,a), and Sign(M,a)=1 } \cup   
+               { l | l = -a, a is a free atom, not exists x free s.t. Score(M,x) > Score(M,a), and Sign(M,a)=-1 } % this could be made simpler
+
+Now we add these values for each variable:
+  fix_sign:  -1 0 1
+  level:     -int...+int 
+  factor:    -int...+int (in hclasp really this is a double, but maybe for simplicity we could present it as integer)
+They are 0 by default:
+  H(M) = { a | a is a free atom, not exists x free s.t. 
+               level(M,x)>level(M,a) or (level(M,x)=level(M,a) and factor(M,x)*Score(M,x) > factor(M,a)*Score(M,a)), and 
+               ( fix_sign(M,a)=1 or (fix_sign(M,a)=0 and Sign(M,a)=1) ) } \union   
+         { l | l = -a, a is an atom, not exists x free s.t. 
+               level(M,x)>level(M,a) or (level(M,x)=level(M,a) and factor(M,x)*Score(M,x) > factor(M,a)*Score(M,a)), and 
+               ( fix_sign(M,a)=-1 or (fix_sign(M,a)=0 and Sign(M,a)=-1) ) } 
+
+We have to define the functions fix_sign, level and factor.  
+  level(M,x) = #op{ P | P = 0 or _heuristic(x,true,P) is in M or _heuristic(-x,false,P) is in M }       
+  factor(M,x) = #op{ P | _heuristic(x,factor,P) is in M }       
+  fix_sign(M,x) = { 1 if _heuristic(x,true,level(M,x)) is in M, else -1 if _heuristic(x,false,level(M,x)) is in M, else 0 }     
+Where #op may be the maximum value, for example.
+
+
+
+
+=====================================================
+         TOTAL LANGUAGE FOR THE HEURISTIC
+=====================================================
+        
+Vsids has the following information for each variable:
+        - activity
+        - occurrence
+It picks the free variable with the highest activity, 
+with a polarity that depends on the value of occurrence, 
+and with a default polarity in case occurrence equals 0.
+SO: activity determines the variable chosen
+    occurrence determines the sign of the variable
+        
+Hclasp additions:
+ - level
+ - factor
+ - fix_sign
+ - def_sign
+ - init
+
+So, for each variable we have this data:
+        - activity
+        - level
+        - factor
+        - occurrence
+        - fix_sign
+        - def_sign
+
+Note: 
+* init is not a value that we mantain, 
+  it is something that was just true at start
+
+  
+choose FREE variable 
+  of the highest LEVEL  
+        with the highest FACTOR*ACTIVITY
+      and FIX_SIGN else OCCURRENCE else DEF_SIGN        
+
+[ really it is not exactly this way, because DEF_SIGN is only used if there is no FIX_SIGN, 
+  occurrence==0 and there is no saved sign ]
+
+We could skip def_sign, we havent taken advantage of it, and it only makes things more complicated.
+This way, we can skip occurrence, and allow it only to be modified by fix_sign: 1=true, -1=false, 0=vsids chooses as wants.
+SO we would have:
+  activity
+  level
+  factor
+  fix_sign
+
+choose FREE variable
+  of the highest LEVEL
+    with the highest FACTOR*ACTIVITY
+      and FIX_SIGN else vsids-choice
+  
+to say free we need to be able to refer to the value in the current partial assignment, 
+and this may be good to refer to undefined variables:
+  value:    -1 0 1
+  fix_sign: -1 0 1  (neg,undef,pos)
+  score (more general name than activity, which is vsids)
+  level: -int...+int
+  factor
+We should give a general value to the score
+It would be good if score, level and factor had the same type.
+But: keep it easy:
+  value:    -1 0 1
+  fix_sign: -1 0 1
+  score:     0...1       (double)
+  level:     -int...+int (integer)      
+  factor:    -int...+int
+Really score and value, we cannot touch, so we only can modify:
+    fix_sign:        set to -1, 0 or 1
+    level,factor:    set to -int..+int
+  to simplify, we can consider fix_sign, also 
+    -int...+int 
+  and then if it is <=-1 it is negative, and if it is >=1 it is positive
+  
+  
+And we have a general language that is: 
+иииииииииииииииииииииииииииииииииииииии
+
+        _heuristic(
+                property*(a,value),
+                if(property(b),op,value)
+        )
+
+        or maybe _heuristic(set(property*(a),value),if(property(b),op,value))
+        
+    properties are: value, score, sign, level, factor
+        and only sign, level and factor can be modified (property*)
+        op is: <, <=, =, >=, >
+        
+Example:
+        _heuristic(level(holds(F,T),T),sign(holds(F,T),1)) :- holds(F,T1), next(T,T1).
+    _heuristic(level(a,5),sign(a,-1),if(level(a,<=,5)))           :- body.   
+ 
+This way _heuristic atoms are applied as they become true, 
+and with ifs you can control whether it is executed or not at that moment.
+Problem1: an if condition is false at unitpropagation, but becomes true afterwards 
+          (maybe even in the same unitpropagation step), what should we do? 
+          mmm... too complex, seems...
+Problem2: you refer to score(a,=,0) to say that a is undefined at that time step,
+          and it is and you modify the priority of the corresponding variable, 
+                  what do you do if afterwards a becomes assigned? (f.e., in the same unitpropagation?)
+ 
+Simple Solution: you just apply the property* changes if the conditions are satisfied, 
+                 and when the atom is backjumped, you undo them
+                                 
+  
+[endOf:27Sep12]
+
+ 
+ 

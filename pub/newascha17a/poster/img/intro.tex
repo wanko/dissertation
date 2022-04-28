@@ -1,0 +1,29 @@
+\begin{tikzpicture}[>=stealth,scale=2.7,every text node part/.style={align=center}]
+\tikzstyle{block} = [rounded corners=10,draw=black,fill=HRO1, text=white, inner sep = 20,font=\small,minimum height=3.4cm]
+\tikzstyle{arrow} = [->,line width=0.12cm,black]
+\tikzstyle{axis} = [->, black, line width=0.12cm]
+\tikzstyle{link} = [<->, black!50, line width=0.12cm]
+
+\node[block, minimum width=6.5cm] at (-4.5, 1) (behav) {Behavior};
+\node[block, minimum width=6.5cm] at (-4.5, -1) (const) {Constraints};
+
+\node[block, minimum width=6.5cm] at (4.5, 1) (struct) {Structure};
+\node[block, minimum width=6.5cm,text width=5.0cm] at (4.5, -1) (qn) {Quality\\Numbers};	
+
+\node[dashed,draw=black,minimum height=10.5cm,minimum width=7cm,font=\small, line width=0.12cm] (spec) at (-4.5,+0.2) {};
+\node[anchor=north west,font=\small] at (spec.north west) {Specification};
+
+\node[dashed,draw=black,minimum height=10.5cm,minimum width=7cm,font=\small, line width=0.12cm] (spec) at (4.5,+0.2) {};
+\node[anchor=north east,font=\small] at (spec.north east) {Implementation};
+
+\node[draw=black,minimum height=5cm,minimum width=13cm,font=\small, line width=0.12cm] (spec) at (0,0) {};
+\node[anchor=north,font=\small] at (spec.north) {Synthesis};
+
+\node[block, text width=4cm] (DM) at (-1.2,-0.2) {Decision\\Making};
+\node[block, text width=4cm] (RF) at (1.2, -0.2) {Refinement};
+\draw[arrow] (DM) -- (RF);
+\draw[arrow] (const.east) -- (spec.187);
+\draw[arrow] (behav.east) -- (spec.173);
+\draw[arrow] (spec.7) -- (struct.west);
+\draw[arrow] (spec.353) -- (qn.west);
+\end{tikzpicture}

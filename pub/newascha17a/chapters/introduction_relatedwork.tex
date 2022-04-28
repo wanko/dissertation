@@ -1,0 +1,38 @@
+\section{Introduction and Related Work}
+With the ever growing demand for highly complex embedded systems in both industrial and consumer environments, efficient design techniques gain progressively more importance. 
+To satisfy the requested productivity constraints, the abstraction of embedded systems design has been raised to the electronic system level. 
+In system synthesis, a task-level behavioral description is transformed into a structural representation considering certain constraints such as available computational (CPUs, DSPs,  hardware accelerators) and communication (buses, routers) resources as well as extra-functional requirements \cite{Gerstlauer2009}. \par
+To perform a holistic synthesis, resources have to be selected from an architectural template, 
+computational tasks and messages have to be mapped onto computational resources and routed over the allocated communication infrastructure, respectively, and finally, 
+a schedule has to be determined that complies with given timing constraints like latency or throughput requirements.\par
+In order to cope with the ever increasing complexity of functional and non-functional requirements of embedded systems, 
+symbolic techniques have traditionally been employed in embedded system synthesis since the early 2000s, e.g. \cite{Haubelt2003,Lukasiewycz2009,Lukasiewycz2012}. 
+While the encoding of feasible mapping and routing decisions into Boolean formulas led to efficient synthesis frameworks by leveraging enhancements in state-of-the-art Boolean satisfiability (SAT) solvers, 
+numerical and non-linear problems (such as scheduling) are not easily representable in Boolean logic. 
+As a consequence, SMT-based techniques, i.e. the combination of Boolean logic (traditionally SAT) and variant background theories, have been developed in the domain of embedded systems synthesis \cite{Satish2007,Reimann2010,Andres2015,Biewer2015,Liu2011}. 
+In one of the first works on SMT-based approaches, Reimann et al.\ \cite{Reimann2010} integrate a background theory solver to evaluate partial assignments of an underlying SAT-solver. 
+In contrast to the work at hand, the authors do not consider scheduling decisions. 
+In \cite{Reimann2011}, they extend their approach to constructing schedules though only consider complete assignments, i.e.\ mapping and routing is already completed.\par
+The authors of \cite{Liu2011} present another SMT-based method for scheduling analysis in a background theory. 
+Similar to the proposed approach in this paper, they utilize \emph{quantifier free integer difference logic} (QF--IDL) as background theory to identify valid schedules. 
+The main advantages of QF--IDL are its decidability in polynomial time%\footnote{Note that the overall system synthesis problem is $\mathcal{NP}$--hard.} 
+~\cite{Sebastiani2007} and the possibility to leverage the solving process to directly analyze and propagate observed conflicts. 
+Yet, the work of \cite{Liu2011} does not support cyclic or periodic applications nor heterogeneous architectures whereas our approach considers a much more sophisticated system model allowing us to synthesize cyclic and periodic behavior.
+%While the approach in \cite{Liu2011} only considers acyclic and aperiodic applications as well as homogeneous hardware architectures, our work provides a more sophisticated system model as it supports additionally cyclic and periodic applications that may be implemented on heterogeneous architectures. 
+%While they also utilize QF--IDL, they do not support cyclic and periodic applications nor heterogeneous architectures. 
+\par The work of Andres and Biewer et al. in \cite{Andres2015} and \cite{Biewer2015} is the most related to our approach. 
+They suggest to replace the SAT-solver with an \emph{answer set programming} (ASP) solver as it has been shown to decide routing options more efficiently. 
+To analyze timing constraints, they use separate ASP and QF--IDL-based SMT-solvers which communicate indicator variables through a shared text file. 
+Thus, in this configuration, an evaluation of partial assignments is not supported.
+%Furthermore, the applications considered in \cite{Andres2015} and \cite{Biewer2015} only contain simple linear dependencies and assume the deadline of applications to match their period. 
+Furthermore, the system model considered in \cite{Andres2015} and \cite{Biewer2015} is very restrictive. It only allows the representation of simple linear applications where deadlines of tasks have to be smaller than their corresponding periods. 
+In combination with a homogeneous hardware architecture and unconstrained mapping options, the authors are able to exploit symmetries in the synthesis problem and use advanced heuristics which simplifies the solving accordingly.
+
+\textbf{Contributions:} In this paper, we first present a mathematical formulation that allows us to describe more sophisticated system models for streaming applications on heterogeneous hardware architectures compared to previous work. 
+In particular, this includes deadline-constrained periodic and cyclic applications. Second, we integrate the background theory \emph{QF--IDL} directly into the state-of-the-art ASP-Solver \emph{clingo} \cite{gekakaosscwa16a} which results in a much tighter coupling between background and foreground theories. Third, individual propagators check extra-functional constraints early in the decision process by utilizing \emph{partial assignment checking}. Thus, large infeasible areas of design points can be excluded from the search space more efficiently.
+
+\textbf{Paper organization: } 
+In Sec.~\ref{sec:model}, a detailed presentation of the underlying specification model is given. 
+The proposed synthesis framework including binding, routing, and scheduling encodings as well as first results are presented in Sec.~\ref{sec:synthesis}. 
+Finally, Sec.~\ref{sec:conclusion} concludes this work and discusses future challenges. 
+%\newpage

@@ -1,0 +1,608 @@
+\documentclass[a4j]{article}
+\title{Responses to the reviewers}
+\author{Mutsunori Banbara}
+\date{September 30, 2017}
+%
+%\usepackage{bm}
+%\usepackage{mathptmx}
+\usepackage{amsmath,amssymb}
+\usepackage{color}
+%\usepackage{comments}
+\usepackage{listings}
+\usepackage{array}
+\lstset{numbers=left,numberblanklines=false,basicstyle=\ttfamily\footnotesize,%
+numberbychapter=false,columns=fullflexible,keepspaces=true}
+%\usepackage{slashbox}
+%\usepackage{natbib}
+%\usepackage{hyperref}
+%\usepackage{url}
+%\usepackage{tikz}
+%\usetikzlibrary{arrows,chains,positioning,automata,decorations,shapes,calc,matrix,fit,backgrounds} % CHECK!!
+\input{macro}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+\maketitle
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{quote}
+\begin{list}{}{}
+\item[PAPER ID:]
+  ANOR-D-16-01064
+\item[TITLE:]
+  \textit{teaspoon}: Solving the Curriculum-Based Course Timetabling Problems with Answer Set Programming
+\item[AUTHORS:]
+  Mutsunori Banbara, 
+  Katsumi Inoue,
+  Benjamin Kaufmann,
+  Tenda Okimoto,
+  Torsten Schaub,
+  Takehide Soh,
+  Naoyuki Tamura, and
+  Philipp Wanko
+\end{list}
+\end{quote}
+
+\noindent
+Dear anonymous reviewers,\\[1em]
+We would like to thank the reviewers for their time and
+valuable comments and suggestions to our paper.
+Your efforts helped us to address several issues and to 
+further improve the paper. 
+In this response,
+we first explain the major points of our revision and then
+address the specific questions and comments (highlighted in blue)
+from the reviewers.
+
+\vskip 1em
+
+\noindent Best regards,
+
+\qquad Mutsunori Banbara
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{The major points of our revision}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+We have carefully revised the paper in view of the reviewer comments.
+Before addressing the specific questions and comments, 
+we explain the major points of the revision.
+
+\begin{itemize}
+%%%%%%%%%%%%%%%%
+\item \textbf{Point \#1.~Contributions:} To clarify the main contributions of this
+  paper, we added the following in Introduction.\\[1em]
+\begin{it}
+The main contributions of this paper are as follows.
+\begin{enumerate}
+\item We present a basic ASP encoding for solving CB-CTT problems, 
+  which is an enhancement of our previous encoding (Banbara et al, 2013).
+  This enhancement provides the ability to use advanced ASP solving
+  techniques such as 
+  core-guided optimization, 
+  domain heuristics, 
+  portfolios of prefabricated expert configurations,
+  multi-criteria optimization based on lexicographic ordering, and
+  multi-shot ASP solving (Gebser et al, 2015a,b).
+\item We extend the basic encoding in view of enhancing the
+  scalability and flexibility of solving (multi-criteria) CB-CTT problems.
+  The extended \asap\ encodings have the following features:
+  \begin{itemize}
+  \item A collection of optimized encodings for soft constraints
+  \item Easy composition of different formulations
+  \item Multi-criteria optimization based on lexicographic ordering
+  \end{itemize}
+\item Our empirical analysis considers all 61 instances in 5
+  different formulations, which are publicly available from the CB-CTT
+  portal as of July 20, 2017
+  ($61\times 5 = 305$ combinations in a total).
+  Overall, \asap\ managed to either improve or reproduce the best
+  known bounds for 182 combinations (59.7\% in the total).
+  In detail, \asap\ provided 54 better bounds, 
+  16 new optima,
+  and 128 same bounds, 
+  35 of which were proven optimal for the first time.
+  Furthermore,
+  \asap\ was able to produce upper bounds for very large instances in
+  the category \verb+erlangen+ with every formulation, and 24 of them
+  were unsolvable before.
+\item We also extend the {\asap} system to finding Pareto optimal solutions
+  of multi-objective course timetabling and consider
+  \textit{minimal perturbation problems}
+ (Bart{\'{a}}k et al, 2004; M{\"{u}}ller et al, 2005; Rudov{\'{a}} et al, 2011; Phillips et al, 2016) 
+  by utilizing multi-shot ASP solving techniques (Gebser et al, 2015b).
+\end{enumerate}
+All in all, the proposed declarative approach represents a significant
+contribution to the state-of-the-art for CB-CTT.
+\end{it}
+%%%%%%%%%%%%%%%%
+\item \textbf{Point \#2.~Experiments:}
+To verify the effectiveness of the extensions presented in Section~5, 
+we showed new experimental results in Section~6.3 for 
+the optimized encodings as well as for 
+multi-criteria optimization based on lexicographic ordering.
+Consequently, 
+we were able to obtain good performance as can be seen in 
+Table~5 and Table~6.
+%
+Furthermore, to make our experimental results more solid, 
+our empirical analysis included 
+the newest \code{UUMCAS_A131} instance 
+inserted to the CB-CTT portal in March 2017, and 
+{\asap} was able to produce new upper bounds with every formulation,
+and 4 of them were unsolvable before.
+%
+It is noted that the related tables such as 
+Table~2 and Table~7 have been all updated
+due to the addition of this new instance to the
+benchmark set.
+
+%%%%%%%%%%%%%%%%
+\item \textbf{Point \#3.~Features:}
+To clarify the main features of our proposed approach,
+we added the following in Conclusion.\\[1em]
+\begin{it}
+The main features of our declarative approach are as follows:
+\begin{list}{}{}
+\item \textbf{Expressiveness}. 
+The expressive power of ASP's modelling language enables us to compactly express
+a wide variety of hard and soft constraints of CB-CTT as demonstrated
+by a collection of {\asap} encodings. 
+Given new constraints (e.g., Manhattan distance), 
+all we have to do is adding ASP rules.
+
+\item \textbf{Flexibility}. 
+{\asap} provides flexible lexicographic optimization and easy
+composition of different formulations, since any combination of
+constraints can be represented as ASP facts. 
+Consequently, it enables a timetable keeper to experiment with
+different formulations as well as to optimize the obtained timetable 
+with different priority levels of soft constraints, 
+at a purely declarative level.
+
+\item \textbf{Efficiency}. 
+Our empirical analysis considers all instances in five different 
+formulations, which are publicly available from the CB-CTT portal. 
+% Many instances are based on real world data from several European
+% universities. 
+We have contrasted the performance of \asap\ with the best known
+bounds obtained so far via more dedicated implementations.
+\asap\ demonstrated that our declarative approach allows us to
+compete with state-of-the-art CB-CTT solving techniques.
+
+\item \textbf{Scalability}. 
+The optimized encoding drastically reduces the grounding time compared
+to the basic encoding.
+Consequently, our declarative approach scales to large instances in
+complex formulations, as demonstrated by the fact that
+{\asap} was able to find upper bounds for very
+large instances in the category \code{erlangen} with every
+formulation, and 24 of them were unsolvable before. 
+
+\item \textbf{Extensibility}. 
+The high-level approach of ASP facilitates extensions and variations
+of first-order encodings.
+From this viewpoint, 
+we extended the {\asap} system to solving multi-objective course
+timetabling problem combining CB-CTT and minimal perturbation problems
+with two criteria of optimality and stability.
+\end{list}
+\end{it}
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{Response to review \#1}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{it}\color{blue}
+Reviewer \#1: The paper aims to introduce general approach to solve
+curriculum-based course timetabling (CCT) problems. The work builds on
+earlier journal paper of the authors introducing application of answer
+set programming (ASP) to course timetabling.  Current approach studies
+various configurations of ASP solver to improve existing results,
+optimizes encoding in ASP and shows how to apply the approach on
+minimal perturbation version of the problem.
+
+First part of the paper is devoted to the traditional description of
+the curriculum-based timetabling. Next section shows application of
+ASP to CCT as it was published in earlier journal version.
+
+Consequent part is devoted to description of various configurations of
+the ASP solver, their possible influence on actual results and
+presentation of computational results in comparison with the results
+at CTT web portal in November 2015. The most interesting results: the
+approach was able to find new optimal solution for 14 problems (given
+by instance and formulation) and improve bounds for 40 problems.
+\end{it}
+
+Thank you for your comments.
+
+\begin{it}\color{blue}
+Here I was rather surprised why results refers to November 2015 status
+of the other results (footnote 10, page 14). This paper was submitted
+at the end of 2016, so it would be better to compare against results
+at about the middle of 2016.
+\end{it}
+
+As suggested, in Table~7, 
+we empirically contrasted the performance of {\asap} with the best
+known bounds on the CB-CTT web portal as of \textbf{July 20, 2017}.
+We clarified this date in the footnote of Page 3 and 23.
+
+\begin{it}\color{blue}
+Section 6 presents extensions of encoding presented earlier, describes
+possible combination of different formulation and describes support
+for multi-criteria reasoning. It was not clear how presented
+extensions are included in computational results. Are they included
+anywhere? If some extensions are introduced, corresponding
+computational results should verify their importance.
+\end{it}
+
+Indeed such questions are very important.
+We verified the effectiveness of the extensions in the revision.
+Please see \textbf{Point \#2} mentioned above.
+
+\begin{it}\color{blue}
+Study of minimal perturbation problems is presented at the end. This
+part needs more explanations and justifications. 
+\end{it}
+\begin{enumerate}
+\item 
+  \begin{it}\color{blue}
+  Results presented for extreme cases are important from the
+  research point of view. From practical point of view, results where
+  both criteria are reasonably good are much more important.  Given
+  the results, it seems that the practical value is rather weak -
+  improvement from extremal values (0 in stability) is obtained by
+  subsequent increases of the complete stability by one (e.g., \code{DDS2}
+  $(47,1)$, $(46,2)$, $(45,3)$).
+  \end{it}
+
+In our experiments, 
+we first calculated the extreme Pareto optimal solutions regarding
+stability and optimality giving both a time limit of 3 hours.
+Afterwards, we used another 3 hours to enumerate additional Pareto
+optimal solutions.
+We showed that the proposed method can find a small subset
+of Pareto optimal solutions for many real-world instances.
+However, at the same time, 
+we observed that the current implementation
+is insufficient to find a promising subset that includes solutions
+such that both criteria are reasonably well-balanced as you pointed out.
+%
+This shows a limitation of our approach at present.
+To overcome this issue, there might be at least two approaches. 
+One is spending more times, since our approach is complete, and we can
+find more Pareto optimal solutions.
+Another is extending our approach with an advanced technique in MODOP solving 
+based on P-minimal model generation (Soh et al, 2017).
+It would be promising because P-minimal models can be 
+efficiently computed by ASP.
+%
+We wrote this discussion clearly in the last paragraph of Section~7.
+
+\item 
+  \begin{it}\color{blue}
+  In addition, it is rather hard to understand results in Table 6:
+  it would be nice to see the total number of variables which can be
+  possibly changed 
+  (How bad or good is 48 in $(0,48)$ for \code{DDS2}? Percentage of changes makes sense here.) 
+  and the quality of the optimization criterion for the original
+  problem 
+  (How the optimization quality is changed from original to new problem?).
+  \end{it}
+
+As suggested, we displayed the total number of possible changes in Table~8.
+In a scenario we used, the optimization criterion is changed from
+an original (a problem instance in UD1) to a new problem (a problem
+instance in UD2) due to the additional soft constraint $S_5$. 
+Therefore, the optimization quality might be different between them depending on the
+instance. For each instance, the difference between UD1 and UD2 can be
+seen in Table~7.
+%
+In the case of the \code{DDS2} instance, 
+we obtained five Pareto optimal solutions: 
+$(0,48)$,
+$(47,1)$,
+$(46,2)$, 
+$(45,3)$, and 
+$(48,0)$.
+In each solution, 
+the first is a value representing its optimization quality 
+(viz. the penalty of soft constraints), and 
+the second is a value representing its stabilization quality
+(viz. the change from the legacy solution).
+Since the optimization quality of \code{DDS2} is 0 both in UD1 and UD2,
+and the number of possible changes is 146,
+the extreme solution $(0,48)$ has the minimal penalty 0
+but 33\% of the legacy assignments are changed.
+The extreme solution $(48,0)$ has the minimal change 0
+but incurs higher penalty 48 than the optimal quality 0.
+The others $(47,1)$, $(46,2)$, and $(45,3)$
+are additional Pareto optimal solutions.
+%
+We clarified this in the revision as well as the case of the
+\code{comp13} instance.
+
+\item 
+  \begin{it}\color{blue}
+  Actually I am not sure if I understand your results well. You
+  write ``the first is the value for optimality and the second for
+  stability'' (p.21,l.31). However, the extremal values $(48,0)$ and
+  $(0,48)$ for \code{DDS2} are rather surprising. Is it the ``optimization
+  quality'' (first value) really the same as the number of changes
+  (second value)? What do you mean precisely by the 
+  ``value for optimality'' for ``stability''? I would expect that it
+  is about the optimization quality and the number of changed
+  variables. And what is the variable then (do you measure changes in
+  the number of changed lectures or courses)?
+  \end{it}
+
+  In the case of \code{DDS2}, both has the same values (this happened
+  by chance).
+  In each solution, 
+  the first value is the penalty of soft constraints representing its
+  optimization quality.
+  The second value is the change from the legacy solution 
+  representing its stabilization quality.
+  In detail, 
+  the legacy solution is represented as a set of legacy assignments
+  represented by \code{legacy(assigned(C,R,D,P))}) atoms.
+  Each legacy assignment not in the obtained timetable
+  counts as 1 violation.
+  %
+  We clarified this in the revision.
+\end{enumerate}
+
+\begin{it}\color{blue}
+\noindent
+Minor comments:
+\end{it}
+\begin{itemize}
+\item 
+  \begin{it}\color{blue}
+  Listing 2, l.4: it is not clear from the description of
+  integrity constraint (p.5,l.35) that conjunction of literals
+  actually must not hold. And the same for Listing 7, l. 17 where the
+  similar case is described on p.9,l.33 with the negative statement 
+  ``\code{C} is \_not\_ assigned at a period \code{P} on a day \code{D} if
+  \code{unavailability_constraint(C,D,P)} holds.''
+  \end{it}
+  
+A rule is called an \emph{integrity constraint} 
+if the \emph{head} of the rule (left of `\code{:-}') is empty.
+\begin{quote}
+\lstinline[basicstyle=\ttfamily\normalsize,mathescape=true]{:- a$_1$,...,a$_m$,not a$_{m+1}$,...,not a$_n$.}
+\end{quote}
+An integrity constraint is considered as a rule that filters solution candidates, 
+meaning that the conjunction of literals in its body must not hold. 
+We clarified this in the revision.
+
+\item 
+  \begin{it}\color{blue}
+  Listing 7, l.9,10: it is not explained what \code{not \{a(X):b(X)\} 1}
+  means.  Please add explanation about the ``at most one'' rule.
+  \end{it}
+
+The rule in Line 9 enforces that,
+for every teacher \code{T}, day \code{D}, and period \code{P},
+there is at most one course \code{C} taught by \code{T}
+such that \code{assigned(C,D,P)} holds.
+In detail, 
+if \code{t(T)}, \code{d(D)}, and \code{ppd(P)} hold,
+this integrity constraint tells us that
+the at-most-one constraint represented by \\
+`\verb+{ assigned(C,D,P) : course(C,T,_,_,_,_) } 1+'\\
+must be true as well in order to prevent its body from being satisfied. 
+In the similar way,
+the rule in Line 10 enforces that,
+for every curriculum \code{Cu}, day \code{D}, and period \code{P},
+there is at most one course \code{C} that belongs to \code{Cu}
+such that \code{assigned(C,D,P)} holds.
+We clarified this in the revision.
+
+\item 
+  \begin{it}\color{blue}
+  It is not clear why N-way configuration sorts particular
+  configurations in the given ordering as given at Table 3. Can you
+  describe reasons for reordering in contrast to the ordering given by
+  mean rank in Table 2?
+  \end{it}
+
+In Table~3, the rows are ordered 
+in descending order by the times the
+configuration in the row was included in a best $k$-way configuration.
+We clarified this in the revision.
+
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{Response to review \#2}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{it}\color{blue}
+Reviewer \#2: The manuscript presents a model referred to as ``teaspoon''
+based on an Answer Set Programming approach to solve a
+curriculum-based course timetabling problem and its corresponding
+minimal perturbation problem.
+
+In my opinion:
+\begin{itemize}
+\item this work is original.
+\item the paper is appropriately organised so that it is easy to read.
+\item the tables and listings are good and support the understanding of the research.
+\item the proposed method is able to produce new best known solutions
+  for a number of instances of a well-known difficult timetabling
+  problem.
+\end{itemize}
+\end{it}
+
+Thank you very much for your comments!
+
+\begin{it}\color{blue}
+The following minor corrections need to be made before publication:
+\end{it}
+
+\begin{itemize}
+\item 
+  \begin{it}\color{blue}
+  Page 2, Lines 29-36. Cite a reference(s) to back up these statements.
+  \end{it}
+
+  Thank you for your suggestion.
+  We added a citation of the following paper:
+
+  \begin{it}%\small
+    Erdem E, Gelfond M, Leone N (2016) Applications of ASP. AI Magazine 37(3):53-–68.        
+  \end{it}
+
+\item 
+  \begin{it}\color{blue}
+  Page 3, Lines 35-36. Provide a summary of the remaining sections
+  (e.g. Section 2 describes the curriculum-based course timetabling
+  problem. Section 2 presents ...).
+  \end{it}
+
+  As suggested, we added the following in the revision.
+
+  \begin{it}
+The rest of the paper is structured as follows.
+Section~2 provides the problem description of CB-CTT\@.
+Although we give a brief introduction to ASP and its basic language
+constructs in Section~3,
+we refer the reader to the literature
+(Baral, 2003; Gebser et al, 2012) 
+for a comprehensive treatment of ASP\@.
+Section~4
+describes {\asap}'s fact format of CB-CTT instances and then 
+presents a basic {\asap} encoding for solving CB-CTT problems.
+Section~5 presents a variety of features of
+extended {\asap} encodings for (multi-criteria) CB-CTT solving.
+Section~6 provides a detailed empirical analysis of {\asap}
+features and performance in contrast to 
+the best known bounds obtained by state-of-the-art CB-CTT solving techniques.
+Section~7 presents an extension of the {\asap} system to 
+minimal perturbation problems in course timetabling. 
+Finally, a conclusion is given in Section~8.
+  \end{it}
+
+
+\item 
+  \begin{it}\color{blue}
+  Page 7, Section 4. The authors could briefly explain the
+  reasoning of naming their proposed method as teaspoon?
+  \end{it}
+
+  Thank you for your suggestion!
+
+{\asap}: \textbf{T}im\textbf{E}tabling with \textbf{A}nswer \textbf{S}et \textbf{P}r\textbf{O}grammi\textbf{N}g
+
+We explained this in the footnote of Page 8.
+
+\item 
+  \begin{it}\color{blue}
+  Page 18, Line 43. ``greater than and equal'' should be ``greater than or equal''?
+  \end{it}
+
+We did a change as suggested.
+
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{Response to review \#3}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{it}\color{blue}
+Reviewer \#3: The paper investigates a descriptive ASP approach for
+course timetabling problems, and evaluates its effectiveness on
+problem instances at the timetabling international competition. As a
+less studied approach in timetabling research, ASP seems to be an
+interesting new direction, thus new contributions are encouraged in
+the area. A couple of issues however need to be addressed before the
+paper can be considered again for publication at ANOR.
+
+In the paper, it's not clear how ASP has been used for course
+timetabling or related education timetabling problems in the existing
+research. Due to the missing literature on relevant work and
+especially the authors' previous work, it's thus difficult to see the
+new contributions from this research. 
+For example, are the
+formulations in section 2 new? Is the model in section 3 the same or
+similar to that's used in the authors' previous research? Is the
+teaspoon system built upon an existing system? What's new and improved
+in this work? The additional contributions to the literature, based on
+previous work, should be clearly presented in the paper to clearly
+demonstrates the significance of the research for a new publication.
+\end{it}
+
+Indeed such questions are very important.
+For the main contributions of the paper, 
+please see \textbf{Point \#1} mentioned above.
+
+From the perspective of applying ASP to educational timetabling, 
+there exists an early work that studied school timetabling with ASP
+(Faber et al,1998). 
+The problem description of CB-CTT presented in Section~2 is based on
+(Bonutti et al, 2012).
+The {\asap} system is built upon general-purpose ASP systems,
+in our case {\clingo}. 
+That is, {\asap} relies on high-level ASP encodings presented in
+Section 4, 5, and 7 and delegates both the grounding and solving tasks
+to {\clingo}.
+We also clarified these points in the revision.
+
+\begin{it}\color{blue}
+Although scalabilty and flexibility have been discussed in the paper,
+it's still not clear how the approach should be adapted for other
+instance or problems, and how effective it is for different
+problems. How much efforts are needed to define a new problem? Are new
+models or new formulations needed if problems changed (or even just
+slightly changed)? Without this information the scalability and
+flexibility are not properly justified.
+\end{it}
+
+Thank you for your comments.
+For the main features of our proposed approach,
+please see \textbf{Point \#3} mentioned above.
+From this view, 
+our ASP-based approach can be applied to a wide range of timetabling
+problems such as school timetabling, examination timetabling, and
+post-enrollment course timetabling.
+
+\begin{it}\color{blue}
+As a descriptive approach, what are the main limitations compared to
+the other related approaches? 
+\end{it}
+
+We have not found any drawback so far compared with other related
+declarative approaches such as SAT, MaxSAT, and constraint programming
+systems.
+
+\begin{it}\color{blue}
+Is the approach in the teaspoon system
+applied for real world problems?
+\end{it}
+
+Yes, our approach can be applied for real world problems, since 
+all problem instances we used in our experiments are
+based on real data from various universities in Europe.
+
+\begin{it}\color{blue}
+The work on multi-criteria optimisation seems interesting and new, and
+could be extended to demonstrate new contributions in this research.
+\end{it}
+
+Thank you very much for your comments!
+We extended the work on multi-objective course timetabling in
+Section~7 with more examples and explanations.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{document}
+
+%  LocalWords:  Mutsunori Banbara CTT et al multi Gebser scalability
+%  LocalWords:  encodings erlangen ller Rudov UUMCAS ASP's modelling
+%  LocalWords:  Extensibility optimality ANOR Katsumi Inoue Kaufmann
+%  LocalWords:  Tenda Okimoto Torsten Schaub Takehide Soh Naoyuki CCT
+%  LocalWords:  Tamura Philipp Wanko extremal MODOP UD basicstyle ppd
+%  LocalWords:  mathescape descendingly organised Erdem Gelfond Leone
+%  LocalWords:  Baral im nswer grammi Faber Bonutti scalabilty MaxSAT
+%  LocalWords:  optimisation

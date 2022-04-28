@@ -1,0 +1,23 @@
+\section{Introduction}
+With the ever growing demand for highly complex embedded systems in both industrial and commercial environments, efficient design techniques gain progressively more importance. 
+To satisfy the requested productivity constraints, the abstraction of embedded systems design has been raised to the system level in recent years. 
+In system synthesis, a coarse-grained behavioral description is transformed into a structural representation considering certain constraints such as available computational (CPUs, DSPs,  hardware accelerators) and communication (buses, routers) resources or timing requirements. 
+To perform a complete synthesis, resources have to be selected from an architectural template, computational tasks and messages have to be mapped onto computational and routed over communication resources, respectively and finally, a schedule has to be determined that complies with given timing constraints like latency or throughput requirements. 
+While plain SAT-based techniques (i.e. also ILP, PB-SAT) were traditionally utilized to encode mapping, routing, and scheduling decisions (e.g. \cite{Lukasiewycz2012a}), recent work has shown that SMT-based system synthesis provides a more efficient way of solving by relaying scheduling decisions to a background theory solver \cite{Reimann2010}. \par 
+In this work, we also seize the idea of using an SMT-based approach, but similar to the approaches in \cite{Andres2015} and \cite{Biewer2015}, we employ answer set programming (ASP) instead of SAT in order to decide mapping and routing options as ASP has shown to be more efficient in finding feasible routings as reachability can be expressed naturally \cite{Andres2013}. 
+We propose an approach that relays the construction of valid schedules into a background theory based on quantifier free integer difference logic (QF-IDL) which is decidable in polynomial time\footnote{Note that the overall system synthesis problem is $\mathcal{NP}$--hard.}\cite{Sebastiani2007}. 
+Furthermore, QF-IDL offers the possibility to leverage the solving process to directly analyze arisen conflict. 
+%To efficiently construct valid schedules, we employ quantifier free integer difference logic (QF-IDL) as background theory. The main advantages of this approach are the decidability in polynomial time and the possibility to leverage the solving process to directly analyze arisen conflicts. 
+\par In contrast to previous work, we integrate the background theory solver directly into the state-of-art answer set solver \emph{clingo} \cite{gekakaosscwa16a} to support a more stringent coupling between both decision processes. This allows us to perform schedulability analysis on \emph{partial assignments} which accelerates the detection of infeasible mapping and routing decisions by excluding large regions from the search space early in the decision process.% Our main contribution are as follows:
+%\begin{enumerate}
+%	\item[1)] We propose a graph-based system synthesis model that allows an efficient representation of periodic applications, arbitrary architecture templates, and user-defined non-functional constraints.
+%	\item[2)] We present a mathematical definition of valid scheduling decisions using \emph{quantifier free integer difference logic} (QF-IDL) and propose a way to leverage the solving process to directly analyze conflicts in order to restrict the search space.   
+%	\item[3)] We extend the state-of-the-art ASP solver \emph{clingo} by integrating a QF-IDL background theory solver and consequently enable an SMT-like approach capable to work on partial assignments. This technique, called \emph{answer set programming modulo theories (ASP-MT)}, allows us to search the design space more efficiently by determining infeasible regions earlier during the decision process. 
+%\end{enumerate}
+%\begin{itemize}
+%	\item 
+%\end{itemize}
+\par The remainder of this paper is organized as follows: Section~\ref{sec:relatedwork} covers related work. 
+In Sec.~\ref{sec:model}, a detailed presentation of the underlying specification model, including the model of computation and the model of architecture, is given. 
+The proposed synthesis framework including binding, routing, and scheduling encodings and implementation details are displayed  in Sec.~\ref{sec:synthesis}. 
+Finally, Sec.~\ref{sec:conclusion} concludes this work and discusses future challenges. 

@@ -1,0 +1,134 @@
+ % ----------------------------------------------------------------------
+%\section{
+\begin{block}{Heuristics in ASP}
+%}
+% ----------------------------------------------------------------------
+%\begin{frame}[c,fragile]{Heuristic language elements}
+
+\dosubtitle{Heuristic language elements}
+
+\begin{columns} \begin{column}{.02\linewidth}\end{column}
+\begin{column}{.98\linewidth}
+
+\begin{itemize}
+
+\item \structure{Heuristic predicate} \ \alert{\hpredicate}
+
+    \bigskip %\bigskip \bigskip \bigskip
+
+\item \structure{Heuristic modifiers} \hfill   (\alert{atom} $a$ and \alert{integer} $v$)
+
+\ \ \ \ \alert{\texttt{init}} for initializing the heuristic value of $a$ with $v$
+\\ \ \ \ \ \alert{\texttt{factor}} for amplifying the heuristic value of $a$ by factor $v$
+\\ \ \ \ \ \alert{\texttt{level}} for ranking all atoms; the rank of $a$ is $v$
+\\ \ \ \ \ \alert{\texttt{sign}} for attributing the sign of $v$ as truth value to $a$
+  
+    \bigskip %\bigskip \bigskip \bigskip
+
+\item \structure{Heuristic atoms}
+
+%\texttt{\hpredicate(a,init,5)} \texttt{\hpredicate(b,factor,2)} 
+
+%\texttt{\hpredicate(c,level,1)} \texttt{\hpredicate(d,sign,-1)}
+
+%\item \alert{\texttt{\hpredicate(a,init,5)}} Add \verb|5| to the initial heuristic value of \verb|a| 
+
+%\item \alert{\texttt{\hpredicate(b,factor,2)}} Multiply the heuristic value of \verb|b| by \verb|2|
+
+%\item \alert{\texttt{\hpredicate(c,level,1)}}  The rank of \verb|c| is \verb|1| (the default rank is \verb|0|)
+
+%\item \alert{\texttt{\hpredicate(d,sign,-1)}}  If deciding on \verb|d|, assign it to false
+
+\ \ \ \ \texttt{\hpredicate(a,init,5)} Add \verb|5| to the initial heuristic value of \verb|a|  
+\\ \ \ \ \ \texttt{\hpredicate(b,factor,2)} Multiply the heuristic value of \verb|b| by \verb|2|
+\\ \ \ \ \ \texttt{\hpredicate(c,level,1)}  The rank of \verb|c| is \verb|1| (the default rank is \verb|0|)
+\\ \ \ \ \ \texttt{\hpredicate(d,sign,-1)}  If deciding on \verb|d|, assign it to false
+
+ 
+
+%_heuristic(\alert<5>{occurs(\only<-3>{A}\only<4->{mv},\only<-3>{T}\only<4->{5})},\alert<6>{factor},\alert<7>{\only<-3>{T}\only<4->{5}})} :- action(\only<-3>{A}\only<4->{mv}), time(\only<-3>{T}\only<4->{5}).
+
+\end{itemize}
+
+\end{column} \end{columns}
+
+\bigskip \bigskip %\bigskip \bigskip
+
+\dosubtitle{Heuristic~modifications~to~functions~$h$~and~$s$}
+
+\begin{columns} \begin{column}{.02\linewidth}\end{column}
+\begin{column}{.98\linewidth}
+
+  \begin{itemize}
+  \item $\nu(V_{a,m}(\ass))$ --- ``{\em value for modifier $m$ on atom $a$ wrt partial assignment \ass}''
+
+\bigskip
+
+  \item \structure{\texttt{init} and \structure{\texttt{factor}}}
+    \begin{align*}
+      d_0(a)&=\quad\;\nu(V_{a,\mathtt{init}}(\ass_0))+h_0(a)
+      % \text{ and for} i\geq 1
+      \\
+      d_i(a) & =
+        \left\{
+          \begin{array}{rl}
+            \nu(V_{a,\mathtt{factor}}(\ass_i))\times h_i(a)&\text{if } V_{a,\mathtt{factor}}(\ass_i)\neq\emptyset
+            \\
+            h_i(a)&\text{otherwise}
+          \end{array}
+        \right.
+    \end{align*}
+
+
+\bigskip
+  \item \structure{\texttt{level}} \quad
+    \(
+    \ell_{\ass_i}(\mathcal{A}')=\textit{argmax}_{a\in\mathcal{A}'}\nu(V_{a,\mathtt{level}}(\ass_i))
+    \)
+    \qquad
+    $\mathcal{A}'\subseteq\mathcal{A}$
+
+\fourskip
+
+  \item \structure{\texttt{sign}}
+    \begin{align*}
+      t_i(a)&=
+      \left\{
+        \begin{array}{rl}
+          \true &\text{if }
+          \nu(V_{a,\mathtt{sign}}(\ass_i))>0
+          \\
+          \false&\text{if }
+          \nu(V_{a,\mathtt{sign}}(\ass_i))<0
+          \\
+          s_i(a)&\text{otherwise}
+        \end{array}
+      \right.\qquad\qquad\qquad\quad\;
+    \end{align*}
+  \end{itemize}
+
+\end{column} \end{columns}
+
+
+\bigskip  \bigskip %\bigskip \bigskip
+\dosubtitle{Inside \alert{\textit{decide}}, {heuristically modified}}
+
+\begin{columns} \begin{column}{.02\linewidth}\end{column}
+\begin{column}{.98\linewidth}
+
+
+  \begin{description}% ENUMERATE!!!!
+  %\begin{itemize}
+%  \addtocounter{enumi}{-1}
+  \item [$0 \ $] $\alert{h(a) := d(a)}$                         \hfill for each $a\in\mathcal{A}\qquad$
+  \item [$1 \ $] $h(a) := \alpha\times h(a) + \beta(a)$ \hfill for each $a\in\mathcal{A}\qquad$
+  \item [$2 \ $] $U:=\alert{\ell_{\ass}}(\mathcal{A}\setminus (\tlits{\ass}\cup\flits{\ass}))$
+  \item [$3 \ $] $C:= \textit{argmax}_{a\in U}\alert{d}(a)$
+  \item [$4 \ $] $a:= \tau(C)$
+  \item [$5 \ $] $\ass := \ass\cup\{a\mapsto\alert{t}(a)\}$
+
+ \end{description}
+ %\end{itemize}
+\end{column} \end{columns}
+
+\end{block}

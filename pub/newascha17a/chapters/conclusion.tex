@@ -1,0 +1,54 @@
+\section{Conclusion and Future Work}
+\label{sec:conclusion}
+In this paper, we presented a novel ASPmT-based approach towards symbolic system synthesis that supports a more expressive system model compared to previous work. Especially, the proposed approach allows for the description of deadline-constrained periodic applications as well as heterogeneous hardware architectures.
+Furthermore, the tight integration of QF--IDL into the ASP solver allows us to evaluate partial assignments in order to prune the search space more efficiently. 
+First experimental results showed the general applicability of our approach. 
+
+In the future, we aim to improve the performance of used propagators for example by using lazy variable creation or incorporating domain-specific heuristics. 
+Since our ASPmT framework encompasses all relevant information,
+the model is easily adaptable and features may be added comfortably.
+Namely, we will extend the framework towards design space exploration including multi-objective optimization techniques.
+%\blindtext
+%\begin{itemize}
+% \item introduce system using ASP modulo theory with following advantages:
+% 	\begin{itemize}
+% 		\item more expressive synthesis model
+% 		\item efficient solving due to detection of invalid schedules for partial bindings,routings
+% 		\item periodic scheduling without introducing new tasks
+% 		\item formulation encompassing binding, routing and scheduling
+% 	\end{itemize}
+% \item promising results for previous synthesis model
+% \item currently not scalable for periodic schedules due to many unnecessary choices, alleviated by adding variables lazily in the future
+% \item scales up to NxN with Y apps with Z comms
+% \item future capabilities
+% 	\begin{itemize}
+% 		\item multi-objective optimization
+% 		\item subset of representative optimal design points
+% 	\end{itemize}
+% \item future techniques
+% 	\begin{itemize}
+% 		\item domain-specific heuristic similar to \cite{Andres2015}
+% 		\item additional propagators (acyclicity)
+% 	\end{itemize}
+%\end{itemize}
+%\begin{table}[]
+%	\centering
+%	\caption{My caption}
+%	\label{my-label}
+%	\begin{tabular}{@{}llll@{}}
+%		\toprule
+%		\#Resources              & \#Tasks & \#Apps & Time     \\ \midrule
+%		\multirow{2}{*}{$2\times2$} & 20      & 1      & 2.08s    \\
+%		& 28      & 2      & 4.85s    \\\midrule
+%		\multirow{4}{*}{$3\times3$} & 27      & 1      & 8.24s    \\
+%		& 45      & 5      & 13.99s   \\
+%		& 45      & 2      & 121.28s  \\
+%		& 45      & 1      & TO       \\\midrule
+%		\multirow{5}{*}{$4\times4$} & 48      & 3      & 191.871s \\
+%		& 48      & 1      & 280.86s  \\
+%		& 80      & 6      & 543s     \\
+%		& 80      & 5      & 577.63s  \\
+%		& 80      & 1      & TO       \\\midrule
+%		$5\times5$                  & 75      & 5      & TO       \\ \bottomrule
+%	\end{tabular}
+%\end{table}

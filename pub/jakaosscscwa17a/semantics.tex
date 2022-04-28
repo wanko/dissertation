@@ -1,0 +1,250 @@
+
+In what follows,
+we elaborate upon the formal relationships among the different types of lc-atoms.
+To this end,
+we distinguish four homogeneous settings, in which all lc-atoms are either
+\lcatype{defined}{strict},
+\lcatype{defined}{non-strict},
+\lcatype{external}{strict}, or
+\lcatype{external}{non-strict}, respectively.
+We use the following notation.
+For an lc-program $P$ over $\mathcal{A}\cup\mathcal{L}$ and an lc-solution $\mathcal{S}\subseteq\mathcal{L}$,
+we define \PS{P}{S} as the extension of program $P$ given in (\ref{eq:stable:strict}) and (\ref{eq:stable:non-strict}).
+Also,
+we let \smset{P} denote the set of (regular) stable models of program $P$ over $\mathcal{A}\cup\mathcal{L}$,
+and
+\(
+\smsetlc{P}=
+\bigcup_{\mathcal{S}\subseteq\mathcal{L}\text{ lc-solution}}
+\smset{\PS{P}{S}}
+\)
+its set of lc-stable models.
+Note that the respective semantic setting is determined by the type of lc-atoms in $\mathcal{L}$.
+In fact, two syntactically equivalent lc-programs may yield different lc-models in different settings.
+%
+This is made precise in the following proposition.
+% --------------------------------------------------------------------------------
+\begin{theorem}\label{thm:settings}
+  Let $P$ be an lc-program over $\mathcal{A}\cup\mathcal{L}$
+  and $P'$   an lc-program over $\mathcal{A}\cup\mathcal{L}'$
+  such that $P=P'$.
+  \begin{enumerate}
+  \item \label{th:dsr} % X_d subseteq X_r
+    If
+    \(
+    \mathcal{L}=\mathcal{L}\cap\head{P}
+    \),
+    then
+    \(
+    \smsetlc{P}\subseteq\smset{P}
+    \)
+  \item \label{th:rsen} % X_r subseteq X_en
+    If
+    \(
+    \mathcal{L}=\mathcal{L}^\rightarrow\setminus\head{P}
+    \),
+    then
+    \(
+    \smset{P}\subseteq\smsetlc{P}
+    \)
+  \item \label{th:ssn} % X_s subseteq X_n
+    If
+    \(
+    \mathcal{L}'=\mathcal{L}'^\rightarrow
+    \),
+    then
+    \(
+    \smsetlc{P}\subseteq\smsetlc{P'}
+    \)
+  \end{enumerate}
+\end{theorem}
+% --------------------------------------------------------------------------------
+%
+Note that $P=P'$ also makes $\mathcal{L}$ and $\mathcal{L}'$ syntactically equivalent,
+although they may represent different types of lc-atoms.
+%
+The above results draw on the observation that if all atoms in $\mathcal{L}'$ are non-strict, then
+\(
+\{\mathcal{S}\subseteq\mathcal{L} \mid \mathcal{S}\text{ is an lc-solution}\}
+\subseteq
+\{\mathcal{S}\subseteq\mathcal{L}'^\rightarrow \mid \mathcal{S}\text{ is an lc-solution}\}
+\).
+This is because the former set of lc-solutions need to satisfy at least condition~(i)
+while the latter must only satisfy~(i).
+%
+Note that Proposition~\ref{thm:settings} does not just apply to \ASPm{lc} but to ASP modulo arbitrary theories.
+
+In more detail,
+Proposition~\ref{thm:settings}.\ref{th:dsr} expresses that each      lc-stable model is also a  regular stable model
+in a setting involving defined lc-atoms only.
+%
+Conversely,
+Proposition~\ref{thm:settings}.\ref{th:rsen} expresses that each regular stable model is also an      lc-stable model
+in the \lcatype{external}{non-strict} setting.
+%
+Proposition~\ref{thm:settings}.\ref{th:ssn} portrays that handling lc-atoms in a strict or non-strict way
+may lead to fewer (or equal) lc-stable models than treating them just in a non-strict way.
+
+In contrast to the observations of Proposition~\ref{thm:settings},
+the following proposition tells us that regular and lc-stable models are in general incomparable in the \lcatype{external}{strict} setting.
+%
+\begin{theorem}\label{thm:settings2} % X_es not subseteq X_r   and   X_r not subseteq X_es
+    There exist lc-programs $P$ over $\mathcal{A}\cup\mathcal{L}$ with
+    \(
+    \mathcal{L}=\mathcal{L}^\leftrightarrow\setminus\head{P}
+    \),
+    so that
+    \(
+    \smset{P}\not\subseteq\smsetlc{P}
+    \)
+    or
+    \(
+    \smsetlc{P}\not\subseteq\smset{P}
+    \).
+\end{theorem}
+% --------------------------------------------------------------------------------
+This results from the fact that
+the treatment of strict lc-atoms may prune regular stable models
+and, on the other hand, the pure external evaluation of lc-atoms may induce additional stable models.
+
+Now that we have explored the formal correspondence among the alternative settings,
+let us discuss their appropriateness for \ASPm{lc}.
+To this end, let us consider two examples.
+
+We first asses the two defined settings. Modifying our above example, let $P_1$ be
+\begin{lstlisting}[numbers=none,mathescape]
+{a("1.5")}.  &sum{"1.5"*x}<=7 :- a("1.5").  &sum{x}<"4.5".
+\end{lstlisting}
+This logic program has two regular stable models
+$X_1=\{$\lstinline@ &sum{x}<"4.5" @$\}$ and
+$X_2=\{$\lstinline@ a("1.5"),@ \lstinline@&sum{"1.5"*x}<=7, &sum{x}<"4.5" @$\}$.
+
+Let us first consider the \lcatype{defined}{strict} case,
+in which the lc-atoms \lstinline@&sum{"1.5"*x}<=7@ and \lstinline@&sum{x}<"4.5"@
+belong to $\mathcal{L}^\leftrightarrow\cap\head{P}$.
+Then, $\mathcal{S}_a=\emptyset$ is an lc-solution, since both $1.5*x\leq7$ and $x<4.5$ can be falsified.
+However,
+the resulting program $\PS{P_1}{\mathcal{S}_\mathit{a}}$ contains rules
+`\lstinline[mathescape]@&sum{x}<"4.5".@' and `\lstinline[mathescape]@:- &sum{x}<"4.5".@'
+and thus admits no regular stable model.
+%
+The same result is obtained for
+$\mathcal{S}_b=\{$\lstinline@ &sum{"1.5"*x}<=7 @$\}$.
+Unlike this,
+$\mathcal{S}_c=\{$\lstinline@ &sum{x}<"4.5" @$\}$
+is no lc-solution
+although it appears to support $X_1$ as an lc-model.
+In a strict setting, an \textit{iff} correspondence is imposed between lc-atoms and their associated linear constraints.
+This excludes $\mathcal{S}_c$ as an lc-solution,
+since there is no real-valued assignment satisfying $x<4.5$ while falsifying $1.5*x\leq7$.
+%
+This situation is caused by the non-derivability of lc-atom \lstinline@&sum{"1.5"*x}<=7@,
+which is in turn falsified by the stable models semantics.
+The strict interpretation of the lc-atom then requires the falsification of $1.5*x\leq7$.
+%
+Finally, $\mathcal{S}_d=\{$\lstinline@ &sum{x}<"4.5", &sum{"1.5"*x}<=7 @$\}$ is another lc-solution.
+Given that
+\(
+\PS{P_1}{\mathcal{S}_\mathit{d}}=P_1\;\cup\;$\lstinline[mathescape]@$\{$ :- not &sum{"1.5"*x}<=7.  :- not &sum{x}<"4.5". @$\}
+\)
+has the regular stable model $X_2$, we establish that $X_2$ is the only lc-stable model of $P_1$.
+
+This example illustrates that strict lc-atoms impose a rather strong connection to their associated constraints in a defined setting.
+%
+Hence, let us consider next the above example in a \lcatype{defined}{non-strict} setting,
+requiring merely an \textit{only if} condition between constraints and their lc-atoms.
+Now, $\mathcal{S}_c=\{$\lstinline@ &sum{x}<"4.5" @$\}$ is an lc-solution since $1.5*x\leq7$
+must not be falsified.
+Accordingly, the regular stable model $X_1$ of
+\(
+\PS{P_1}{\mathcal{S}_\mathit{c}}=P_1\;\cup\;$\lstinline[mathescape]@$\{$ :- &sum{"1.5"*x}<=7. @$\}
+\)
+attests that $X_1$ is also an lc-stable model of $P_1$.
+The other lc-solutions yield the same results as above.
+
+Next, let us analyze the two external settings.
+For this,
+let the lc-program $P_2$ be
+\begin{lstlisting}[numbers=none,mathescape]
+:- not &sum{x}<"4.5".  a("1.5") :- &sum{"1.5"*x}<=7.
+\end{lstlisting}
+admitting no regular stable models, due to the included integrity constraint.
+
+First, we examine the \lcatype{external}{non-strict} setting.
+In this case,
+each combination of the lc-atoms \lstinline@&sum{"1.5"*x}<=7@ and \lstinline@&sum{x}<"4.5"@
+in $\mathcal{L}^\rightarrow\setminus\head{P}$ results in an lc-solution.
+However,
+the existence of lc-stable models depends upon the presence of lc-atom \lstinline@&sum{x}<"4.5"@.
+Lc-models are obtained if it is included, otherwise the integrity constraint in $P_2$ denies them.
+%
+The lc-solution $\mathcal{S}_a=\{$\lstinline@ &sum{x}<"4.5" @$\}$ results in the identical lc-stable model.
+Note that all underlying assignments must satisfy $x<4.5$ and hence $1.5*x\leq7$.
+However, the non-strict nature of \lstinline@&sum{"1.5"*x}<=7@ leaves its truth value open.
+Thus, stable model semantics may set it to false and \lstinline@a("1.5")@ is not obtained
+although the actual constraint $1.5*x\leq7$ in the rule body in $P_2$ is satisfied.
+%
+Similarly,
+the lc-solution $\mathcal{S}_b=\{$\lstinline@ &sum{x}<"4.5", &sum{"1.5"*x}<=7 @$\}$
+induces the same counter-intuitive lc-model $\{$\lstinline@ &sum{x}<"4.5" @$\}$
+along with a second, arguably more intuitive lc-model
+\(
+\{$\lstinline[mathescape]@ a("1.5"), &sum{"1.5"*x}<=7, &sum{x}<"4.5" @$\}
+\).
+
+The previous discussion has revealed that non-strict lc-atoms may ignore information induced by the theory in an external setting.
+This lack is compensated in an \lcatype{external}{strict} setting by the above condition (ii)
+and the resulting assertion of lc-atoms representing satisfied constraints in (\ref{eq:stable:strict}).
+Accordingly,
+\(
+\{$\lstinline[mathescape]@ a("1.5"), &sum{"1.5"*x}<=7, &sum{x}<"4.5" @$\}
+\)
+is the only lc-stable model of $P_2$.
+By interpreting both lc-atoms in a strict manner,
+the inclusion of \lstinline[mathescape]@&sum{x}<"4.5"@ entails that of
+\lstinline@&sum{"1.5"*x}<=7@ as well.
+Hence, the singleton $\{$\lstinline@ &sum{x}<"4.5" @$\}$ cannot be an lc-model of $P_2$
+in a \lcatype{external}{strict} setting.
+
+The previous discussion has shown that certain semantic combinations are more appropriate for treating linear constraints than others.
+This may be different for other theories.
+We have seen that a \lcatype{defined}{strict} interpretation of lc-atoms may be overly strong,
+since the non-derivability of lc-atoms may severely restrict real-valued assignments.
+%
+Conversely, the \lcatype{external}{non-strict} treatment of lc-atoms may be too weak,
+since it admits real-valued variable assignments satisfying constraints that are not
+reflected in the corresponding lc-stable models.
+%
+As a consequence, we focus in what follows on the \lcatype{external}{strict} and \lcatype{defined}{non-strict} settings for lc-atoms.
+
+Finally, let us comment on the usability of both types of lc-atoms.
+%
+Their \lcatype{external}{strict} interpretation allows for deriving information from the respective theory.
+This generates some overhead since the corresponding propagators have to deal with
+two relations between lc-atoms and their associated constraints.
+%
+This approach is advantageous in our planning example in Section~\ref{sec:multishot}, 
+where \lcatype{external}{strict} lc-atoms allow us 
+to naturally express goal conditions as integrity constraints.
+Conversely, we face the following difficulties.
+First, defined lc-atoms must also occur in some rule head, which is rarely the case with goal conditions.
+Second, non-strict lc-atoms may be false although the actual constraint is satisfied.
+%
+On the other hand, 
+in the \lcatype{defined}{non-strict} setting,
+the stable model semantics delineates the effective set of constraints that needs to be satisfied.
+False lc-atoms are considered as unknown and can therefore be disregarded by the corresponding propagators.
+We draw on this in our scheduling encodings where it halves the number of constraints and helps with faster propagation via the program's completion.
+The impact of this is investigated in Section~\ref{sec:experiments}.
+%
+As a rule of thumb,
+the choice between both settings depends on who should be in charge of delineating the set of constraints in focus.
+If this is the theory propagator, an \lcatype{external}{strict} setting is preferable,
+since the strict correspondence induces the relevant lc-atoms without any interference with derivable lc-atoms.
+If this is the actual ASP system, a \lcatype{defined}{non-strict} setting is favorable,
+in which derivable lc-atoms delineate the set of constraints checked by the constraint propagator.
+%
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End:

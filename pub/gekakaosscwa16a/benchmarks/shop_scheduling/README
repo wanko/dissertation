@@ -1,0 +1,70 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Shop scheduling with ASP modulo Difference Logic %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+WITHOUT THEORY:
+    DECISION PROBLEM:
+    
+    clingo <encoding> <instance> <options>
+    
+    Example:
+        clingo flow_shop/encodings/flow_shop.lp flow_shop/instances/asp/tai20_5_1.lp
+        
+    OPTIMIZATION PROBLEM:          
+    
+    clingo optimization/shop_opt_directive.lp <encoding> <instance> <options>
+    
+    Example:
+        clingo optimization/shop_opt_directive.lp flow_shop/encodings/flow_shop.lp flow_shop/instances/asp/tai20_5_1.lp
+        
+    OPTIONS:
+        <flow_shop,job_shop,open_shop>/encodings/acyc_<fs,js,os>_transitive.lp:
+            - enables cycle check of transitive hull of task dependencies with integrety constraints
+        <flow_shop,job_shop,open_shop>/encodings/acyc_<fs,js,os>_directive.lp:
+            - enables cycle check of task dependencies with acyclicity propagator
+            
+WITH THEORY:
+    DECISION PROBLEM:
+    
+    clingo differenceLogic-py.lp <encoding> <instance> <options>
+    
+    Example:
+        clingo differenceLogic-py.lp flow_shop/encodings/flow_shop_dl.lp flow_shop/instances/asp/tai20_5_1.lp
+        
+    OPTIMIZATION PROBLEM:          
+    
+    clingo differenceLogic-py_bb.lp optimization/shop_opt_theory.lp <encoding> <instance> <options>
+    
+    Example:
+        clingo differenceLogic-py_bb.lp optimization/shop_opt_theory.lp flow_shop/instances/asp/tai20_5_1.lp
+        
+    OPTIONS:
+        -c state=1:
+            - enables state-based negative cycle detection
+        <flow_shop,job_shop,open_shop>/encodings/acyc_<fs,js,os>_transitive.lp:
+            - enables cycle check of transitive hull of task dependencies with integrety constraints
+        <flow_shop,job_shop,open_shop>/encodings/acyc_<fs,js,os>_directive.lp:
+            - enables cycle check of task dependencies with acyclicity propagator
+        -c trace=1:
+            - enables detailed output of theory propagation 
+
+ENCODINGS:
+    - for problem in [flow_shop,job_shop,open_shop]:
+        - encoding without theory:
+            $problem/encodings/$problem.lp     
+        - encoding with theory:
+            $problem/encodings/$problem_dl.lp
+                   
+INSTANCES:
+    - all instances are taken from:
+      http://mistic.heig-vd.ch/taillard/problemes.dir/ordonnancement.dir/ordonnancement.html  
+      explained in Taillard1993EJOR.pdf
+    - for problem in [flow_shop,job_shop,open_shop]:
+        - instances from the web:
+            $problem/instances/web     
+        - converted instances in ASP fact format:
+            $problem/instances/asp
+        - best kown results for latency optimization:   
+            $problem/instances/best_lb_up.txt
+    - converter.py -- tool for web --> asp
+             

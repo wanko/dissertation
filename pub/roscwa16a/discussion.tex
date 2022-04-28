@@ -1,0 +1,43 @@
+
+\section{Discussion}\label{sec:discussion}
+
+We presented a comprehensive framework for computing diverse (or similar) solutions to logic programs with generic preferences
+and implemented it in \asprin~2, available at~\cite{asprin}. %\comment{T: Make it available!}
+To this end, we introduced a spectrum of different methods, among them, generalizations of existing work to the case of
+programs with general preferences.
+Hence, certain fragments of our framework provide implementations of the proposals in \cite{eiererfi13a,zhutru13a}.
+While the latter had to resort to solver wrappers or even internal solver modifications,
+\asprin\ heavily relies upon multi-shot solving that allows for an easy yet fine-grained control of reasoning processes.
+Moreover, we provided several generic building blocks, such as 
+\textit{maxmin} (and \textit{minmax}) preferences,
+query-answering for programs with preferences,
+preferences among optimal models,
+and an automated approach for the guess and check methodology of~\cite{eitpol06a},
+all of which are also of interest beyond diversification.
+%
+Finally, we took advantage of the uniform setting offered by \asprin~2 to conduct a 
+comparative empirical analysis of the various methods for diversification.
+Generally speaking,
+there is a clear trade-off between performance and diversification quality, 
+which allows for selecting the most appropriate method 
+depending on the hardness of the application at hand.
+%\comment{T: Last phrase is a bit weak\dots}
+% \begin{itemize}
+% \item System for diverse optimal models of logic program with preferences.
+% \item Lifts previous approaches in ASP \cite{eiererfi13a} or with answer set optimization \cite{zhutru13a} to general preferences of \asprin.
+% \item Variety of methods.
+% \item Experimental evaluation shows that different methods differ wrt performance and diversity of solutions.
+% \item There is a tradeoff between performance and diversity, which allows for selecting the most appropiate method at hand for the application at hand.
+% \item Furthermore, four more general contributions to preferences: $maxmin$, automation of generate and test, query solving, and preferences over
+% optimal models.
+% \item Future work: Real world applications on DSS and TT.
+% \item Future work: Apply SMT framework of \clingo\ 5. In \cite{eiererfi13a}, the modification of the solver was more efficient than ASP implementation.
+%       We intend to do it in a principled (general?) way inside the new framework.
+% \end{itemize}
+
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End: 

@@ -1,0 +1,107 @@
+%% $Id:  $
+%% $HeadURL:  $
+\documentclass[a4paper,USenglish]{oasics-v2016}
+
+\usepackage{microtype}
+\bibliographystyle{plainurl}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{url}
+\usepackage{listings}
+\usepackage{microtype}
+
+\DisableLigatures{encoding = T1, family = tt*}
+\frenchspacing
+
+\lstset{basicstyle=\ttfamily\small}
+\usepackage[boxruled,vlined,linesnumbered]{algorithm2e}
+\SetKwInOut{Input}{Input}
+\SetKwInOut{Output}{Output}
+\SetKwInOut{Internal}{Internal}
+\SetKwFor{Loop}{loop}{}{}
+\SetKwRepeat{Repeat}{repeat}{until}
+\usepackage{enumitem}
+\usepackage{hhline}
+\usepackage{graphicx} 
+
+% \newlist{qenumerate}{enumerate}{1}
+% \setlist[UR]{label=Q-\arabic*:}
+
+\input{macro} 
+
+\newcommand{\Qlabel}[1]{\textcolor{darkgray}{\small\sffamily\bfseries\mathversion{bold}{Q-#1}}}
+\newcommand{\Alabel}[1]{\textcolor{darkgray}{\small\sffamily\bfseries\mathversion{bold}{A-#1}}}
+
+%\usepackage{comments} % https://svn.cs.uni-potsdam.de/svn/reposWV/TeXInputs/trunk/comments.sty
+%\def\SVNREVISION{$LastChangedRevision: 42 $} % <== is automatically inserted by svn
+
+\title{Computing Diverse Optimal Stable Models\footnote{This work was partially supported by DFG-SCHA-550/9 and 11}}
+\titlerunning{Computing Diverse Optimal Stable Models}
+
+\author[1]{Javier~Romero}
+\author[1,2]{Torsten~Schaub}
+\author[1]{Philipp~Wanko}
+
+\affil[1]{University of Potsdam, Germany}
+\affil[2]{INRIA Rennes, France}
+
+\authorrunning{J.~Romero, T.~Schaub, and P.~Wanko}
+
+\Copyright{Javier~Romero, Torsten~Schaub, and Philipp~Wanko}
+
+\subjclass{%
+D.1.6 Logic Programming,
+F.4.1 Mathematical Logic%,
+% I.2.3 Deduction and Theorem Proving
+}
+\keywords{Answer Set Programming, Diversity, Similarity, Preferences} % , Maxmin optimization}
+
+\pdfinfo{
+/Title (Computing Diverse Optimal Stable Models)
+/Author (Javier~Romero, Torsten~Schaub, Philipp~Wanko) }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%Editor-only macros:: begin
+\EventEditors{Manuel Carro, Andy King, Marina De Vos, and Neda Saeedloei}
+\EventNoEds{4}
+\EventLongTitle{Technical Communications of the 32nd Int'l Conference on Logic
+      Programming (ICLP 2016)}
+\EventShortTitle{ICLP 2016 TCs}
+\EventAcronym{ICLP}
+\EventYear{2016}
+\EventDate{October 16--21, 2016}
+\EventLocation{New York City, USA}
+\EventLogo{}
+\SeriesVolume{52}
+\ArticleNo{NNN}
+% Editor-only macros::end %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\maketitle
+%
+\input{abstract}
+%
+\input{introduction}
+\input{background}
+\input{overview}
+\section{Basic Solving Techniques}\label{sec:basic}
+\input{maxmin}
+\input{generate}
+\input{queries}
+\input{preferences}
+\section{Advanced Diversification Techniques}\label{sec:advanced}
+\input{complete}
+\input{approximation}
+%
+\input{experiments}
+\input{discussion}
+\bibliography{paper} % {local,lit,akku,misc,procs} % https://svn.cs.uni-potsdam.de/svn/reposWV/Papers/bibfiles/trunk
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

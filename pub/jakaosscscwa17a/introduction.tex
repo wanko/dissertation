@@ -1,0 +1,36 @@
+
+\section{Introduction}\label{sec:introduction}
+
+Answer Set Programming (ASP;~\cite{baral02a}) has become an established paradigm for knowledge representation and reasoning,
+in particular, when it comes to solving knowledge-intense combinatorial (optimization) problems.
+Despite its versatility,
+however, ASP falls short in handling non-Boolean constraints, such as linear constraints over unlimited integers or reals.
+This shortcoming was broadly addressed in the recent \clingo~5 series~\cite{gekakaosscwa16a} by
+providing generic means for incorporating theory reasoning.
+They span from theory grammars for seamlessly extending \clingo's input language with theory expressions to 
+a simple interface for integrating theory propagators into \clingo's solver component.
+
+We instantiate this framework with different forms of linear constraints and elaborate upon its formal properties.
+Given this, we discuss the respective implementations,
+and present techniques for using these constraints in a reactive context.
+In more detail,
+we introduce extensions to \clingo{} with
+difference and linear constraints over integers and reals, respectively, 
+and realize them in complementary ways.
+For handling difference constraints,
+we provide customized implementations of well-established algorithms in \python{} and \cpp,
+while we use \clingo's \python{} API to connect to off-the-shelf linear programming solvers, viz.\ \cplex{} and \lpsolve,
+to deal with linear constraints.
+In both settings, we support integer as well as real valued variables.
+For a complement, we also consider \clingcon, a derivative of \clingo, 
+integrating constraint propagators for handling linear constraints over integers at a low-level.
+While this fine integration must be done at compile-time, the aforementioned \python{} extensions are added at run-time.
+Our empirical analysis complements the study in~\cite{liesus16a} 
+with experimental results on our new systems \clingod{dl} and \clingod{lp}.
+Finally, we provide a comparison of different semantic options for integrating theories into ASP
+and a systematic overview of the various features of state-of-the-art ASP systems handling linear constraints.
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End: 

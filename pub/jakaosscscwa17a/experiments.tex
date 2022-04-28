@@ -1,0 +1,101 @@
+
+\section{Experimental analysis}\label{sec:experiments}
+
+We begin with an empirical analysis of our \clingo{} derivatives in different settings.
+We investigate, 
+first,  different types of lc-atoms, viz.\ \lcatype{defined}{non-strict} versus \lcatype{external}{strict},
+second, different levels of theory interfaces, \python\ or \cpp, for \clingod{dl},
+and, third, different levels of integration, namely, dedicated implementations versus off-the-shelf solver.
+Finally, we contrast the performance of our systems with other systems for \ASPm{lc}.
+
+We ran each benchmark on a Xeon E5520 2.4 GHz processor under Linux limiting RAM to 20~GB and execution time to 1800s.
+For \clingod{dl} and \clingod{lp}, we use \clingo~5.2.0.
+Furthermore, we use \clingcon~3.2.0,
+\dingo~v.2011-09-23,
+\mingo~v.2012-09-30,
+\ezsmt~1.0.0, 
+and \ezcsp~1.7.9 for our experiments.
+We upgraded \dingo\ and \mingo{} to use recent versions of their back-end solvers.
+Hence, in our experiments,
+the LP-based systems \clingod{lp} and \mingo{} use \cplex~12.7.0.0
+and 
+the SMT-based systems \dingo{} and \ezsmt{} use \zzz~4.4.2.
+The benchmark set consists of 165 instances, 
+among which 110 can be encoded using difference constraints~(\dl)
+and 55 require linear constraints with more than two variables~(\lc).
+In detail, the \dl\ set consists of
+38 instances of two-dimensional strip packing~(\tsp)~\cite{sointabana10a},
+and 72 instances of flow shop~(\fs), job shop~(\js), and open shop~(\os) problems~\cite{taillard93a},
+selecting three instances for each job and machine at random.
+Since not all systems support optimization over variable values,
+we bounded the instances with 1.2 times the best known bound and solved the resulting decision problem.
+The \lc\ instance set includes
+20 instances of incremental scheduling~(\is),
+15 instances of reverse folding~(\rf), and
+20 instances of weighted sequence~(\ws).
+Encodings have been adopted from ~\cite{liesus16a}
+in combination with the instances from the ASP competition.%
+\footnote{We refrained from using the other three benchmark classes from this source because the available instances were too easy in view of producing informative results.}
+Our empirical evaluation focuses on available systems sharing comparable encodings.
+This was not the case for \aspartame, \aspmttosmt, \inca, and \dlvhex[\textsc{cp}].
+The first two systems have a proper and thus different input language and encoding philosophy,
+\inca\ produced incorrect results (cf.~\cite{bakaossc16a} for details),
+and \dlvhex[\textsc{cp}] is no longer maintained.
+
+Table~\ref{tab:clingolc} compares \clingod{dl} and \clingod{lp} with different 
+encoding techniques, 
+types of theory atoms, and 
+programming language hosting the theory interface
+by measuring average time~(\T) and timeouts~(\TO).
+% --------------------------------------------------------------------------------
+\input{tables/clingolc}
+% --------------------------------------------------------------------------------
+Each column consists of one combination of form \emph{system}/\emph{atom}/\emph{language}, 
+where
+\emph{system} is either \textsc{dl} or \textsc{lp} for \clingod{dl} and \clingod{lp},
+\emph{atom} either \atomtype{dns} or \atomtype{es} for \lcatype{defined}{non-strict} and \lcatype{external}{strict} lc-atoms,
+and
+\emph{language} either \textsc{py} or \textsc{cpp} for \python\ and \cpp, respectively.
+To compare \clingod{dl} and \clingod{lp}, we restrict the set of benchmarks to \dl.
+We observe that \atomtype{dns} performs better than \atomtype{es} in all settings.
+Under lc-stable model semantics, defined lc-atoms are more tightly constrained.
+External lc-atoms, on the other hand, induce an implicit choice leading to a
+larger search space and might introduce duplicate solutions with different assignments.
+Furthermore, strict lc-atoms double the amount of implications 
+that have to be considered by the propagator.
+As expected, the \cpp\ variant of \clingod{dl} outperforms its \python\ counterpart,
+even though the performance gain does not reach an order of magnitude.
+
+Table~\ref{tab:systems} compares different systems dealing with \ASPm{lc}
+by average time~(\T) and timeouts~(\TO).
+%
+% --------------------------------------------------------------------------------
+\input{tables/systems}
+% --------------------------------------------------------------------------------
+%
+Only the best configurations from Table~\ref{tab:clingolc} were selected for comparison.
+All systems were tested using their default configurations.
+For \dl{}, \clingolc{dl}{dns}{cpp} performs best overall,
+even though \clingcon\ is better for \tsp\ and \js.
+The class \fs\ generates the most difference constraints among all benchmark classes,
+making it less suited for translation-based approaches, like \dingo, \mingo, and \ezsmt,
+and producing overhead for more involved propagation as in \clingcon.
+By default, \ezcsp\ performs the theory consistency check on full answer sets,
+and by doing so avoids handling vast amounts of constraints during search
+and therefore performs comparatively well on \fs.
+For the other classes though, this generate and test approach is less effective.
+Regarding \lc\ and overall results, \clingcon\ clearly dominates the competition,
+followed by the two translation-based approaches \mingo\ and \ezsmt\ 
+with underlying state-of-the-art solvers \cplex\ and \zzz, respectively.
+\clingolc{lp}{dns}{py} falls behind,
+since it is a straightforward \python\ implementation
+and uses an exponential consistency check.
+In addition, distinct features of \clingod{lp} like real-valued variables and optimization
+as well as dynamic conditions are not supported by other systems 
+and thus not included in the benchmark set.
+
+  
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End: 

@@ -1,0 +1,135 @@
+Dear Torsten,
+
+On behalf of the ICLP 17 Program Committee, we are pleased to inform
+you that your submission
+
+43: Clingo goes Linear Constraints over Reals and Integers
+
+has been accepted for the second round of refereeing. Moving to the
+second round means that there is a good chance of being accepted for
+TPLP publication but it is important to note that acceptance is
+conditional on addressing the reviewers' comments and suggestions and
+on the discussion resulting from the second round of refereeing.
+Moreover, we are assuming that NOT ALL submissions will make it 
+through this second round and will then be offered Technical 
+Communication slots.
+
+Please revise your paper taking into account the enclosed reviewers'
+comments and submit the revised version of your paper no later than
+June 20, 2017. Further instructions about the resubmission process
+will follow in another message (hopefully no later than next week).
+
+We suggest that all authors provide an appendix which details how the
+reviewers' comments have been addressed. This appendix is not
+mandatory, it is merely a suggestion that could guide and help the
+reviewers. This appendix will just be used for the second round of
+refereeing, thereafter it should be removed.
+
+Best regards,
+Ricardo Rocha and Tran Cao Son
+
+
+----------------------- REVIEW 1 ---------------------
+PAPER: 43
+TITLE: Clingo goes Linear Constraints over Reals and Integers
+AUTHORS: Tomi Janhunen, Roland Kaminski, Max Ostrowski, Torsten Schaub, Sebastian Schellhorn and Philipp Wanko
+
+
+----------- Relevancy -----------
+See below
+
+----------- Significance -----------
+See below
+
+----------- Quality of Presentation -----------
+See below
+
+----------- Overall evaluation -----------
+This paper discusses several extensions to clingo that address linear
+constraints.  There is clingo[lp], a general apporach that handles
+different combinations of variables: strict vs. non-strict and
+external vs. internal.  clingo[dl], which is more-or-less a
+specialization of clingo[lp] that is restricted to 2-variable
+constraints.  And finally, there is clingcon which restricts itself to
+strict variables, integer values and (pre-linked?) C++ constraint
+solver.  For experimental evaluation, first a comparison is made of
+these three solvers indicating the overhead of the various
+generalizations.  Next, the engines are compared to various recent
+solvers that support linear constraints or SMT.
+
+This is a well written paper and the authors have done a good job in
+terms of experimental implementation.  However, I was left with some
+questions.  From the discussion of strict/non-strict variables on
+pg. 5, it appears that treating non-strict variables give rise to
+"models" (or rather structures) that have unsatisfiable constraints.
+I can't see any use for this, except as perhaps an optimization step.
+They weren't explained in this way though, and in any case
+understanding whether such an optimization could apply is of course
+undecidable in general.
+
+My other question was why clingcon could only use certain solvers.  Is
+the reason simply one of engineering -- does clasp/clingo support
+dynamic linking of C programs?  Or is it something else, like a
+specialized translation that is needed.
+
+Despite these questions, I recommend acceptance of this paper.  I
+would however like some motivation about the usefulness of non-strict
+variables.  Perhaps I misunderstand them, but they don't seem like
+constraints as most people use the term.  I'd also like to have a bit
+more explanation of the benchmark programs and experiments, which
+could easily be added in a small appendix.
+
+
+----------------------- REVIEW 2 ---------------------
+PAPER: 43
+TITLE: Clingo goes Linear Constraints over Reals and Integers
+AUTHORS: Tomi Janhunen, Roland Kaminski, Max Ostrowski, Torsten Schaub, Sebastian Schellhorn and Philipp Wanko
+
+
+----------- Relevancy -----------
+The paper describes how the clingo solver can be used for reasoning beyond discrete domains in a computationally efficient way. As such, it is very relevant to ICLP.
+
+----------- Significance -----------
+Clingo is one of the fastest state-of-the-art ASP solvers. The ability to embed in it reasoning over linear constraints and reals has definitely a potential for a lasting impact.
+
+----------- Quality of Presentation -----------
+The paper is written well. The English could be improved somewhat -- see a few specific suggestions below. Overall, it may be worth having a native speaker go over the paper.
+
+Specific suggestions
+--------------------
+* "techniques of how to use" -> "for using" (multiple occurrences)
+* "not just applies" -> "does not just apply"
+* "the turkey stays dead" (page 7): from a KR perspective, it would be better to avoid a special treatment of fluent dead. I recommend applying the same encoding used in lines 5-6.
+
+----------- Overall evaluation -----------
+The paper discusses clingo 5's ability to enhance ASP with theory reasoning capabilities. The ability is demonstrated on linear constraints over reals and integers.
+>From my perspective, the paper gives three main contributions: (1) definition of various semantic combinations and their analysis; (2) demonstration on specific theories; (3) experimental evaluation.
+Of these, (1) is to me the most valuable and certainly worth publishing. (2) + (3) may not be particularly novel, but still bring value.
+
+
+----------------------- REVIEW 3 ---------------------
+PAPER: 43
+TITLE: Clingo goes Linear Constraints over Reals and Integers
+AUTHORS: Tomi Janhunen, Roland Kaminski, Max Ostrowski, Torsten Schaub, Sebastian Schellhorn and Philipp Wanko
+
+
+----------- Relevancy -----------
+This paper is highly relevant to ICLP
+
+----------- Significance -----------
+For real-world applications it is necessary for ASP to move beyond boolean.
+
+----------- Quality of Presentation -----------
+Well organised and clearly explained.
+
+----------- Overall evaluation -----------
+2
+In this paper, the authors present an applied account of the use of clingo series 5 theoretical framework to allow the reasoning with two different forms of linear constraints, namely, linear constraints and difference constraints. This leads to two implementations clingo[LP] and clingo[DL] respectively. While clingo[LP] relies on clingo's python APIs to connect the off-the-shelve linear constraint solvers, for clingo[DL], the authors implemented well known algorithms for DL theory solvers in Python to handle the difference logic constraints. The paper experimentally evaluates clingo[LP] and clingo[DL].
+
+The paper is well written and presented. The work is compared to closely related systems
+
+There is one point that in my onion could be improved. It was not clear to me when or why a user should go for one of the four combinations of strict/non-strict and external/defined.
+
+
+
+

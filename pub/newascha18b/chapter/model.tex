@@ -1,0 +1,89 @@
+\section{Prerequisites}
+\label{sec:model}
+The focus of the work at hand is on how to efficiently explore the design space of embedded systems using \ac{ASPmT}. To this end, the description of the specification model considered in the remainder of the paper is followed by the basics of \acf{ASP} and the utilization of background theories. 
+%\vspace*{.5mm}
+\subsection{Specification Model}
+As depicted in Fig.~\ref{fig:specexample}, we model the system specification as a graph separated into applications, an heterogeneous architecture template, and mapping options that connect the former two.\par
+\textbf{Application: }
+An application is specified in task-level granularity and is modeled as a directed acyclic graph $A=(T,C,E)$. That is, it contains sets of computational tasks $T$ and communication messages $C$. A set of edges $E\subseteq T\times C \cup C\times T$ specifies dependency relations between the elements. Each message $c\in C$ has exactly one predecessor task, i.e. inter process communication is characterized in a point-to-point fashion. Furthermore, each application is constrained by a maximum period by which it repeats its execution.
+\begin{figure}
+	\centering
+	\input{figures/specExample}
+	\vspace*{-0.1cm}
+	\caption{Specification example consisting of two applications $A_1$ and $A_2$, a $2\times 2$ platform template with four processing elements $p_{1-4}$ and routers $r_{1-4}$, and mapping options $m_1$ to $m_9$ annotated with WCET values. }
+	\label{fig:specexample}
+%	\vspace*{-0.1cm}
+\end{figure}
+%\vspace*{.5mm}
+%\subsection{Architecture Template}
+
+\textbf{Architecture Template: }
+The architecture, or \emph{platform} template $P=(V_P,V_R,L)$ consists of processing elements $V_P$ and the communication infrastructure split into routers $V_R$ and links $L$. Both processing elements and routers are annotated by individual area and static power requirements that are used in the evaluation process to determine the quality of a solution. Additionally, the routing delay and energy determine the time and energy needed for each message to get send over one link. 
+In this paper, we assume a circuit switching strategy for the routing of messages. That is, a message blocks the whole route from sender to receiver until it has been received completely. 
+%However, each router internally consists of independent crossbar switches and corresponding input buffers to allow concurrent routing of messages if distinct links are involved in the communication. 
+Note that bidirectional arrows represent two separate links. %For example, the connection between $p_1$ and $r_1$ in Fig.~\ref{fig:specexample} represents the directed edges $l_1=(p_1,r_1)$ and $l_2=(r_1,p_1)$.
+
+%\vspace*{.5mm}
+%\subsection{Specification Model}
+\textbf{Problem Instance: }
+For each task, a set of mapping options $M\subseteq T\times V_P$ is specified. A mapping option $m=(t,p)$ indicates that task $t$ may be executed on processing element $p$ and is annotated with a worst case execution time (WCET) as well as the dynamic energy consumed by $p$ when executing $t$. Specifying several mapping options per tasks with different WCETs and energy annotations corresponds to the modeling of heterogeneous systems.  Together with the applications and the platform template, the mapping options complete the problem instance $I=(A,P,M)$.\par
+
+\textbf{Exploration Model: }
+Acquiring a \emph{feasible} solution to the problem instance involves selecting a mapping for each task, routing the messages over the communication infrastructure, and determining a schedule while adhering to given timing constraints. Each solution is evaluated by three objective functions $latency$, $area$, and $energy$, that determine timing properties as well as area and energy requirements, respectively. These objective functions represent soft constraints that have to be optimized. Without loss of generality, the \ac{DSE} is formulated as a minimization problem as follows:
+\begin{center}
+	\vspace*{-0.1cm}
+	\begin{minipage}[c]{0.2\textwidth}
+		\begin{tabbing}
+			mini\=mize $f(x) = (latency(x), area(x), energy(x)),$ \\
+			subject to: \\
+			\> $x$ is a feasible system implementation.
+		\end{tabbing}
+	\end{minipage}
+	\vspace*{-0.1cm}
+\end{center}
+Here, a feasible system implementation is a solution that adheres to all given mapping, routing, and timing constraints. \par
+In this work, we consider three different routing strategies. First, \emph{dimension order routing} (DOR) only allows one route for 
+each pair of sending and receiving processing elements but simultaneously guarantees the shortest path. Second, \emph{shortest path 
+routing} (SPR) also guarantees a shortest path between sender and receiver. However, the route is not fixed and various alternative 
+routes can be selected. Finally, \emph{arbitrary length routing} (ALR) allows every acyclic route over the communication 
+infrastructure and may be able to find solutions that distribute communication traffic over less congested links. That is, the 
+number of decision variables and thus the complexity increases from DOR to ALR. 
+\subsection{Answer Set Programming}
+The specification model and the constraints described in the previous section are encoded as \acf{ASP} facts and rules. \ac{ASP} is 
+a programming paradigm that is tailored towards NP-hard search problems and is based on the stable model (\emph{answer set}) 
+semantics. Problems are formulated in a first-order input language as a set of facts and rules that are used to represent and infer 
+domain knowledge, respectively. %Facts are the simplest constructs that are unconditionally true and consist of only one atom (i.e., an $n$-ary 
+%predicate applied to $n$ terms). 
+%Given the example in Fig.~\ref{fig:specexample}, the facts below encode the existence of task $t_1$ as well as its mapping options $m_1$ and $m_2$.
+%\begin{equation}{\tt task(t1)}.\quad {\tt map(m1,t1,p1).}\quad {\tt map(m2,t1,p2).}\label{eq:facts}\end{equation}
+%Rules are used to encode constraints. For example, the following (choice) rule encodes the selection mapping options. \begin{equation}\tt \{\ bind(M,T,P)\ :\ map(M,T,P)\ \} =1\ :-\ task(T).\label{eq:rules} \end{equation} 
+%Here, the ternary predicate {\tt bind} (short {\tt bind/3}) is inferred exactly once for every {\tt task/1}. Thus, an answer set containing both {\tt bind(m1,t1,p1)} and {\tt bind(m2,t1,p2)} simultaneously cannot exist. Note that variables, indicated by capital letters, are used to provide a uniform problem definition that can be used for every specification instance.\par
+
+Determining answer sets of logic programs (i.e., the combination of facts and rules) in \ac{ASP} is a two-step process. First, the
+logic program is translated (\emph{grounded}) into a variable free representation before it can be solved by an answer set solver 
+that determines stable models (\emph{solutions}). 
+%Accordingly, grounding the example would result into $$\tt1\{bind(m1,t1,p1);bind(m2,t1,p2)\}1.$$
+%Accordingly, solving the example in Eqs.~\ref{eq:facts} and \ref{eq:rules} produces two stable models (solutions): One with atom {\tt bind(m1,t1,p1)} and the other with {\tt bind(m2,t1,p2)}. 
+The actual solving process is out of scope of this paper and we refer to \cite{gekakarosc15a} for further information.\par 
+%To allow for optimizations of \ac{ASP} programs, \asprin{} %(\emph{ASP} for \emph{pr}eference handl\emph{in}g) 
+%has been proposed in 
+%\cite{Brewka2015} as a framework to compute preferred (optimal) solutions among stable models of logic programs based on 
+%the solver \clingo. In addition to single-objective preference types, it also offers predefined 
+%composite types like Pareto optimization.
+
+Generally, \ac{ASP} is capable of finding stable models efficiently if there are only linear constraints involved. However, in system design, non-linear constraints such as timing requirements must be taken into account. To this end, we use \acf{ASPmT} (see~\cite{gekakaosscwa16a}) to incorporate custom background theories directly into the solving process. The details are displayed in the following section.%The coordination of \ac{ASP} and individual background theories is done with indicator variables that are known to both foreground and background theory. This way, conflicts that have been detected in the background theory are propagated to \ac{ASP} that subsequently prunes the search space accordingly. In this paper, we utilize \ac{QF--IDL} to analyze timing properties (see~\cite{Neubauer2017} for detailed information) as well as additional Pareto filters that are responsible for dominance checks. The details are described in the following section.
+
+
+%\asprin{} (\emph{ASP} for \emph{pr}eference handl\emph{in}g) has been proposed in \cite{Brewka2015} as a framework to define and 
+%compute preferred (optimal) solutions among stable models of logic programs. In addition to single-objective preference types such 
+%as cardinality minimization, it also offers predefined composite (i.e.~multi-objective) preference types like Pareto optimization. 
+%As \asprin{} is based on the \ac{ASP} solver \clingo{} \cite{gekakaosscwa16a}, it is only efficient for linear constraints. In this 
+%work, we propose an optimization framework to \clingo{} that utilizes the input language of \asprin{} and allows non-linear 
+%preference types. Therefore, we integrate background theories that handle both non-linear constraints solving and Pareto filtering. 
+
+
+
+
+
+
+

@@ -1,0 +1,49 @@
+#include "incmode_dl.lp".
+
+#program base.
+%actions
+action(wait). action(load). action(shoot).
+duration(load,25). duration(shoot,5). duration(wait,36).
+unloaded(0).
+
+#program base.
+
+&diff{ at(0)-0} <=0.
+&diff{ 0-at(0) } <=0.
+
+#program step(n).
+
+1{do(X,n) : action(X)}1.
+
+&diff { 0-at(n) } <= 0.
+&diff { at(N')-at(n) } <= -D :- do(X,n); duration(X,D); N'=n-1.
+&diff { at(n)-at(N') } <= D :- do(X,n); duration(X,D); N'=n-1.
+
+%inertials
+loaded(n)   :- loaded(n-1); not unloaded(n).
+unloaded(n) :- unloaded(n-1); not loaded(n).
+&diff { 0-armed(n) } <= 0:- unloaded(n-1).
+&diff { armed(n)-0 } <= 0:- unloaded(n-1).
+&diff { armed(N')-armed(n) } <= -D :- do(X,n); duration(X,D); N'=n-1; loaded(N').
+&diff { armed(n)-armed(N') } <= D :- do(X,n); duration(X,D); N'=n-1; loaded(N').
+
+% conditions and effects of actions
+loaded(n)   :- do(load,n).
+unloaded(n) :- do(shoot,n).
+:- do(shoot,n), unloaded(n-1).
+
+dead(n) :- do(shoot,n); &diff { armed(n)-0 } <= 35.
+dead(n) :- dead(n-1).
+
+#program check(n).
+%goals
+:- not dead(n); query(n).
+:- not &diff { at(n)-0 } <= 100, query(n).
+:- do(shoot,n), not &diff{ 0-at(n) } <= -36.
+
+#show do/2.
+#show dead/1.
+&show_assignment{}.
+
+#show unloaded/1.
+#show loaded/1.

@@ -1,0 +1,64 @@
+%% $Id: paper.tex 33257 2013-01-15 07:56:11Z torsten $
+%% $HeadURL: https://svn.cs.uni-potsdam.de/svn/reposWV/Papers/ASPDomHeu/trunk/paper.tex $
+\documentclass[a4]{article}
+\usepackage{ijcai13}
+\usepackage{times,helvet,courier}
+\usepackage{amsmath,amssymb}
+
+\usepackage{listings}
+\lstset{aboveskip=\smallskipamount,belowskip=\smallskipamount}
+\lstset{basicstyle=\ttfamily\small}
+\input{macro} 
+
+% \usepackage{xcolor,comments} % https://svn.cs.uni-potsdam.de/svn/reposWV/TeXInputs/trunk/comments.sty
+\def\SVNREVISION{$LastChangedRevision: 33257 $} % <== is automatically inserted by svn
+
+% \usepackage{patch}
+
+\sloppy
+
+\title{Domain-specific Heuristics in Answer Set Programming}
+
+\author{Id: NN, Area: MM}
+% {%
+%   M.~Gebser$^*$
+%   \and
+%   B.~Kaufmann$^*$
+%   \and
+%   R.~Otero$^\star$
+%   \and 
+%   J.~Romero$^{*,\star}$
+%   \and 
+%   T.~Schaub$^*$
+%   \and
+%   P.~Wanko$^*$
+%   \\
+%   University of Potsdam$^*$
+%   \and
+%   University of Corunna$^\star$
+%   }
+
+\date{}
+
+\begin{document}
+
+\maketitle
+\input{abstract}
+
+\input{introduction}
+\input{background}
+\input{cdcl}
+\input{approach}
+\input{experiments}
+\input{discussion}
+
+% \input{acknowledgments}
+\clearpage
+\bibliographystyle{named}
+\bibliography{lit,akku,procs,local} % https://svn.cs.uni-potsdam.de/svn/reposWV/Papers/bibfiles/trunk
+% \input{bbl}
+% \newpage
+% \appendix
+% \input{advisor}
+% \input{relwork}
+\end{document}

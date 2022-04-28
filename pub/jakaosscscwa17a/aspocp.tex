@@ -1,0 +1,90 @@
+%% $Id:  $
+%% $HeadURL:  $
+\documentclass[fleqn]{llncs}
+
+\usepackage{microtype}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{newtxtext,newtxmath} %\usepackage{times,helvet,courier}
+
+\input{macro} 
+\newcommand{\paratheory}[2]{\par\emph{{#1}+{#2}:}}
+\newcommand{\myparagraph}[1]{\par\textbf{#1}}
+
+% \usepackage{comments} % https://svn.cs.uni-potsdam.de/svn/reposWV/TeXInputs/trunk/comments.sty
+% \def\SVNREVISION{$LastChangedRevision: 42 $} % <== is automatically inserted by svn
+
+\usepackage{listings}
+\usepackage{pifont}
+\newcommand{\cmark}{\ding{51}}%
+\newcommand{\xmark}{\ding{55}}%
+\usepackage{threeparttable}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+%\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
+\usepackage[table]{xcolor}
+\usepackage{url}
+
+\lstset{xleftmargin=2\parindent,aboveskip=\smallskipamount,belowskip=\smallskipamount,captionpos=b}
+\lstset{numbers=left,numberblanklines=false,basicstyle=\ttfamily}
+\lstset{keywords=[1]{m,n},keywordstyle=[1]\usefont{OT1}{cmtt}{m}{n}}
+
+\lstdefinelanguage{clingo}{
+  keywordstyle=[1]\usefont{OT1}{cmtt}{m}{n},%
+  keywordstyle=[2]\textbf,%
+  keywordstyle=[3]\usefont{OT1}{cmtt}{m}{n},%\textit
+  alsoletter={\#,\&},%
+  keywords=[1]{not,from,import,def,if,else,return,while,break,and,or,for,in,del,and,class},%
+  keywords=[2]{\#const,\#show,\#minimize,\#base,\#theory,\#count,\#external,\#program,\#script,\#end,\#heuristic,\#edge,\#project,\#show},%
+  keywords=[3]{&,&dom,&sum,&diff,&show},%
+  morecomment=[l]{\#\ },%
+  morecomment=[l]{\%\ },%
+  commentstyle={\color{darkgray}}%
+}
+
+\sloppy
+
+\title{\clingo{} goes Linear Constraints over Reals and Integers}
+
+\author{\hspace{-3pt}%
+  T. Janhunen\inst{1} % omi
+  \and 
+  R. Kaminski\inst{3}% oland
+  \and
+  M. Ostrowski\inst{3}% ax
+  \and 
+  T. Schaub\inst{2}\inst{3}% orsten
+  \and
+  S. Schellhorn\inst{3}% ebastian
+  \and
+  P. Wanko\inst{3}}% hilipp
+
+% \institute{Aalto University \and INRIA Rennes \and Universit\"at Potsdam}
+\institute{$^1$Aalto University \quad $^2$INRIA Rennes \quad $^3$University of Potsdam}
+
+
+\begin{document}
+
+\maketitle
+
+\input{abstract}
+
+\input{introduction}
+\input{background}
+\input{multishot}
+\input{system}
+\input{related}
+\input{experiments}
+\input{discussion}
+
+\bibliographystyle{splncs} % {plain} % {named}
+%\bibliography{lit,procs,akku,own} % https://svn.cs.uni-potsdam.de/svn/reposWV/Papers/bibfiles/trunk
+\input{bbl}
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

@@ -1,0 +1,135 @@
+
+\subsection{A gentle introduction}
+\label{sec:glance}
+
+A key feature, distinguishing \clingo{} from its predecessors,
+is the possibility to structure (non-ground) input rules into subprograms.
+To this end,
+a program can be partitioned into several subprograms by means of the directive \lstinline{#program};
+it comes with a name and an optional list of parameters.
+Once given in the input,
+the directive gathers all rules up to the next such directive (or the end of file)
+within a subprogram identified by the supplied name and parameter list.
+%
+As an example,
+two subprograms \lstinline{base} and \lstinline{acid(k)} can be specified as follows:
+%
+\begin{lstlisting}[language=clingo]
+a(1).
+#program acid(k).
+b(k).
+c(X,k) :- a(X).
+#program base.
+a(2).
+\end{lstlisting}
+%
+Note that \lstinline{base} is a dedicated subprogram (with an empty parameter list):
+in addition to the rules in its scope,
+it gathers all rules not preceded by any \lstinline{#program} directive.
+Hence, in the above example, the \lstinline{base} subprogram includes the facts \lstinline{a(1)} and \lstinline{a(2)},
+although, only the latter is in the actual scope of the directive in line~5.
+% 
+Without further control instructions (see below),
+\clingo{} grounds and solves the \lstinline{base} subprogram only,
+essentially, yielding the standard behavior of ASP systems.
+The processing of other subprograms such as \lstinline{acid(k)} is subject to scripting control.
+
+For customized control over grounding and solving,
+a \lstinline{main} routine
+(taking a control object representing the state of \clingo{} as argument)
+can be supplied.
+For illustration, let us consider two \python{} \lstinline{main} routines:
+\footnote{The \lstinline{ground} routine takes a list of pairs as argument.
+  Each such pair consists of a subprogram name (e.g.\ \lstinline{base} or \lstinline{acid}) and a list of actual parameters (e.g.\ \lstinline{[]} or \lstinline{[42]}).}
+%
+\begin{lstlisting}[firstnumber=7,language=clingo]
+#script(python)
+def main(prg):
+    prg.ground([("base",[])])
+    prg.solve()
+#end.
+\end{lstlisting}
+%
+While the above control program matches the default behavior of \clingo,
+the one below ignores all rules in the \lstinline{base} program but rather
+contains a \lstinline{ground} instruction for \lstinline{acid(k)} in line~8,
+where the parameter~\lstinline{k} is to be instantiated with the term \lstinline{42}.
+%
+\begin{lstlisting}[firstnumber=7,language=clingo]
+#script(python)
+def main(prg):
+    prg.ground([("acid",[42])])
+    prg.solve()
+#end.
+\end{lstlisting}
+%
+Accordingly, the schematic fact \lstinline{b(k)} is turned into \lstinline{b(42)},
+no ground rule is obtained from `\lstinline{c(X,k) :- a(X)}' due to lacking instances of \lstinline{a(X)},
+and the \lstinline{solve} command in line~10 yields a stable model consisting of
+\lstinline{b(42)} only.
+Note that \lstinline{ground} instructions apply to the subprograms
+given as arguments,
+while \lstinline{solve} triggers reasoning w.r.t.\ all accumulated ground rules.
+
+In order to accomplish more elaborate reasoning processes,
+like those of \iclingo~\cite{gekakaosscth08a} and \oclingo~\cite{gegrkasc11a} or other customized ones,
+it is indispensable to activate or deactivate ground rules on demand.
+For instance, former initial or goal state conditions need to be
+relaxed or completely replaced when modifying a planning problem, e.g.,
+by extending its horizon.%
+\footnote{The planning horizon is the maximum number of steps a planner takes into account when searching for a plan.}
+%
+While the two mentioned predecessors of \clingo{} relied on the \lstinline{#volatile} directive
+to provide a rigid mechanism for the expiration of transient rules,
+\clingo{} captures the respective functionalities and customizations
+thereof in terms of the \lstinline{#external} directive.
+This directive goes back to \lparse\ \cite{lparseManual} and was also
+supported by \clingo's predecessors to exempt (input) atoms
+from simplifications (and fixing them to false).
+As detailed in the following,
+the \lstinline{#external} directive of \clingo{} provides a generalization
+that, in particular, allows for a flexible handling of yet undefined atoms.
+
+For continuously assembling ground rules evolving at different stages of a
+reasoning process, \lstinline{#external} directives declare atoms that may
+still be defined by rules added later on.
+%
+In terms of module theory~\cite{oikjan06a},
+such atoms correspond to inputs, which (unlike undefined output atoms) must not be simplified.
+For declaring input atoms, 
+\clingo{} supports schematic \lstinline{#external} directives that are instantiated along with
+the rules of their respective subprograms.
+To this end, a directive like
+%
+\begin{lstlisting}[numbers=none,language=clingo]
+#external p(X,Y) : q(X,Z), r(Z,Y).
+\end{lstlisting}
+%
+is treated similar to a rule
+%
+`\lstinline{p(X,Y) :- q(X,Z), r(Z,Y)}'
+during grounding.
+%
+However, the head atoms of the resulting ground instances are merely collected as inputs,
+whereas the ground rules as such are discarded.
+
+Once grounded, the truth value of external atoms can be changed via the \clingo{} API
+(until the atoms become defined by corresponding rules).
+By default, the initial truth value of external atoms is set to false.
+Then, for example, with \clingo's \python{} API,
+\lstinline{assign_external(self,p(a,b),True)}%
+\footnote{%
+In order to construct atoms, symbolic terms, or function terms, respectively, the \clingo{} API function \lstinline{Function} has to be used.
+Hence, the expression \lstinline{p(a,b)} actually stands for \lstinline{Function("p", [Function("a"), Function("b")])}.}
+can be used to set the truth value of the external atom \lstinline{p(a,b)} to true.
+Among others,
+this can be used to activate and deactivate rules in logic programs.
+For instance,
+the integrity constraint `\lstinline{:- q(a,c), r(c,b), p(a,b)}' is ineffective whenever \lstinline{p(a,b)} is false.
+
+A full specification of \clingo's \python{} API can be found at \url{https://potassco.org/clingo/python-api/current/clingo.html}.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End:

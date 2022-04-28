@@ -1,0 +1,72 @@
+
+\subsection{Semantic underpinnings}
+\label{sec:semantics}
+
+Given the hands-on nature of this tutorial,
+we only give an informal idea of the semantic principles underlying theory solving in ASP.
+
+As mentioned in Section~\ref{sec:background}, a logic program induces a set of stable models.
+%
+To extend this concept to logic programs with theory expressions,
+we follow the approach of lazy theory solving~\cite{baseseti09a}.
+We abstract from the specific semantics of a theory by considering the theory atoms representing the underlying theory constraints.
+The idea is that a regular stable model of a program over regular and theory atoms is only valid with respect to a theory,
+if the constraints induced by the truth assignment to the theory atoms are satisfiable in the theory.
+
+In the above example, 
+this amounts to finding a numeric assignment to all theory variables satisfying all difference and linear constraints associated with theory atoms.
+%
+The ground program in~\ref{prg:grd:diff} has a single stable model consisting of all regular and theory atoms in lines~1-16.
+%
+Here, we easily find assignments satisfying the induced constraints,
+e.g.\
+\(
+\texttt{start(1)}\mapsto 1
+\),
+\(
+\texttt{end(1)}\mapsto 2
+\),
+\(
+\texttt{start(2)}\mapsto 2
+\), and
+\(
+\texttt{end(1)}\mapsto 3
+\).
+
+In fact,
+there are alternative semantic options for capturing theory atoms, as detailed in~\cite{gekakaosscwa16a}.
+%
+First of all,
+we may distinguish whether imposed constraints are only determined outside or additionally inside a logic program.
+%
+This leads to the distinction between \emph{defined} and \emph{external} theory atoms.%
+\footnote{This distinction is analogous to that between head and input atoms,
+  defined via rules or \lstinline{#external} directives \cite{gekakasc14b}, respectively.}
+%
+While external theory atoms must only be satisfied by the respective theory,
+defined ones must additionally be derivable through rules in the program.
+%
+The second distinction concerns the interplay of ASP with theories.
+More precisely, it is about the logical correspondence between theory atoms and theory constraints.
+%
+This leads us to the distinction between \emph{strict} and \emph{non-strict} theory atoms.
+%
+The strict correspondence requires
+a constraint to be satisfied 
+\textit{iff}
+the associated theory atom is true.
+%
+A weaker since only implicative condition is imposed in the non-strict case.
+Here, a constraint must hold 
+\textit{only if}
+the associated theory atom is true.
+%
+In other words, only non-strict theory atoms assigned true impose requirements, 
+while constraints associated with falsified non-strict theory atoms are free to hold or not.
+%
+However, by contraposition, a violated constraint leads to a false non-strict theory atom.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End:

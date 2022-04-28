@@ -1,0 +1,72 @@
+% Override constant "m" with desired (exact) number of moves
+
+#const m = 1.
+
+% Output predicates
+
+#hide.
+% #show box/3.  % atoms representing basic fluents
+#show move/4. % atoms representing (split) actions
+
+% Generate locations of boxes
+
+time(1..m).
+
+boxes(B) :- B := #count{ square(X,Y) : initial_box(X,Y) }.
+targs(S) :- S := #count{ target_square(X,Y) }.
+
+box(X,Y,0) :- square(X,Y), initial_box(X,Y).
+box(X,Y,m) :- square(X,Y), target_square(X,Y).
+B-S { box(X,Y,m) : square(X,Y) : not target_square(X,Y) } B-S :- boxes(B), targs(S), B != S.
+{ box(X,Y,T) } :- square(X,Y), time(T), T < m, not boxes(0).
+ :- time(T), boxes(B), not B #count{ box(_,_,T) } B.
+
+% Exactly one box is moved from old to new square in each transition
+
+goto(f;t).
+axis(x;y).
+diff(1,0;;-1,0;;0,1;;0,-1).
+
+move(f,X,Y,T) :- box(X,Y,T-1), time(T), not box(X,Y,T).
+move(t,X,Y,T) :- box(X,Y,T), time(T), not box(X,Y,T-1).
+ :- goto(G), time(T), not 1 #count{ move(G,_,_,T) } 1.
+
+% Redundant constraints posting that old and new square must differ in exactly one coordinate
+
+proj(G,x,X,T) :- move(G,X,_,T).
+proj(G,y,Y,T) :- move(G,_,Y,T).
+proj(A,T) :- axis(A), time(T), proj(f;t,A,Z,T).
+ :- time(T), proj(A,T) : axis(A).
+ :- time(T), not proj(A,T) : axis(A).
+
+% Verify existence of an unblocked path between new and old square
+
+path(X+DX,Y+DY,DX,DY,T) :- move(t,X,Y,T), square(X+DX,Y+DY), diff(DX,DY).
+path(X+DX,Y+DY,DX,DY,T) :- path(X,Y,DX,DY,T), square(X+DX,Y+DY), not box(X,Y,T).
+
+from(X+DX,Y+DY,DX,DY,T) :- path(X+DX,Y+DY,DX,DY,T), box(X,Y,T-1).
+ :- time(T), not 1 #count{ from(_,_,_,_,T) } 1.
+
+from(X,Y,T) :- from(X,Y,_,_,T).
+ :- time(T), not 1 #count{ from(_,_,T) }.
+
+push(DX,DY,T) :- from(_,_,DX,DY,T).
+ :- time(T), not 1 #count{ push(_,_,T) }.
+
+% Squares from which boxes are pushed must be reachable
+
+reach(X,Y,0) :- square(X,Y), initial_at(X,Y), not initial_box(X,Y).
+reach(X,Y,T) :- move(f,X,Y,T), T < m.
+reach(X+DX,Y+DY,T) :- reach(X,Y,T), diff(DX,DY), square(X+DX,Y+DY), not box(X+DX,Y+DY,T).
+ :- from(X,Y,T), not reach(X,Y,T-1).
+
+% Redundant constraints forbidding the same box to be moved on in the same direction
+
+same(T) :- move(t,X,Y,T), time(T+1), not box(X,Y,T+1).
+ :- same(T), push(DX,DY,T;T+1).
+
+% Redundant constraints forbidding the same box to be moved back unnecessarily
+
+back(X,Y,DX,DY,T) :- same(T), from(X,Y,DX,DY,T), push(-DX,-DY,T+1).
+ :- back(X,Y,DX,DY,T), reach(X-2*DX,Y-2*DY,T-1).
+ :- back(X,Y,DX,DY,T), not path(X-2*DX,Y-2*DY,-DX,-DY,T+1).

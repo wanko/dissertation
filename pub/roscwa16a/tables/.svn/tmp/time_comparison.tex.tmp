@@ -1,0 +1,36 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb}
+\usepackage{times,helvet,courier}
+\usepackage[graphics,tightpage,active]{preview}
+\PreviewEnvironment{tabular}
+\newlength{\imagewidth}
+\newlength{\imagescale}
+\pagestyle{empty}
+\thispagestyle{empty}
+
+\begin{document}
+
+\begin{table}
+\begin{tabular}{|l||r|r|r|r|r|r|r|r|r|r|r|r||r|r|}
+
+\hline
+Class & \multicolumn{2}{c|}{CTT} & \multicolumn{2}{c|}{DSE} & \multicolumn{2}{c|}{card-4} & \multicolumn{2}{c|}{sub-4} & \multicolumn{2}{c|}{card-8} & \multicolumn{2}{c||}{sub-8}& \multicolumn{2}{c|}{total} \\ 
+ & T & TO & T & TO & T & TO & T & TO & T & TO & T & TO & T & TO \\ 
+\hline
+A3 & 407 & 7 & 243 & 21 & 195 & 31 & 28 & 3 & 97 & 8 & 22 & 0 & 165 & 70 \\
+A3-Hpos & 444 & 8 & 299 & 29 & 238 & 43 & 20 & 2 & 181 & 31 & 18 & 0 & 200 & 113 \\ 
+A3-Hboth & 439 & 8 & 300 & 29 & 238 & 44 & 30 & 4 & 187 & 32 & 18 & 1 & 202 & 118 \\ 
+A3-Hdyn & 442 & 8 & 273 & 25 & 393 & 115 & 254 & 55 & 326 & 98 & 226 & 48 & 319 & 349\\ 
+A3-Hpg & 440 & 8 & 273 & 22 & 391 & 115 & 244 & 58 & 325 & 98 & 230 & 50 & 317 & 351\\
+A3-Hvgpgrd & 440 & 8 & 269 & 25 & 426 & 119 & 314 & 93 & 364 & 104 & 313 & 93 & 354 & 442\\
+A3-Hvgpg & 442 & 8 & 268 & 25 & 416 & 121 & 310 & 93 & 363 & 103 & 307 & 93 & 351 & 443\\
+A1-Q4-o & 456 & 8 & 350 & 32 & 495 & 148 & 538 & 164 & 514 & 156 & 538 & 164 & 482 & 672\\
+A1-Q3 & 460 & 8 & 366 & 33 & 497 & 153 & 538 & 165 & 520 & 155 & 538 & 165 & 487 & 679\\
+
+\hline
+\end{tabular} 
+\end{table}
+
+\end{document}

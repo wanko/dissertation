@@ -1,0 +1,132 @@
+\definecolor{myblue}{HTML}{004A99}
+\begin{tikzpicture}
+\tikzstyle{axis} = [-latex, thick]
+\tikzstyle{link} = [<->, black!50, very thick]
+\tikzstyle{task} = [anchor=west,shape=rectangle,thick,text=white,minimum height=0.5cm, draw=black, fill=myblue, align=center, rounded corners=2,inner sep=0]
+\tikzstyle{difftask} = [shape=circle,thick,text=white,minimum height=0.5cm, draw=black, fill=myblue, align=center,inner sep=2]
+\tikzstyle{router} = [icon,draw,fill=black!30!yellow,inner sep=0,minimum width=0.45cm,minimum height =0.3cm]
+\tikzstyle{resource} = [rectangle,minimum width=0.6cm,minimum height=0.4cm,draw,fill=black!50!green,text=white]
+\tikzstyle{route} = [->,black,line width=1.5]
+
+\tikzstyle{textfield} = [draw,minimum height = 0.6cm,font=\footnotesize,text width=2cm,align=center]
+\tikzstyle{decision} =[draw,diamond,text width=1.7cm,aspect=1.5,inner sep=0,align=center,font=\footnotesize,minimum width=2cm]
+\node [textfield,text width=,] (v3) at (-1.4,-2.6) {Problem Instance};
+\node [textfield,text width=,] (v80) at (1.3,-2.6) {Problem Definition};
+\node [textfield,text width=] (v9) at (-1.4,-3.9) {Grounding};
+
+%\draw [axis] (v4.west) --node[sloped,above=-3,font=\tiny]{depends on} (v3);
+
+\coordinate (v5) at (-3.1,-3.1) {} {} {};
+\coordinate (v6) at (-3.1,-8.8) {} {} {} {} {};
+\coordinate (v7) at (0.3,-8.8) {} {} {} {} {} {};
+\coordinate (v8) at (0.3,-3.1) {} {} {} {};
+\draw  (v5) -- (v6) -- (v7) -- (v8) -- cycle;
+\node[anchor = north west,font=\small] at (v5) {Clingo API};
+\coordinate (s1) at (-2.8,-4.5) {} {} {} {} {} {} {};
+\coordinate (s2) at (-2.8,-7.9) {} {} {} {} {} {} {} {};
+\coordinate (s3) at (0,-7.9) {} {} {} {} {} {} {};
+\coordinate (s4) at (0,-4.5) {} {} {} {} {} {};
+\draw[] (s1) -- (s2) -- (s3) -- (s4) --node[midway] (smid){}  cycle;
+\node [anchor=north west,font=\small] (s10) at (s1) {Solving};
+\draw[axis]  (v3) edge (v9);
+\draw[axis]  (v9) edge (smid.center);
+\node [textfield,] (s9) at (-1.4,-5.7) {propagate and assign ASP decisions};
+
+
+
+\coordinate (a1) at (0.5,-5.3) {} ;
+\coordinate (a2) at (0.5,-8.8) {} {} {} {} {} ;
+\coordinate (a3) at (6.2,-8.8) {} {} {} {} {} {} {} {} {} ;
+\coordinate (a4) at (6.2,-5.3) {} {} {} {} {} {} {} ;
+\draw  (a1) -- (a2) -- (a3) -- (a4) -- cycle;
+\node[anchor = north west,font=\small] at (a1) {Optimization Propagator};
+\node [textfield,minimum width=0cm,text width=,] (x3) at (1.9,-4.3) {evaluate\\objectives};
+
+\coordinate (v1) at (-1.4,-4.9) {} {} {} {} {};
+\coordinate (v2) at (-1.2,-4.9) {} {} {} {} {} {} {} {} {} {};
+\coordinate (v4) at (0.8,-4.3) {} {} {} {} {} {} {} {} {};
+\draw[axis]  (s9) -- (v1)--(v2)--node[midway,sloped,,font=\tiny,fill=white,inner sep=1,outer sep=1]{(partial) assignment}(v4)-- (x3);
+
+\node [decision] (v10) at (4.4,-4.3) {};
+\node[font=\footnotesize,text width=2cm,align=center] at (v10) {constraints\\met?};
+\draw[axis]  (x3) -- (v10);
+\node [decision] (v11) at (4.4,-6.3) {};
+\node[font=\footnotesize] at (v11) {dominated?};
+\draw[axis]  (v10) --node[very near start, ,fill=white,font=\tiny,inner sep=1,outer sep=1]{yes}  (v11);
+\node [decision] (v12) at (1.8,-6.3) {};
+\node[font=\footnotesize,text width=2cm,minimum width=1,align=center] at (v12) {complete\\solution?};
+\draw [axis] (v11) --node[pos=0.4, sloped,fill=white,font=\tiny,inner sep=1,outer sep=1]{no}  (v12);
+
+\node [textfield,minimum width=0cm,text width=,fill=white] (v13) at (-1.4,-7.1) {restrict\\search space};
+\draw [axis] (v13) edge (s9);
+%\draw [axis] (v10) --node[midway, sloped,fill=white,font=\tiny,inner sep=0,outer sep=0]{conflict clause} (v13);
+%\draw [axis] (v11) --node[midway, sloped,fill=white,font=\tiny,inner sep=0,outer sep=0]{conflict clause} (v13);
+\coordinate (v40) at (0.4,-6.3) {} {} {} {} {} {} {} {};
+\draw [axis] (v12) --node[midway, sloped,fill=white,font=\tiny,inner sep=1,outer sep=1]{no} (v40)|-(s9);
+
+
+
+\coordinate (v17) at (3.9,-8.5) {} {} {} {} {} {} {} {} {} {} {} ;
+\coordinate (v18) at (4.8,-8.5) {} {} {} {} {} {} {} {} {} {} {} ;
+\coordinate (v16) at (3.9,-8.1) {} {} {} {} {} {} {} {} {} {} ;
+\coordinate (v21) at (4.8,-8.1) {} {} {} {} {} {} {} {} {} {} ;
+\coordinate (v22) at (5,-8.3) {} {} {} {} {} {} {} {} {} {} {} ;
+\coordinate (v15) at (5,-7.9) {} {} {} {} {} {} {} {} {} {} {}  ;
+\coordinate (v14) at (4.1,-7.9) {} {} {} {} {} {} {} {} {} {} ;
+\coordinate (v19) at (4.2,-8.3) {} {} {} {} {} {} {} {} {} {} ;
+\coordinate (v20) at (4.5,-8.3) {} {} {} {} {} {} {} {} {} {} ;
+\coordinate (v24) at (4.7,-7.9) {} {} {} {} {} {} {} {} {} {} {} ;
+\coordinate (v25) at (4.7,-8.1) {} {} {} {} {} {} {} {} {} {} {} {} ;
+\coordinate (v26) at (4.8,-7.8) {} {} {} {} {} {} {} {} {} {} {}  ;
+\coordinate (v27) at (4.1,-7.8) {} {} {} {} {} {} {} {} {} {} {} ;
+\coordinate (v28) at (4,-8.1) {} {} {} {} {} {} {} {} {} {} ;
+\coordinate (v29) at (4,-7.9) {} {} {} {} {} {} {} {} {} {} ;
+\coordinate (v30) at (4.1,-8.1) {} {} {} {} {} {} {} {} {} {} {} ;
+\coordinate (v31) at (4.9,-7.7) {} {} {} {} {} {} {} {} {} {} {} {} ;
+\coordinate (v32) at (4.9,-8.1) {} {} {} {} {} {} {} {} {} {} {} {} {} ;
+\coordinate (v33) at (4.2,-8.1) {} {} {} {} {} {} {} {} {} {} {} ;
+\coordinate (v34) at (4.2,-7.7) {} {} {} {} {} {} {} {} {} {} {} ;
+\draw[thick]  (v14) edge (v16);
+\draw[thick]  (v14) edge (v15);
+\draw[thick,fill=white]  (v16) -- (v17) -- (v18) -- (v22) -- (v15) -- (v14) -- cycle;
+\draw [thick,fill=white] (v31) -- (v32)--(v33) --(v34) --cycle;
+\draw[thick,fill=white] (v26)--(v27) -- (v30) -- (v21) -- cycle;
+\draw [thick,fill=white] (v29) -- (v28)--(v25) --(v24) --cycle;
+\draw [thick] (v15)--(v21) -- (v16);
+\draw [thick,fill=white] (v18) -- (v21)--(v15);
+
+%\draw[thick,fill=white]  (v16) -- (v17) -- (v18) -- (v22) -- (v15) -- (v14) -- cycle;
+%\draw[thick,fill=white]  (v18) -- (v22) -- (v15) -- (v21) --cycle;
+\draw [thick] (v19) -- (v20);
+\coordinate (v38) at (1.8,-7.9) {} {} {} {} {} {} {} {} {} {};
+\coordinate (v39) at (1.8,-8.7) {} {} {} {} {} {} {} {} {} {};
+\draw [axis,-] (v12) --node[midway,fill=white,font=\tiny,pos=0.7,inner sep=1,outer sep=1,align=center]{yes} (v38) -- (v39);
+\coordinate (v23) at (3.5,-7.2) {} {} {} {} {} {} {};
+\coordinate (v37) at (5.3,-7.2) {} {} {} {} {} {} {};
+\coordinate (v35) at (3.5,-8.6) {} {} {} {} {} {} {} {} {};
+\coordinate (v36) at (5.3,-8.6) {} {} {} {} {} {} {};
+\draw [] (v23) --node[midway](archleft){} (v35) --node[midway](archmid){} (v36) --node[midway](archright){} (v37) --node[midway](archtop){} cycle;
+\node[anchor = north west,font=\footnotesize] at (v23) {Archive};
+
+
+
+\draw [axis] (v38) --node[midway, sloped,fill=white,font=\tiny,inner sep=1,outer sep=1,align=center]{update} (archleft.center);% -- (archleft.center);
+%\draw [axis] (v38) --node[midway, sloped,fill=white,font=\tiny,inner sep=0,outer sep=0]{conflict clause} (v13);
+
+\draw[axis,open diamond-,dashed] (archtop.center)--node[midway, right=0.15,fill=white,font=\tiny,inner sep=1,outer sep=1,align=center]{check}(v11);%--node[midway, sloped,fill=white,font=\tiny,inner sep=0,outer sep=0,align=center]{check}(v11);
+\coordinate (v41) at (6.1,-4.3) {} {} {};
+\coordinate (v42) at (6.1,-6.3) {} {} {};
+\coordinate (v45) at (6.1,-8.7) {} {} {} {} {};
+\coordinate (v43) at (0.3,-8.7) {} {} {} {};
+\coordinate (v44) at (-1.4,-8.7) {} {} {};
+\draw [axis](v10) --node[fill=white,font=\tiny]{no} (v41) -- (v42)--(v45) -- (v43) --node[midway,,above=-0.1, sloped,fill=white,font=\tiny,inner sep=1,outer sep=1]{conflict clauses} (v44) -- (v13);
+\draw [axis,-] (v11) --node[midway,sloped,pos=0.5,font=\tiny,fill=white,inner sep=1,outer sep=1]{yes} (v42);
+%\draw [thick] (v38) edge (v44);
+\coordinate (v47) at (0.5,-5.1) {};
+\coordinate (v48) at (6.2,-5.1) {} {};
+\coordinate (v49) at (6.2,-3.1) {} {} {};
+\coordinate (v46) at (0.5,-3.1) {} {};
+\draw (v46) -- (v47) -- (v48) -- (v49) -- cycle;
+\node[anchor = north west,font=\small] at (v46) {Theory Propagator};
+\draw [axis] (v80) -- (v9);
+\end{tikzpicture}

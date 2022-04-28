@@ -1,0 +1,87 @@
+
+\emph{Approximation.}
+%
+We describe the different implementations of the procedure 
+$\mathit{solve}(P,\mathcal{X})$ outlined in Section \ref{sec:overview}. 
+
+%
+In Algorithm~\Alabel{1}, $\mathit{solve}(P,\mathcal{X})$ solves the
+\emph{Most Distant Optimal Model} problem given the optimal stable models in $\mathcal{X}$,
+applying the solution 
+%with preferences over optimal models described in Section \ref{sec:basic}. %preferences}.
+described at the end of Section \ref{sec:basic}. %preferences}.
+%
+%In algorithm A1 $\mathit{solve}(P,\mathcal{X})$ 
+%returns an optimal model of $P$ most dissimilar to those in $\mathcal{X}$.
+%For this, solutions in $\mathcal{X}$ are reified into facts \lstinline!holds(a,i)! as for the Enumeration method,
+%and atoms in $P$ are reified via \lstinline!holds/1! predicate.
+%Given \lstinline!n! previous optimal solutions, 
+%the following preference statement establishes the preference:
+%\begin{lstlisting}[numbers=none]
+%sol(1..n).
+%#preference(p,maxmin) { 
+%  I,1,X : holds(X), not holds(X,I), sol(I); 
+%  I,1,X : not holds(X), holds(X,I), sol(I)  }.
+%\end{lstlisting}
+
+In Algorithm~\Alabel{2}, $\mathit{solve}(P,\mathcal{X})$ first computes a partial interpretation $I$ 
+distant to $\mathcal{X}$ in one of the following ways:
+\begin{enumerate}
+\item 
+A random one (named $\mathit{rd}$).
+\item 
+A heuristically chosen one, following the $\mathit{pguide}$ heuristic from \cite{nadel11a} ($pg$):
+for an atom $a$, $a$ is added to $I$ if it is true in $\mathcal{X}$ more often than false, 
+$\neg a$ is added in the opposite case, and nothing happens if there is a tie.
+%if an atom is true if among the solutions in $\mathcal{X}$ it is $false$ more times than $true$, 
+%and it is false in the opposite case. In case of a tie, it does not appear in $I$.
+\item 
+One most distant to the solutions in $\mathcal{X}$ ($\mathit{dist}$), 
+computed applying the solution to the \emph{Most Distant Model} problem described at the beginning of Section \ref{sec:basic}, %\ref{sec:maxmin},  
+where the program $P$ is `\lstinline[mathescape=true]!$\{${holds($a$)}.$ \mid a \in \mathcal{A}\}$!'.
+\item 
+One complementary to the last computed optimal model $L$ 
+taking into account either 
+true ($\{ \neg a \ | \ a \in L\}$), 
+false ($\{ a \ | \ a \notin L\}$), 
+or both types of atoms ($\{ \neg a \ | \ a \in L\} \cup \{ a \ | \ a \notin L\}$). 
+They are named $\mathit{true}$, $\mathit{false}$ and $\mathit{all}$, respectively.
+\end{enumerate}
+%
+For selecting an optimal model closest to $I$, 
+the technique is similar to the one for the \emph{Most Distant Optimal Model} problem:
+we start with the logic program $P$ with preference statement $s$, 
+and we add the rules 
+\lm{$\{\;$holds($a$,0) :- $a$.${}\mid a \in \mathcal{A}\}$} reifying the atoms of $P$, 
+the facts 
+\lm{$\{\;$holds($a$,1).${}\mid a \in I\cap\mathcal{A}\}\cup\{\;$nholds($a$,1).${}\mid \neg a \in I, a \in \mathcal{A} \}$} reifying $I$,  
+and define the following preference statement: 
+\begin{lstlisting}
+#preference(partial,less(cardinality)) {
+  holds(X,0), nholds(X,1); not holds(X,0), holds(X,1) }.
+\end{lstlisting}
+Finally, we compute the optimal models of this program wrt $s$ and then \lm{partial}
+using the method for preferences over optimal models described in Section \ref{sec:basic}. %\ref{sec:preferences}.
+
+In~\Alabel{3},
+we select a distant solution $I$ as we do for \Alabel{2}, 
+and we add the same reifying rules, 
+along with the following heuristic rules for approximating an optimal model of $P$ close to $I$:
+\begin{lstlisting}
+#heuristic hold(X,0) :  holds(X,1). [  1, sign ]
+#heuristic hold(X,0) : nholds(X,1). [ -1, sign ]
+\end{lstlisting}
+For prioritizing the variables in $I$, we add another two heuristic rules like the previous ones, 
+but replace both \lm{[ 1, sign ]} and \lm{[ -1, sign ]} by \lm{[ 1, level ]}, respectively.
+%
+%These basic heuristics can be further refined by adding 
+%a dynamic heuristic that, when the current assignment is very close to a previous solution, 
+%modifies the signs given by the heuristic to get away from that previous solution:
+%\begin{lstlisting}
+%#heuristic X.
+%\end{lstlisting}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End: 

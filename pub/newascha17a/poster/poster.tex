@@ -1,0 +1,234 @@
+  \PassOptionsToPackage{table}{xcolor}
+  \documentclass[final]{beamer} % beamer 3.10: do NOT use option hyperref={pdfpagelabels=false} !
+  %\documentclass[final,hyperref={pdfpagelabels=false}]{beamer} % beamer 3.07: get rid of beamer warnings
+  \mode<presentation> {  %% check http://www-i6.informatik.rwth-aachen.de/~dreuw/latexbeamerposter.php for examples
+  	\usetheme{ROPO}    %% you should define your own theme e.g. for big headlines using your own logos 
+  }
+  \usepackage[ngerman, english]{babel}
+%  \usepackage[latin1]{inputenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{amsfonts}
+  \usepackage{amsmath,amsthm, amssymb, latexsym}
+  \usepackage{tikz}
+  \usepackage{xcolor}\usepackage{calc}
+  \definecolor{myblue}{HTML}{004A99}
+  \usetikzlibrary{arrows.meta,chains,matrix,positioning,scopes,shapes.geometric,fit,calc}
+  \usepackage{tcolorbox} 
+  \usepackage{multirow}
+  \usepackage{booktabs}
+  \usepackage{float}
+%  \usepackage[table]{xcolor}
+  \usepackage{verbatim}
+  %\usepackage{times}\usefonttheme{professionalfonts}  % times is obsolete
+  \usefonttheme[onlymath]{serif}
+  \boldmath
+  \usepackage[orientation=portrait,size=a0,scale=1.3,debug]{beamerposter}                       % e.g. for DIN-A0 poster
+  \newsavebox\CBox
+  \def\textBF#1{\sbox\CBox{#1}\resizebox{\wd\CBox}{\ht\CBox}{\textbf{#1}}}
+  
+  \makeatletter
+  \newcommand{\specificthanks}[1]{\@fnsymbol{#1}}% Inserts a specific \thanks symbol
+  \renewcommand\@makefntext[1]{%
+  	\@setpar{%
+  		\@@par \@tempdima=\hsize
+  		\advance\@tempdima by -0.4cm\relax
+  		\parshape \@ne 0.4cm \@tempdima
+  	}%
+  	\par \parindent=\z@ \noindent
+  	\hb@xt@ \z@{\hss \hb@xt@ 0.4cm\textsuperscript{\@thefnmark\hss}}%
+  	#1%
+  }
+  \makeatother
+  
+  \setlength\heavyrulewidth{0.12cm}
+  
+  \title[Fancy Posters]{Enhancing Symbolic System Synthesis through ASPmT with Partial Assignment Evaluation}
+  \author[]{Kai Neubauer\textsuperscript{\specificthanks{1}}, Philipp Wanko\textsuperscript{\specificthanks{2}}, Torsten Schaub\textsuperscript{\specificthanks{2}}, and Christian Haubelt\textsuperscript{\specificthanks{1}}}
+  \institute[RostockPotsdam]{\textsuperscript{\specificthanks{1}}Applied Microelectronics and Computer Engineering, University of Rostock, Germany\\[0.5ex] \textsuperscript{\specificthanks{2}}Knowledge Processing and Information Systems, University of Potsdam, Germany}
+  \date{Jul. 31th, 2007}
+  
+  \newlength\colsep
+  \setlength\colsep{1cm}
+  \newlength\colwidth
+  \setlength\colwidth{0.5\textwidth-0.5\colsep}
+  
+  \renewcommand{\blacktriangleright}{\triangleright}
+  
+\begin{document}
+  	\begin{frame}{} 
+  		\vspace*{1.8cm}
+  		\begin{columns}
+  			\begin{column}{\colwidth}
+  	           \begin{myblock}{Introduction}{A}
+				\begin{itemize}
+					\item[\color{HRO1}$\blacktriangleright$] Emerging industrial and consumer environments require efficient design techniques
+					\item[\color{HRO1}$\blacktriangleright$] Abstraction raised to the electronic system level \cite{Gerstlauer2009}
+					\item[\color{HRO1}$\blacktriangleright$] \emph{Answer Set Programming} (ASP) in combination with \emph{Quantifier Free Integer Difference Logic} (QF--IDL) has shown to be a promising approach~\cite{Biewer2014a}
+					\item[\color{HRO1}$\blacktriangleright$] We propose a novel \emph{ASP modulo Theories} (ASPmT) approach that:
+					    \begin{itemize}
+					        \item Supports sophisticated system models
+					        \item Tightly integrates QF--IDL solving 
+					        \item Makes use of partial assigmnet checking
+					        \item Offers a flexible declarative encoding encompassing binding, routing and scheduling
+					    \end{itemize}
+				\end{itemize}
+				\begin{center}
+					\vspace*{1cm}
+					\input{./img/workflow}
+						\vspace*{0.0cm}
+				\end{center}
+  	           \end{myblock}
+  			\end{column}
+  			\begin{column}{\colwidth}
+  	                \begin{myblock}{Specification Model}{A}
+	  				\begin{itemize}
+	  					\item[\color{HRO1}$\blacktriangleright$] Application Model
+	  					\begin{itemize}
+	  						\item Bipartite graph in task level granularity: Tasks $T$ and Messages $C$
+	  						\item Characterized by a Period $P_i$ and a Deadline $D_i$
+	  						\item Index delay $s:C\mapsto\mathbb{N}$ allows description of cyclic applications
+	  					\end{itemize}
+	  					\item[\color{HRO1}$\blacktriangleright$] Platform Model
+	  					\begin{itemize}
+	  						\item Directed graph containing computational resources $R_C$ connected by routers $R_R$
+	  					\end{itemize}
+	  					\item[\color{HRO1}$\blacktriangleright$] Specification Model
+	  					\begin{itemize}
+	  						\item Connection of Applications and Platform model by a set of mapping possibilities %$M\subseteq T\times R_C$
+	  						\item Worst case execution times (WCET) associated to each mapping edge 
+	  					\end{itemize}
+	  				\end{itemize}
+	  				\vspace*{0.0cm}
+	  				\begin{center}
+	  					\input{./img/specExample}
+	  						\vspace*{-0.0cm}
+	  				\end{center}
+	        \end{myblock}
+	  		\end{column}
+	  	\end{columns}
+  	\vspace*{1.0cm}
+		\begin{columns}[T]
+			\begin{column}{1.4\colwidth}
+	  			\begin{myblock}{ASPmT Synthesis Framework}{B}
+	  				\begin{columns}[]
+	  					\begin{column}{0.56\textwidth}
+			  				\begin{itemize}
+			  					\item[\color{HRO1}$\blacktriangleright$] Transformation from Specification into feasible Implementation including Binding, Routing, Schedule
+			  					\begin{itemize}
+%			  						\item ASP's support for reachability offers a scalable solution for binding and routing 
+			  						\item Answer Set Programming (ASP) offers a scalable solution for binding and routing due to support of \emph{reachability}
+			  						\item Domain specific heuristics utilized to steer solving
+			  					\end{itemize}
+								\item[\color{HRO1}$\blacktriangleright$] \textBF{ASP modulo Theories (ASPmT) Approach:} Tight integration of background theory into ASP Solver
+								\begin{itemize}
+									\item Detection of invalid schedules on \emph{partial} bindings and routings with \emph{Quantifier-free Integer Difference Logic} (QF--IDL)
+									\item Exclusion of schedules where tasks overlap in subsequent iterations through an additional \emph{post propagator}
+									\item One single encoding for binding, routing, and scheduling offers a succinct and elaboration tolerant formulation
+								\end{itemize} 
+			  				\end{itemize}
+			  			\end{column}
+			  			\begin{column}{.44\textwidth}
+			  				\begin{center}
+			  					\input{./img/frameworkOverview}
+			  				\end{center}
+	  					\end{column}
+	  				\end{columns}
+	  			\end{myblock}
+	  		\end{column}
+	  		\begin{column}{0.6\colwidth}
+	  			\begin{myblock}{Spatial Binding and Routing}{B}
+	  				\begin{itemize}
+	  					\item[\color{HRO1}$\blacktriangleright$] Binding and Routing is derived from \cite{Biewer2014a}
+	  					\begin{itemize}
+	  					\item Selecting exactly one mapping possibility per task
+	  					\item Routes for messages between tasks are subsequently decided recursively from receiver to sender
+	  				\end{itemize}
+	  					\begin{center}
+	  						\input{./img/binding}
+	  					\end{center}
+	  				\end{itemize}
+	  			\end{myblock}
+	  		\end{column}
+	  	\end{columns}
+  	\vspace*{1.0cm}
+		\begin{columns}[T]
+  			\begin{column}{\colwidth}
+  				\begin{myblock}{Scheduling}{S}
+  					\begin{itemize}
+  						\item[\color{HRO1}$\blacktriangleright$] Scheduling relayed into background theory QF--IDL
+  						\item[\color{HRO1}$\blacktriangleright$] Constraints of form $x-y\leq k$ encode order of tasks
+  						\begin{itemize}
+  							\item Example: $\tau(t_1)-\tau(t_2)\leq -3$
+  							\item Task $t_1$ has to be executed at least $3$ time units before $t_2$
+  						\end{itemize}
+  						\item[\color{HRO1}$\blacktriangleright$] Priority encoding based on partial order between tasks
+  						\begin{itemize}
+  							\item Prevent independent tasks to overlap
+  							\item Decide order of tasks in subsequent iterations
+  						\end{itemize}
+  						\item[\color{HRO1}$\blacktriangleright$] Constraints form a directed Graph
+  						\begin{itemize}
+  							\item Shortest Path results in (negated) earliest possible start time
+  							\item Negative cycle results in backtracking
+  						\end{itemize}
+  						\item[\color{HRO1}$\blacktriangleright$] Computation of a valid periodic schedule for a given binding of Application $A_1$:
+  					\end{itemize}
+  					\vspace*{-1.24cm}
+  					\begin{center}
+  						\input{./img/periodic3}
+  						\input{./img/periodic1}
+  						\input{./img/periodic2}
+  					\end{center}
+  					\vspace*{-11mm}
+  				\end{myblock}
+  			\end{column}
+  			\begin{column}{\colwidth}
+  				\begin{tcolorbox}[size=minimal,equal height group=S,colback=tlg,colframe=tlg,beforeafter skip=0.0cm,toptitle=0mm,bottomtitle=0mm]
+	  				\vspace*{-0.5cm}
+	  				\begin{myblock}{Experimental Results}{E}
+	  					\begin{itemize}
+	  						\item[\color{HRO1}$\blacktriangleright$] Various specifications implemented onto regular 2D-mesh architecture
+	  						\begin{itemize}
+	  							\item ASP Solver \emph{clingo 5} \cite{gekakaosscwa16a}
+	  							\item Number of necessary choices to find a solution decreased significantly
+	  							\item Performance of background theory subject to improvements
+	  						\end{itemize}
+	  					\end{itemize}
+	  					\begin{center}
+		  					
+		  					\begin{tabular}{lcc!{\vrule width 0.08cm}rrr!{\vrule width 0.08cm}rrr}
+		  						\toprule
+		  						\rowcolor{HRO1!50}[6pt][7pt]&  &  & \multicolumn{3}{c!{\vrule width 0.08cm}}{Partial Assignments} & \multicolumn{3}{c}{Full Assignments}  \\\noalign{\vskip-1pt} %\cmidrule(l){4-9} 
+		  						\rowcolor{HRO1!50}[6pt][7pt]\hspace{1ex}$\lvert R\rvert$&$\lvert T\rvert$&$\lvert C\rvert$& \multicolumn{1}{c}{Choices}   & \multicolumn{2}{c!{\vrule width 0.08cm}}{Runtime}  & \multicolumn{1}{c}{Choices}   & \multicolumn{2}{c}{Runtime} \\ \noalign{\vskip-1pt}
+		  						\rowcolor{HRO1!50}[6pt][7pt]&     &    &           &    \multicolumn{1}{c}{Overall}    &  \multicolumn{1}{c!{\vrule width 0.08cm}}{QF--IDL}  &  &   \multicolumn{1}{c}{Overall} &  \multicolumn{1}{c}{QF--IDL}       \\ %\midrule
+		  						%$2\times2$& 28 & 32 & \textBF{3364} & \textBF{12.70 s} & 11.93 s  & 135692    &    14.69 s & 2.65 s \\ %7tpr_2x2_1apps
+		  						$2\times2$& 20 & 44 & \textBF{11680} &  \textBF{87.17 s} & 85.19 s & 482870   &   173.08 s & 53.06 s  \\ %3tpr_3x3_1apps
+		  						\rowcolor{HRO1!25}[6pt][7pt]$3\times3$& 18 & 18 & \textBF{181606} &  \textBF{399.37 s} & 367.56 s & 17445197  & 994.80 s & 187.35 s    \\ %3tpr_3x3_2apps
+		  						$3\times3$& 45 & 50 & \textBF{47439}  & 388.64 s & 380.17 s &135546    &  \textBF{91.47 s}  &   10.02 s      \\ %5tpr_3x3_5apps
+		  						\rowcolor{HRO1!25}[6pt][7pt]$4\times4$& 48 & 58 & \textBF{20851}&  355.95 s & 347.17 s &  287231    &  \textBF{187.56 s} & 29.82 s \\ %3tpr_4x4_1apps
+		  						$4\times4^*$  & 48 & 54 & \textBF{235214} & \textBF{1345.67 s} & 1231.92 s & 18346301 & \multicolumn{2}{c}{\centering T/O\textsuperscript{**}} \\ \bottomrule %3tpr_4x4_3apps
+		  						\rowcolor{white}\multicolumn{9}{l}{\footnotesize{\textsuperscript{*}unsatisfiable, \textsuperscript{**}timeout set to 1800 s}}
+		  					\end{tabular}
+		  					
+	  					\end{center}
+  					\vspace*{-0.7cm}
+	  				\end{myblock}
+	  			%	\vfill
+	  				\begin{myblock}{Conclusion and Future work}{C}
+	  					\begin{itemize}
+	  						\item[\color{HRO1}$\blacktriangleright$] Approach that allows the description of deadline-constrained periodic application and heterogeneous hardware architectures
+	  						\item[\color{HRO1}$\blacktriangleright$] Integration of QF--IDL into ASP Solver leads to a more efficient search 
+	  						\item[\color{HRO1}$\blacktriangleright$] Extension towards design space exploration including multi-objective optimization in the future
+	  					\end{itemize}
+	  				\end{myblock}
+	  				\begin{myblock}{References}{R}
+	  					\vspace*{-1cm}
+	  					\small
+						\bibliographystyle{unsrt}
+	  					\bibliography{library}
+	  				\end{myblock}
+  				\end{tcolorbox}
+  			\end{column}
+  		\end{columns}
+  	\end{frame}
+  \end{document}

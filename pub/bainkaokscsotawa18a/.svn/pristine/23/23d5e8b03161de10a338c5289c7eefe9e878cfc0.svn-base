@@ -1,0 +1,20 @@
+c(C)      :- course(C,_,_,_,_,_).  t(T)        :- course(_,T,_,_,_,_).
+r(R)      :- room(R,_,_).          cu(Cu)      :- curricula(Cu,_).
+d(0..D-1) :- days(D).              ppd(0..P-1) :- periods_per_day(P). 
+
+% H1.Lectures
+N { assigned(C,D,P) : d(D), ppd(P) } N :- course(C,_,N,_,_,_).
+
+% H2.Conflicts
+:- not { assigned(C,D,P) : course(C,T,_,_,_,_) } 1, t(T), d(D), ppd(P).
+:- not { assigned(C,D,P) : curricula(Cu,C) } 1, cu(Cu), d(D), ppd(P).
+
+% H3.RoomOccupancy
+1 { assigned(C,R,D,P) : r(R) } 1 :- assigned(C,D,P).
+:- not { assigned(C,R,D,P) : c(C) } 1, r(R), d(D), ppd(P).
+
+% H4.Availability
+:- assigned(C,D,P), unavailability_constraint(C,D,P).
+
+% Additional constraints (can be omitted)
+:- not { assigned(C,D,P) : c(C) } N, d(D), ppd(P), rooms(N).

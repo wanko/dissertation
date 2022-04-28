@@ -1,0 +1,146 @@
+
+\emph{Automatic Guess and Check in \clingo.}
+%
+Given a logic program $P$ over $\mathcal{A}$, and a preference statement $s$ with preference program $Q_s$, 
+the optimal models of $P$ wrt $\succ_s$ correspond to the solutions of the \gc\ problem
+$\langle P \cup R_\mathcal{A}',P \cup R_\mathcal{A} \cup Q_s\rangle$, 
+where $R_X'$ stands for \lm{$\{$ holds'($a$) :- $\ a$. ${}\mid a \in X \}$}, 
+and $R_X$ for \lm{$\{$ holds($a$) :- $\ a$. ${}\mid a \in X \}$} given some set $X$.%
+\footnote{To avoid the conflict between the atoms of $P$ appearing in both the guesser and the checker, 
+given a model $X$ of $P \cup R_{\mathcal{A}}'$, only the atoms of predicate \lm{holds'/1} in $X$ are passed to the checker.
+In the system $\mathit{metagnc}$ this is declared via directive `\lstinline!#guess holds'/1.!'}
+%
+The guess program generates stable models $X$ of $P$ reified with \lstinline!holds'/1!,
+while the check program looks for models better than $X$ wrt $s$ reified with \lstinline!holds/1!,
+so that $X$ is optimal whenever the checker along with the \lstinline!holds'/1! atoms of $X$ becomes unsatisfiable.
+%
+This correspondence is the basis of a method for computing optimal models in \asprin, 
+where the logic program with preferences is translated into a \gc\ problem, 
+that $\mathit{metagnc}$ translates into a disjunctive logic program,
+which is then solved by \clingo.
+%
+This allows, for example, for solving the \emph{Most Distant Model} problem using the logic program 
+\lstinline[mathescape=true]!$P \cup \{ $holds($a$,0) :- $a$. $\mid a \in \mathcal{A}\} \cup H_\mathcal{X}$! 
+and the preference statement \lstinline!distance!,
+with the corresponding preference program comprising the three sets of rules described before.
+
+%
+In general, the G{\&}C framework \cite{eitpol06a} 
+allows for representing $\Sigma^p_2$ problems in ASP, 
+and solving them using the \textit{saturation} technique by Eiter and Gottlob in~\cite{eitgot95a}.
+%
+The idea is to re-express the problem as a positive disjunctive logic program, containing a special-purpose atom \lm{bot}.
+%
+Whenever \lm{bot} is obtained, saturation derives all atoms (belonging to a ``guessed'' model).
+%
+Intuitively, this is a way to materialize unsatisfiability.
+%
+We automatize this process in $\mathit{metagnc}$ by building on the meta-interpretation-based approach of~\cite{gekasc11b}.
+%
+For a \gc\ problem $\langle G, C \rangle$ over $\langle \mathcal{A}_G,\mathcal{A}_C\rangle$,
+the idea is to reify the program
+\lstinline[mathescape=true]!$C \cup \{ ${$a$}.$ \mid a \in \mathcal{A}_G \}$!
+into the set of facts
+\lstinline[mathescape=true]!$\mathcal{R}(C \cup \{ ${$a$}.$ \mid a \in \mathcal{A}_G \})$!.
+%\lm{$\mathcal{R}(C \cup \{ ${$a$}.$ \mid a \in \mathcal{A}_G \})$}. 
+%%%\footnote{This is done via option \texttt{--reify} in \textit{gringo}~3 (\textit{gringo}~4 implementation is forthcoming).}
+%
+The latter are combined with the meta-encoding $\mathcal{M}$ from~\cite{gekasc11b} implementing saturation.
+%%%\footnote{The specific encoding, \texttt{metaD.lp}, is available at \url{http://www.cs.uni-potsdam.de/metasp}.}
+%    
+This leads to the positive disjunctive logic program:
+\begin{lstlisting}[mathescape=true]
+$\phantom{G}$$\mathcal{R}\big(C \cup \{ ${$a$}.$ \mid a \in \mathcal{A}_G \} \big) \cup\mathcal{M}$
+\end{lstlisting}
+%\begin{lstlisting}[mathescape=true]
+%$\mathcal{R}\big(C \cup \{ ${$a$}.$ \mid a \in \mathcal{A}_G \} \big) \cup\mathcal{M}$
+%\end{lstlisting}
+This program has a stable model (excluding \lm{bot}) for each $X \subseteq \mathcal{A}_G$ such that $C \cup X$ is satisfiable, 
+and it has a saturated stable model (including \lm{bot}) if there is no such $X$.
+%This is part of the meta-encoding that works when $C$ is tight:
+%\begin{lstlisting}
+%true(A) ; false(A) :- atom(A).
+%
+%supported(A)   :- head(R,A); true(A)  : body(R,pos,A); 
+%                             false(A) : body(R,neg,A).
+%unsupported(R) :- rule(R);   true(A)  ; body(R,neg,A).
+%unsupported(R) :- rule(R);   false(A) ; body(R,pos,A).
+%unsupported(A) :- unsupported(R) : head(R,A).
+%
+%bot :- true(A), unsupported(A). true(A)  :- bot, atom(A).
+%bot :- false(A),  supported(A). false(A) :- bot, atom(A).
+%\end{lstlisting}
+%For the case where $C$ has loops, further rules have to be added (see \cite{gekasc11b} for details).
+%
+%For representing a solution to the \gc\ problem, 
+Next, we just have to add the generator program $G$, 
+map the true and false atoms of $G$ to their counterparts in the positive disjunctive logic program 
+(represented by predicates \lm{true/1} and \lm{false/1}, respectively),
+and enforce the atom \lm{bot} to hold:
+\begin{lstlisting}[mathescape=true]
+$\phantom{G }$$\mathcal{R}\big(C \cup \{ ${$a$}.$ \mid a \in \mathcal{A}_G \} \big) \cup\mathcal{M} \; \cup $
+$\phantom{G    \mathcal{R}\big( }$$G \cup \{ $true($a$) :- $a$.$ \mid a \in \mathcal{A}_G \} \cup \{ $false($a$) :- not $a$.$ \mid a \in \mathcal{A}_G \} \cup \{ $:- not bot.$\}$
+\end{lstlisting}
+%
+%\begin{align*}
+%G \cup {}&
+%\mathcal{R}\big(C \cup \{ \{ a \} \mid a \in \mathcal{A_G} \} \big) \cup\mathcal{M}
+%\cup{} \\& \{ \mathit{true}(a) \leftarrow a \mid a \in X \} \cup \{ \mathit{false}(a) \leftarrow not \ a \mid a \in X \} \cup\{\leftarrow \ not \ \mathit{bot}\}
+%\ .  
+%\end{align*}
+The stable models of the resulting program correspond to the solutions of the \gc\ problem.
+%\comment{JR: reformat, explain true(a) and false(a), and add a conclusion: the toolchain is automated. Also, $\mathcal{R}$ must be used always the same way in the paper.}
+%For solving the problem posed in the previous section, 
+%in \cite{brderosc15a} an iterative algorithm was introduced. 
+%Given the logic program $P$ over $\mathcal{A}_P$, 
+%and the preference program $Q$ for preference relation $\succ_{\mathtt{distance}}$, 
+%the algorithm returns an optimal model of $P$ wrt $\mathcal{A}_P$, or $\bot$ if $P$ is unsatisfiable:
+%\begin{enumerate}
+%\item
+%Step 1: Assign to $Y$ the result of solving $P$, and return $\bot$ if $P$ is unsatisfiable.
+%\item
+%Step 2:
+%Assign $Y$ to $X$, and assign to $Y$ the result of solving the program
+%$P \cup Q \cup R_\mathcal{A_P} \cup H'_Y$. 
+%If $Y$ is $\bot$, then return $X$, else repeat this Step.
+%\end{enumerate}
+
+%Let $P$ be a logic program with signature $\mathcal{A}_P$, 
+%let $s$ be a preference statement defining preference relation $\succ_s$ over $\mathcal{A}\times\mathcal{A}$, 
+%and $Q$ a preference program for $s$ with signature $\mathcal{A}_Q$ disjoint from $\mathcal{A}_P$.
+%Define $P'$ as a copy of $P$ but with signature $\mathcal{A}_{P'}$ disjoint from $\mathcal{A}_P$ and $\mathcal{A}_Q$.
+%The guess and check solutions of 
+%$\langle P  \cup        \{ holds'(a) \leftarrow a \mid a \in \mathcal{A}_P \}, 
+%         P' \cup Q \cup \{ holds(a)  \leftarrow a \mid a \in \mathcal{A}_{P'} \} \rangle$
+%correspond to the $\succ_s$-preferred stable models of $P$. 
+
+%\cite{eitpol06a} defined a G{\&}C framework as follows:
+%\begin{definition}[G{\&}C \cite{eitpol06a}]
+%Let $G$ and $C$ be two logic programs, and $X$ an interpretation of $G$.
+%$X$ is a guess and check solution for $\langle G,C\rangle$ if
+%$X$ is a stable model of $G$, and $X \cup C$ is unsatisfiable.
+%\end{definition}
+
+
+%To avoid these clash of predicate names, 
+%we allow selecting some predicates of the guess program to be passed to the checker program.
+%This is expressed via a guess directive
+%\begin{lstlisting}
+%#guess p/n.
+%\end{lstlisting}
+%where \texttt{p} is a predicate of arity \texttt{n} appearing in $G$.
+%For example, for \asprin\ we could add \lstinline!#guess holds'/1.! and avoid use $P$ in both the guess and the check programs.
+
+%The encoding avoids “guessing”
+%    a level mapping to describe the formation of a counterexample, but directly denies models
+%    for which there is no such construction.
+%    \item
+%    Notably, our meta-programs apply to (reified)
+%    extended logic programs (Simons et al. 2002), possibly including choice rules and \#sum
+%    constraints, and we are unaware of any existing meta-encoding of their answer sets, neither
+%    as candidates nor as counterexamples refuting optimality
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End: 

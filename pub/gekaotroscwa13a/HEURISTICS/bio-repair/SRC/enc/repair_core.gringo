@@ -1,0 +1,36 @@
+% Provide candidate repair (for cardinality or subset minimization)
+%   - For available repair options, see repair_config.gringo
+
+% auxiliary definitions
+sign(-1;1).
+complement(S,-S) :- sign(S).
+
+% construct candidate repair
+pos(aedge(U,V))   :- repair_a, vertex(U;V), U != V, not edge(U,V), exp(P), not input(P,V).
+pos(eflip(U,V,S)) :- repair_e, edge(U,V), obs_elabel(U,V,S), not obs_elabel(U,V,T), complement(S,T), exp(P), not input(P,V).
+pos(ivert(V))     :- repair_g, exp(P), vertex(V), not input(P,V).
+pos(ivert(P,V))   :- repair_i, exp(P), vertex(V), not input(P,V).
+pos(vflip(P,V,S)) :- repair_v, exp(P), vertex(V), obs_vlabel(P,V,S).
+
+{ repair(R) : pos(R) }.
+ :- repair(ivert(V)), repair(ivert(P,V)).
+
+% construct consistent total labeling
+elabel(U,V,S) :- not repair(eflip(U,V,S)), obs_elabel(U,V,S),       edge(U,V).
+elabel(U,V,T) :-     repair(eflip(U,V,S)),                    complement(S,T).
+elabel(U,V,S) :-     repair(aedge(U,V)),   not elabel(U,V,T), complement(S,T).
+elabel(U,V,S) :-     edge(U,V),            not elabel(U,V,T), complement(S,T).
+
+vlabel(P,V,S) :- not repair(vflip(P,V,S)), obs_vlabel(P,V,S), exp(P), vertex(V).
+vlabel(P,V,T) :-     repair(vflip(P,V,S)), complement(S,T).
+vlabel(P,V,S) :- not vlabel(P,V,T),        complement(S,T),   exp(P), vertex(V).
+
+infl(P,V,S*T) :- elabel(U,V,S), vlabel(P,U,T).
+ :- vlabel(P,V,S), not infl(P,V,S), not input(P,V), not repair(ivert(P,V)), not repair(ivert(V)).
+ :- vlabel(P,V,S),     infl(P,V,S),                     repair(ivert(P,V)).
+
+% output projection
+#hide.
+%#show elabel/3.
+#show vlabel/3.
+%#show repair/1.

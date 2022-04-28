@@ -1,0 +1,28 @@
+\begin{table}%
+\newcommand{\mc}[3]{\multicolumn{#1}{#2}{#3}}%
+\caption{Comparison of \clingo\ derivatives \clingod{dl} and \clingod{lp}\label{tab:clingolc}}%
+\centering%
+\begin{tabular}{@{}r@{}@{}r@{}@{}r@{}@{}r@{\ }r@{}@{}r@{\ }r@{}@{}r@{\ }r@{}@{}r@{\ }r@{}@{}r@{\ }r@{}@{}r@{\ }}
+\toprule
+       &        & \mc{2}{@{\,}c@{\,}}{\clingolc{dl}{dns}{py}} 
+                & \mc{2}{@{\,}c@{\,}}{\clingolc{dl}{es}{py}} 
+                & \mc{2}{@{\,}c@{\,}}{\clingolc{lp}{dns}{py}} 
+                & \mc{2}{@{\,}c@{\,}}{\clingolc{lp}{es}{py}} 
+                & \mc{2}{@{\,}c@{\,}}{\clingolc{dl}{dns}{cpp}} 
+                & \mc{2}{@{\,}c@{\,}}{\clingolc{dl}{es}{cpp}}  \\
+\class & \#inst &   \T &       \TO  &   \T &       \TO  &   \T & \TO &   \T & \TO &           \T &         \TO &         \T &       \TO  \\
+\midrule
+\tsp   &     38 &  344 &         6  &  484 &         9  & 1346 &  23 & 1753 &  36 & \textbf{148} &  \textbf{3} &       342  &         7  \\
+\fs    &     35 &  678 &        11  & 1541 &        27  & 1221 &  21 & 1800 &  35 & \textbf{465} &  \textbf{5} &      1349  &        26  \\
+\js    &     24 & 1261 &        15  & 1229 &        14  & 1800 &  24 & 1800 &  24 & \textbf{534} &  \textbf{4} &       678  &         7  \\
+\os    &     13 &    8 & \textbf{0} &   17 & \textbf{0} &  963 &   6 & 1532 &  10 &   \textbf{0} &  \textbf{0} & \textbf{0} & \textbf{0} \\
+\midrule
+\dl    &    110 &  611 &        32  &  928 &        50  & 1360 &  74 & 1752 & 105 & \textbf{316} & \textbf{12} &       695  &        40  \\
+\bottomrule
+\end{tabular}%
+\end{table}%
+%
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../paper"
+%%% End:

@@ -1,0 +1,8 @@
+task(1).                            task(2).
+duration(1,200).                    duration(2,400).
+
+&dom  { 1..1000 } = start(1).      &dom  { 1..1000 } = start(2).
+&dom  { 1..1000 } = end(1).        &dom  { 1..1000 } = end(2).
+&diff { end(1)-start(1) } <= 200.  &diff { end(2)-start(2) } <= 400.
+&sum  { end(1); end(2); -start(1); -start(2) } <= 1000.
+&show { start/1; end/1 }.

@@ -1,0 +1,127 @@
+
+\section{Introduction}\label{sec:introduction}
+
+Answer Set Programming (ASP~\cite{baral02a}) has established itself among the popular paradigms for Knowledge Representation and Reasoning (KRR),
+in particular, when it comes to solving knowledge-intense combinatorial (optimization) problems.
+ASP's unique combination of a simple yet rich modeling language with highly performant solving technology
+has led to an increasing interest in ASP in academia as well as industry.
+Another primary asset of ASP is its versatility, arguably elicited by its roots in KRR.
+On the one hand,
+ASP's first-order modeling language offers, for instance, cardinality and weight constraints
+as well as means to express multi-objective optimization functions.
+This allows ASP to readily express problems in neighboring fields such as
+Satisfiability Testing (SAT~\cite{SATHandbook})
+and
+Pseudo-Boolean Solving (PB~\cite{rouman09a}),
+as well as
+Maximum Satisfiability Testing (MaxSAT~\cite{liman09a})
+and even
+more general constraint satisfaction problems possibly involving optimization.
+On the other hand,
+these constructs must be supported by the corresponding solvers,
+leading to dedicated treatments of cardinality and weight constraints
+along with sophisticated optimization algorithms.
+Moreover, mere satisfiability testing is often insufficient for addressing KRR problems.
+That is why ASP solvers offer additional reasoning modes involving enumerating, intersecting, or unioning solutions,
+as well as combinations thereof, e.g., intersecting all optimal solutions.
+
+In a sense,
+the discussed versatility of modern ASP can be regarded as the result of hybridizing the original approach~\cite{gellif88b} in several ways.
+So far, however, most hybridization was accomplished within the solvers and is thus inaccessible to the user.
+For instance, the dedicated treatment of aggregates like cardinality and weight constraints is fully opaque.
+The same applies to the control of successive solver calls happening during optimization.
+Although a highly optimized implementation of such prominent concepts makes perfect sense,
+the increasing range and resulting diversification of applications of ASP
+calls for easy and generic means to enrich ASP with dedicated forms of reasoning.
+This involves
+the extension of ASP's solving capacities with means for handling constraints foreign to ASP
+as well as
+means for customizing solving processes to define complex forms of reasoning.
+The former extension is usually called \emph{theory reasoning} (or \emph{theory solving}) and
+the resulting conglomerate of ASP extensions is subsumed under the umbrella term \emph{ASP modulo theories}.
+The other extension addresses the customization of ASP solving processes by \emph{multi-shot ASP solving},
+providing operative solving processes that deal with continuously changing logic programs.
+
+Let us motivate both techniques by means of two exemplary ASP extensions, aggregate constraints and optimization.
+%
+With this end in view,
+keep in mind that ASP is a model, ground, and solve paradigm.
+Hence such extensions are rarely limited to a single component
+but often spread throughout the whole workflow.
+This begins with the addition of new language constructs to the input language,
+requiring in turn amendments to the grounder as well as
+syntactic means for passing the ground constructs to a downstream system.
+In case they are to be dealt with by an ASP solver,
+it must be enabled to treat the specific input and incorporate corresponding solving capacities.
+%
+Finally,
+each such extension is theory-specific and requires different means at all ends.
+
+So first of all, consider what is needed to extend an ASP system like \clingo{} with a new type of aggregate constraint?
+The first step consists in defining the syntax of the aggregate type.
+Afterwards, the ASP grounder has to be extended to be able to parse and instantiate the corresponding constructs.
+Then, there are two options, either the ground aggregates are translated into existing ASP language constructs (and we are done),%
+\footnote{Alternatively, this could also be done before instantiation.}
+or they are passed along to a downstream ASP solver.
+The first alternative is also referred to as \emph{eager}, the latter as \emph{lazy theory solving}.
+The next step in the lazy approach is to define an intermediate format (or data structure) to pass instances of
+the aggregate constraints from the grounder to the solver,
+not to forget respective extensions to the back- and front-ends of the two ASP components.
+Now, that the solver can internalize the new constructs, it must be equipped with corresponding processing capacities.
+They are usually referred to as \emph{theory propagators} and inserted into the solver's infrastructure for propagation.
+When solving, the idea is to leave the Boolean solving machinery intact by associating with each theory constraint
+an auxiliary Boolean variable.
+During propagation, the truth values of the auxiliary variables are passed to the corresponding theory propagators
+that then try to satisfy or falsify the respective theory constraints, respectively.
+Finally, when an overall solution is found, the theory propagators are in charge of outputting their part (if applicable).
+One can imagine that each such extension involves a quite intricate engineering effort
+since it requires working with the ASP system's low level API.
+%
+\clingo{} allows us to overcome this problem by providing easy and generic means for adding theory solving capacities.
+On the one side, it offers theory grammars for expressing theory languages whose expressions are seamlessly integrated in its grounding process.
+On the other side, a simple interface consisting of four methods offers an easy integration of theory propagators into the solver,
+either in \C, \cpp, \lua, or \python.
+
+Let us now turn to (branch-and-bound-based) optimization and see what infrastructure is needed to extend a basic ASP solver.
+In fact, for the setup, we face a similar situation as above and all steps from syntax definition to internalization
+are analogous for capturing objective functions.
+The first step in optimization is to find an initial solution.
+If none exists, we are done.
+Otherwise the system enters a simple loop.
+The objective value of the previous solution is determined
+and a constraint is added to the problem specification requiring that
+a solution must have a strictly better objective value than the one just obtained.
+Then, the solver is launched again to compute a better solution.
+If none is found, the last solution is optimal.
+Otherwise, the system re-enters the loop in order to find an even better solution.
+This solving process faces a succession of solver invocations dealing with slightly changing problem specifications.
+The direct way to implement this is to use a script that repeatedly calls an ASP solver after each problem expansion.
+However, such an approach bears great redundancies due to repeated grounding and solving efforts from scratch.
+%
+Unlike this,
+\clingo\ offers evolving grounding and solving processes.
+Such processes lead to operative ASP systems that possess an internal state that can be manipulated by certain operations.
+Such operations allow for adding, grounding, and solving logic programs as well as
+setting truth values of (external) atoms.
+The latter does not only provide a simple means for incorporating external input but
+also for enabling or disabling parts of the current logic program.
+These functionalities allow for dealing with changing logic programs in a seamless way.
+As above, corresponding application programming interfaces (APIs) are available in \C, \cpp, \lua, or \python.
+
+The remainder of this tutorial is structured as follows.
+Section~\ref{sec:background} provides some formal underpinnings for the following sections
+without any claim to completeness.
+Rather we refer the reader to the literature for comprehensive introductions to ASP and its computing machinery,
+among others~\cite{baral02a,lifschitz04a,eiiakr09a,gekakasc12a,gelkah14a}.
+As a result,
+this tutorial is not self-contained and rather aims at a hands-on introduction to using \clingo's API
+for multi-shot and theory solving.
+Both approaches are described in Section~\ref{sec:multi} and~\ref{sec:theory} by drawing on material from~\cite{gekakasc14b,gekaobsc15a}
+and~\cite{gekakaosscwa16a}, respectively.
+Section~\ref{sec:case} is dedicated to a case-study detailing how \clingo{} can be extended with difference constraints over integers,
+or more precisely Quantifier-free Integer Difference Logic (QF-IDL).
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End:

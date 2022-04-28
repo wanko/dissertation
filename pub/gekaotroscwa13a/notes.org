@@ -1,0 +1,28 @@
+
+* hclasp and clavis
+* hclasp and learning
+* hclasp and prefs (enum)
+* hclasp and (general) enumeration
+* effect of heuristics in relaxed spaces (eg longer horizons) ??
+  - check on PDDL benchmarks
+* Phil
+  - verify!
+  - [ ] neutral vs effective domain choices
+  - scaling
+  - ?GB RAM
+  - [X] list of tests
+  - package benchmarks, README, tables, etc
+  - SHK
+* toh
+  - instances too easy
+    - only 3/22 > 10 secs
+  - single timeout makes average climb to 22 :(
+  - no domain choices when doing 'init' ???
+    - same for actions and fluents
+    - init32 is bizarre (presumbly because it solves the single timeout)
+    - no domain choices for ordered 'init' as well
+* refactoring
+  - what is counted in terms of choices
+* BUGS
+  - gringo Facts/board16-1.lp Facts/robots.lp Facts/goals16-1.lp Encodings/oASP/robotsNaive.lp Encodings/hASP/heuNaive.lp -c horizon=8 -c goal=15 | hclasp --heu=vsids -q --stats
+  - gringo Facts/board16-1.lp Facts/robots.lp Facts/goals16-1.lp Encodings/oASP/robotsNaive.lp Encodings/hASP/heuNaive.lp -c horizon=8 -c goal=15 |  clasp --heu=vsids -q --stats

@@ -1,0 +1,44 @@
+\documentclass{letter}
+\usepackage{hyperref}
+\signature{Torsten Schaub}
+\address{Knowledge Processing and Information Systems\\ Institute for Computer Science \\ August-Bebel-Str. 89 \\ Potsdam, Germany}
+\begin{document}
+
+\begin{letter}{Editorial Board \\ Theory and Practice of Logic Programming Journal}
+\opening{Dear Sir or Madam:}
+
+Please find enclosed the manuscript entitled "Hybrid metabolic network completion" by C. Frioux, T. Schaub, S. Schellhorn, A. Siegel and P. Wanko 
+which we submit for consideration for publication in the journal \emph{Theory and Practice of Logic Programming}.
+
+Our paper was selected for TPLP rapid publication following the 14th International Conference on Logic Programming and Nonmonotonic Reasoning in Aalto, Finland. 
+The paper presents a novel hybrid method based on Answer-Set Programming (ASP) and linear programming (LP). 
+It is applied to a bioinformatics problem: metabolic network completion. 
+In this paper, we describe the existing methods in ASP and LP for solving this problem and discuss their characteristics before advocating the advantages of developing a hybrid method. 
+The latter is based on a hybrid ASP encoding and relies upon the theory reasoning capacities of the ASP system clingo for solving the resulting logic program with linear constraints over reals. 
+The system was tested on a benchmark set of 2700 experiments and showed greatly superior results in terms of completion quality compared to purely quantitative or qualitative approaches.
+
+Following the Springer LNCS copyright agreement, we added at least thirty percent new content compared to the version of the conference paper.
+In particular, we slightly improved the toy examples used in Section 2 to make it more compliant with biological situations. 
+In Section 2, we also provide a detailed description of the theory of metabolic completion by adding extra figures to illustrate and highlight the differences between the three methods. 
+In addition, we describe how the union of individual solution behaves with respect to the definitions of activation (Section 2.4), 
+allowing us to discuss in more details the biological relevance of our method in a further section.
+In this section, we i) motivate the use of unions of solutions to provide the user with a relevant set of reactions and evaluate approximation methods, ii) proof stability of activation of reactions for union of graphs and iii) provide examples for different union scenarios.
+
+We restructured and expanded the system section (Section 5) and redid the performance experiments.
+The section is split into:
+	\begin{itemize}
+		\item[5.1] Here, we systematically examine the performance of LP propagation heuristics and solving heuristics on 270 newly selected instances. Note that we could not reproduce the effect of the domain heuristic from the previous experiments. This might be due to the new instances or the slightly updated encoding format which might change the search space.
+		\item[5.2] Examines the quality of solutions and scalability our system provides.
+		\item[5.3] Focuses on the union of solutions and comparison with other systems solving the same problem. We removed the comparisons that were previously in 5.2 since the numbers of meneco and gapfill displayed activation of the union of solutions and not one single solution. By doing the same for our system we establish better comparability.
+	\end{itemize}
+
+We trust that you will find in this work and in its additional material a real contribution to the field of logic programming for publication in TPLP.
+
+Thank you for your time and consideration.
+
+I look forward to your reply.
+
+\closing{Yours Faithfully,}
+
+\end{letter}
+\end{document}

@@ -1,0 +1,110 @@
+
+\section{Solving Hybrid Metabolic Network Completion}
+\label{sec:approach}
+
+In this section, we present our hybrid approach to metabolic network completion.
+We start with a factual representation of problem instances.
+%
+A metabolic network $G$ with a typing function $t: M\cup R\rightarrow\{\texttt{d,r,s,t}\}$,
+indicating the origin of the respective entities,
+is represented as follows:
+\begin{align*}
+F(G,t) = & \phantom{\cup\;}\;\{\texttt{metabolite($m$,$t(m)$)}\mid m\in M\} \\
+         &          \cup\;   \{\texttt{reaction($r$,$t(r)$)}\mid r\in R\}  \\
+         &          \cup\;   \{\texttt{bounds($r$,$lb_r$,$ub_r$)$\mid r\in R$}\} \;\cup\; \{\texttt{objective($r$,$t(r)$)$\mid r\in R$}\}\\
+         &          \cup\;   \{\texttt{reversible(r)}\mid r\in R, \Reactants{r}\cap\Products{r}\neq\emptyset\} \\
+         &          \cup\;   \{\texttt{rct($m$,$\StoichiometricFunction(m,r)$,$r$,$t(r)$)$\mid r\in R, m\in\Reactants{r}$}\} \\
+         &          \cup\;   \{\texttt{prd($m$,$\StoichiometricFunction(r,m)$,$r$,$t(r)$)$\mid r\in R, m\in\Products{r}$}\}
+\end{align*}
+%
+While most predicates should be self-explanatory,
+we mention that \texttt{reversible} identifies bidirectional reactions.
+Only one direction is explicitly represented in our fact format.
+%
+The four types \texttt{d}, \texttt{r}, \texttt{s}, and \texttt{t} tell us whether an entity stems from the
+\textbf{d}raft or \textbf{r}eference network, or belongs to the \textbf{s}eeds or \textbf{t}argets.
+
+In a metabolic network completion problem,
+we consider
+a draft network  $G=(R\cup M,E,\StoichiometricFunction)$,
+a set $S$ of seed compounds, % such that $\strseed(G) \subseteq S$,
+a set $R_{T}$ of target reactions,
+and a reference network $G'=(R'\cup M',E',\StoichiometricFunction')$.
+%
+An instance of this problem is represented by the set of facts
+\(
+F(G,t)\cup F(G',t')
+\).
+In it, a key role is played by the typing functions that differentiate the various components:
+\[
+  t(n) =
+  \left\{
+    \begin{array}{ll}
+    \texttt{d}, & \text{if } n\in (M\setminus (T\cup S))\cup (R\setminus(R_{\strseed}\cup R_T)) \\
+    \texttt{s}, & \text{if } n\in S\cup R_{\strseed} \\
+    \texttt{t}, & \text{if } n\in T\cup R_T
+  \end{array}
+  \right.
+  \quad\text{ and }\quad
+  t'(n) = \texttt{r},
+\]
+where
+\(
+T=\{m\in\Reactants{r}\mid r\in R_T\}
+\)
+is the set of target compounds and
+\(
+R_{\strseed}=\{r\in R\mid m\in \strseed(G), m\in\Products{r}\}
+\)
+is the set of reactions related to boundary seeds.
+% \footnote{For convenience, we reproduce the factual representation of our example in Appendix~\ref{sec:appendix}.}
+
+Our encoding of hybrid metabolic network completion is given in Listing~\ref{lst:encoding}.
+%
+\lstinputlisting[float=t,floatplacement=t,numbers=left,numberblanklines=false,basicstyle=\ttfamily\scriptsize,firstline=1,lastline=27,caption={Encoding of hybrid metabolic network completion},label=lst:encoding,belowskip=-2em]{encoding.lp}
+%
+Roughly,
+the first 10 lines lead to a set of candidate reactions for completing the draft network.
+Their topological validity is checked in lines~12--16 with regular ASP,
+the stoichiometric one in lines~18--24 in terms of linear constraints.
+(Lines~1--16 constitute a revision of the encoding in~\citep{schthi09a}.)
+The last two lines pose a hybrid optimization problem,
+first minimizing the size of the completion and then
+maximizing the flux of the target reactions.%
+%\footnote{The order of optimization follows the definition of LC-stable models in Section~\ref{sec:background}.}
+
+In more detail,
+we begin by defining the auxiliary predicate \texttt{edge}/4 representing directed edges between compounds connected by a reaction.
+With it,
+we calculate in Line~4 and~5 the scope $\Sigma_{G}(S)$ of the \textbf{d}raft network $G$ from the seed compounds in $S$;
+it is captured by all instances of \texttt{scope(M,d)}.
+This scope is then e\textbf{x}tended in Line 7/8 via the reference network $G'$ to delineate all possibly producible compounds.
+We draw on this in Line~10 when choosing the reactions $R''$ of the completion (cf.\ Section~\ref{sec:problem})
+by restricting their choice to reactions from the reference network whose reactants are producible.
+This amounts to a topological search space reduction.
+
+The reactions in $R''$ are then used in lines~12--14 to compute the scope $\Sigma_{G''}(S)$ of the \textbf{c}ompleted network.
+And $R''$ constitutes a topologically valid completion if all targets in $T$ are producible by the expanded draft network $G''$:
+Line~16 checks whether $T\subseteq\Sigma_{G''}(S)$ holds, which is equivalent to $R_T\subseteq\Activity{t}{G''}{S}$.
+%
+Similarly, $R''$ is checked for stoichiometric validity in lines~18--24.
+For simplicity, we associate reactions with their rate and let their identifiers take real values.
+Accordingly, Line~18 accounts for \eqref{eq:stoichiometric:bounds} by imposing lower and upper bounds on each reaction rate.
+%
+The mass-balance equation \eqref{eq:stoichiometric:equation} is enforced for each metabolite \texttt{M} in lines~20--22;
+it checks whether the sum of products of stoichiometric coefficients and reaction rates equals zero,
+viz.\ \texttt{IS*IR}, \texttt{-OS*OR}, \texttt{IS'*IR'}, and \texttt{-OS'*OR'}.
+Reactions \texttt{IR}, \texttt{OR} and \texttt{IR'}, \texttt{OR'} belong to the draft and reference network, respectively,
+and correspond to $R\cup R''$.
+%
+Finally, by enforcing $r_T>0$ for $r_T\in R_T$ in Line~24,
+we make sure that $R_T\subseteq\Activity{s}{G''}{S}$.
+
+In all, our encoding ensures that the set $R''$ of reactions chosen in Line~10 induces an augmented network $G''$
+in which all targets are activated both topologically as well as stoichiometrically,
+and is optimal wrt the hybrid optimization criteria.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End:

@@ -1,0 +1,56 @@
+
+\section{Discussion}\label{sec:discussion}
+
+The \clingo~5 system provides a comprehensive infrastructure for enhancing ASP with theory reasoning.
+This ranges from
+generic means for expressing theories along with their support by \gringo,
+over a theory-aware intermediate format,
+to simple yet powerful interfaces in \C, \lua, and \python.
+In each case, a propagator can    specify (up to) four basic functions to customize its integration into \clasp's propagation,
+where an arbitrary number of (independent) theory propagators can be be incorporated.
+% Our approach leaves room for various alternatives.
+Logically, ASP encodings may build upon defined or external theory atoms,
+and their associated conditions may be strict or non-strict.
+In practice,
+\clingo~5 supports stateless and stateful theory propagators, which can be controlled in a fine-grained way.
+%
+For instance, propagators are thread-sensitive, watches can be set to symbolic as well as theory literals,
+and the scope and lifetime of nogoods stemming from theory propagation can be configured.
+
+A first step toward a more flexible ASP infrastructure
+was done with \clingo~4 \cite{gekakasc14b} by introducing \lua\ and \python\ APIs for multi-shot solving.
+Although this allows for fine-grained control of complex ASP reasoning processes,
+the functionality provided no access to \clasp's propagation and was restricted to inspecting (total) stable models.
+%
+The extended framework for theory propagation relative to partial assignments (cf.\ Figure~\ref{fig:cdcl})
+follows the canonical approach of SMT \cite{baseseti09a}.
+% The \aspmt\ system \cite{barlee14b} extends ASP with theory reasoning by translating it to SMT.
+%
+While \dlvhex\ implicitly provides access to \clasp's propagation,
+this is done on the more abstract level of higher-order logic programs.
+Also, \dlvhex\ as well as many other systems, such as \clingcon\ or \inca,
+implement specialized propagation via \clasp's internal interfaces,
+whose usage is more involved and subject to change with each release.
+%
+Although the new high-level interfaces may not yet fully cover all desired features,
+they provide a first step toward easing the development of such dedicated systems and
+putting them on a more stable basis.
+%
+Currently,
+\clingo~5's infrastructure is already used as a basis for
+\clingcon~3 \cite{bakakaossc16a},
+% lazy \dflat~\cite{blkascwo16a},
+\lctocasp\ \cite{cakaossc16a},
+and
+its integration with SWI-Prolog.
+%
+Finally, we believe that the extended grounding capacities along with the intermediate format supplemented in Appendix~\ref{sec:aspif}  %~\cite{gekakaosscwa16b}
+will also be beneficial for non-native approaches and ease the overall development of ASP-oriented solvers.
+This applies to systems like \dingo, \mingo, and \aspmt\ \cite{barlee14b},
+the latter implementing ASP with theory reasoning by translation to SMT,
+which so far had to resort to specific input formats and meta-programming to bypass the grounder.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End:

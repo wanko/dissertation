@@ -1,0 +1,86 @@
+\definecolor{myblue}{HTML}{004A99}
+\begin{tikzpicture}[>=stealth,icon/.style={path picture={ 
+		\draw[black,thick]
+		($(path picture bounding box.south east)+(-0.05,0.05)$) -- ($(path picture bounding box.south east)+(-0.1,+0.05)$) -- ($(path picture bounding box.north west)+(0.1,-0.05)$) -- ($(path picture bounding box.north west)+(0.05,-0.05)$) ($(path picture bounding box.south west)+(0.05,0.05)$) -- ($(path picture bounding box.south west)+(0.1,0.05)$) -- ($(path picture bounding box.north east)+(-0.1,-0.05)$) -- ($(path picture bounding box.north east)+(-0.05,-0.05)$);
+}}]
+\tikzstyle{axis} = [->, black, very thick]
+\tikzstyle{link} = [<->, black!50, very thick]
+\tikzstyle{task} = [anchor=west,shape=rectangle,thick,text=white,minimum height=0.5cm, draw=black, fill=myblue, align=center, rounded corners=2,inner sep=0]
+\tikzstyle{difftask} = [shape=circle,thick,text=white,minimum height=0.3cm, draw=black, fill=myblue, align=center,inner sep=1,font=\footnotesize]
+\tikzstyle{router} = [icon,draw,fill=black!30!yellow,inner sep=0,minimum width=0.45cm,minimum height =0.3cm]
+\tikzstyle{resource} = [rectangle,minimum width=0.5cm,minimum height=0.3cm,draw,fill=black!50!green,text=white,font=\footnotesize]
+\tikzstyle{route} = [->,black,line width=1.5]
+\node [router] (v1) at (-3.8,2.4) {\footnotesize$$};
+\node[font=\footnotesize,anchor=east,outer sep=0,inner sep=0] at (v1.west) {$r_1$};
+\node [router] (v2) at (-2.2,2.4) {\footnotesize$$};
+\node[font=\footnotesize,anchor=west,outer sep=0,inner sep=0] at (v2.east) {$r_2$};
+\node [router] (v4) at (-3.8,0.9) {\footnotesize$$};
+\node[font=\footnotesize,anchor=east,outer sep=0,inner sep=0] at (v4.west) {$r_3$};
+\node [router] (v5) at (-2.2,0.9) {\footnotesize$$};
+\node[font=\footnotesize,anchor=west,outer sep=0,inner sep=0] at (v5.east) {$r_4$};
+
+\draw [link] (v1) edge (v2);
+\draw [link] (v1) edge (v4);
+\draw [link] (v2) edge (v5);
+\draw [link] (v4) edge (v5);
+
+\node [resource] (v10) at (-4.5,3.1) {$p_1$};
+\node [resource] (v11) at (-2.9,3.1) {$p_2$};
+\node [resource] (v13) at (-4.5,1.6) {$p_3$};
+\node [resource] (v14) at (-2.9,1.6) {$p_4$};
+
+\draw [link] (v10) edge (v1);
+\draw [link] (v11) edge (v2);
+\draw [link] (v13) edge (v4);
+\draw [link] (v14) edge (v5);
+
+\node [difftask] (t5) at (-0.7,3.2) {$t_5$};
+\node [difftask,fill=black!40!red,inner sep=0] (c5) at (-0.7,2.6) {\footnotesize$c_5$};
+%\node [difftask,fill=black!20!orange,inner sep=0] (c6) at (0.4,2) {\footnotesize$c_7$};
+\node [difftask,fill=black!40!red,inner sep=0] (c7) at (-0.7,1.4) {\footnotesize$c_6$};
+\node [difftask] (t6) at (-0.7,2) {$t_6$};
+\node [difftask] (t7) at (-0.7,0.8) {$t_7$};
+%\draw [axis] (t7) edge (c6);
+%\draw [axis] (c6) edge (t5);
+
+\draw [axis,dashed] (t5) edge[bend right=15] node[midway,above]{\tiny$m_6,2$}(v11);
+\draw [axis,dashed] (t7) edge[bend left=11] node[pos=0.55,above]{\tiny$m_9,4$}(v14);
+\draw [axis,dashed] (t6) edge[bend left=10] node[pos=0.45,above]{\tiny$m_8,5$}(v14);
+\draw [axis,dashed] (t6) edge[bend right=14] node[midway,above]{\tiny$m_7,7$}(v11);
+
+%\draw [route,black!40!red](v10) -- (-4.6,2.9) -- (-4.1,2.4) -- (-4.1,0.8) -- (-3.8,0.5) -- (-2.2,0.5)  --    (v14.south);
+%\draw [route,black!20!orange](v14.east) -- (-1.9,0.8) -- (-1.9,2.4) -- (-2.2,2.7) -- (-3.8,2.7)  --    (v10.east);
+\draw [axis] (t5) edge (c5);
+\draw [axis] (c5) edge (t6);
+\draw [axis] (c7) edge (t7);
+\draw [axis] (t6) edge (c7);
+
+
+
+\node [difftask] (t1) at (-6.6,3.2) {$t_1$};
+\node [difftask,fill=black!40!red,inner sep=0] (c2) at (-6,2.7) {$c_2$};
+\node [difftask,fill=black!40!red,inner sep=0] (c1) at (-7.2,2.7) {$c_1$};
+\node [difftask,fill=black!40!red,inner sep=0] (c3) at (-7.2,1.3) {$c_3$};
+\node [difftask,fill=black!40!red,inner sep=0] (c4) at (-6,1.3) {$c_4$};
+\node [difftask] (t4) at (-6.6,0.8) {$t_4$};
+\node [difftask] (t3) at (-5.8,2) {$t_3$};
+\node [difftask] (t2) at (-7.4,2) {$t_2$};
+\draw [axis] (t1) edge (c1);
+\draw [axis] (c1) edge (t2);
+\draw [axis] (t2) edge (c3);
+\draw [axis] (c2) edge (t3);
+\draw [axis] (t1) edge (c2);
+\draw [axis] (c3) edge (t4);
+\draw [axis] (t3) edge (c4);
+\draw [axis] (c4) edge (t4);
+
+\draw [axis,dashed] (t1) edge[bend left=15] node[midway,above]{\tiny$m_2,2$}(v11);
+\draw [axis,dashed] (t1) edge[bend left=7] node[pos=0.6,below]{\tiny$m_1,3$}(v10);
+\draw [axis,dashed,bend right=10] (t2) edge node[pos=0.85,below]{\tiny$m_3,3$}(v10);
+\draw [axis,dashed] (t3) edge[bend left=15] node[midway,above]{\tiny$m_4,2$}(v13);
+\draw [axis,dashed] (t4) edge[bend right=15] node[midway,below]{\tiny$m_5,1$}(v13);
+
+
+\node[font=\footnotesize] at (-0.2,2) {$A_2$};
+\node[font=\footnotesize] at (-6.6,2.4) {$A_1$};
+\end{tikzpicture}

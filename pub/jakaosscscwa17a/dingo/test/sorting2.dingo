@@ -1,0 +1,22 @@
+% Sort the numbers in increasing order.
+% Guohua Liu 2011.
+
+int(p(X)):-number(X).
+
+int(zero).
+dl_ge(p(X),zero,0) :- number(X).
+dl_ne(p(X1),p(X2),0) :- X1 != X2, number(X1;X2).
+dl_ge(p(X1),p(X2),0) :- X1>X2, number(X1;X2).
+
+#hide number(X).
+#hide position(X).
+
+
+
+
+
+
+
+
+
+    

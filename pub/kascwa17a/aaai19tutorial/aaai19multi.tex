@@ -1,0 +1,335 @@
+
+% * Title of the tutorial
+% * Subarea within AI/Keywords: Please give a few keywords of different granularity.
+%   For example a tutorial on AlphaGo should write: Game Playing, Machine Learning, Deep-Learning, AlphaGo.
+% * Name, affiliation, and email addresses of presenters
+% * Suggested duration: Half day (3 hours, 30 minutes, plus 30-minute break) or quarter day (1 hour, 45 minutes).
+% * Goal of the tutorial (1-2 paragraphs): Who is the target audience? What will the audience walk away with? What makes the topic innovative?
+% * Tutorial outline (1 paragraph): A short abstract of the tutorial content.
+% * History: List of previous venues and approximate audience sizes, if the same or a similar tutorial has been given elsewhere.
+% * Estimated number of participants: Please estimate the audience size (large audience is not always preferable).
+% * Prerequisite knowledge (1 paragraph): What knowledge is assumed of the target audience.
+% * Content (as many paragraphs as needed): Detailed outline of the tutorial.
+% * (Optional) Supplementary materials: List of supplemental materials augmented with samples, such as past tutorial slides and survey articles,
+%   whenever possible. Be as complete as possible.
+% * CVs of presenters: A short CV (1-2 pages) for each presenter that includes their name, affiliation, current position (e.g., Ph.D. student,
+%   Postdoc, Professor, Researcher, etc.), mailing address, phone number, and email address. The CVs should also describe their background in the
+%   tutorial area, including a list of relevant publications and/or presentations; any available examples of work in the area (ideally, a published
+%   tutorial-level article or presentation materials on the subject); evidence of teaching experience (courses taught or references); and evidence of
+%   scholarship in AI or computer science.
+
+\documentclass{article}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[colorlinks=false,pagebackref=true]{hyperref}
+\usepackage{url}
+\input{macro}
+\begin{document}
+
+\section*{Answer Set Engineering}
+
+Javier Romero$^2$ \
+Roland Kaminski$^2$ \
+Torsten Schaub$^{1,2}$ \
+Philipp Wanko$^2$
+
+\medskip
+\noindent
+$^1$Inria Rennes, France \
+$^2$University of Potsdam, Germany
+
+\medskip
+\noindent
+\texttt{\{javier,kaminski,torsten,wanko\}@cs.uni-potsdam.de}
+
+\subsection*{Subarea within AI/Keywords}
+
+Knowledge representation and reasoning,
+Answer Set Programming,
+Combinatorial optimization problems
+
+\subsection*{Suggested duration}
+
+Half day (3 hours, 30 minutes, plus 30-minute break)
+
+\subsection*{Goal of the tutorial}
+
+Answer Set Programming (ASP) has become an established paradigm for Knowledge Representation and Reasoning,
+in particular, when it comes to solving knowledge-intense combinatorial (optimization) problems.
+ASP's unique pairing of a simple yet rich modeling language with highly performant solving technology
+has led to an increasing interest in ASP systems in academia as well as industry.
+To further boost this development and make ASP fit for real world applications it is indispensable to possess means
+for an easy integration into software environments and for adding complementary forms of reasoning.
+These means are furnished by \emph{multi-shot} and \emph{theory reasoning} in modern ASP systems.
+The participant will learn
+(i) how to use multi-shot solving
+to integrate ASP systems into software environments and
+to deal with solver objects to model complex reasoning modes (see below)
+and
+(ii) how to use theory reasoning
+to integrate dedicated reasoners into ASP systems and
+to extend the modeling language to express corresponding constraints,
+or in a nutshell, how to exploit modern ASP technology for solving complex reasoning problems.
+
+\subsection*{Tutorial outline}
+
+In this tutorial, we describe how both issues are addressed in the ASP system CLINGO.
+After a gentle introduction to ASP, we outline features of CLINGO's application programming interface (API) that are essential for multi-shot ASP solving,
+a technique for dealing with continuously changing logic programs.
+This is illustrated by realizing two exemplary reasoning modes, namely branch-and-bound-based optimization and incremental ASP solving.
+As a final example we show how to use multi-shot solving for realizing the round-based board game of ricochet robots.
+We then switch to the design of the API for integrating complementary forms of reasoning and detail this in an extensive case study
+dealing with the integration of difference constraints.
+We show how the syntax of these constraints is added to the modeling language and seamlessly merged into the grounding process.
+We then develop in detail a corresponding theory propagator for difference constraints and present how it is integrated into CLINGO's solving process.
+Finally, we discuss aspects of the quite sophisticated use of both techniques in the implementation of the ASPRIN system,
+providing a generic framework for qualitative and quantitative optimization with CLINGO.
+
+\subsection*{History}
+
+Over the years, Torsten Schaub gave the following tutorials with various members of his research group.
+
+\begin{itemize}
+
+\item Tutorial (4h)
+  \emph{Answer Set Programming}.
+  \begin{itemize}
+  \item Institute of Computer Science and Applied Mathematics,
+    \UNIof{ Bern},
+    \SWITZERLAND,
+    \FEB\ 2008.
+  \item Third International Compulog/ALP Summer School on Logic Programming and Computational Logic.
+    New Mexico State University,
+    Las Cruces, \USA,
+    \JUL\ 2008.
+  \item Annual Logic Summer School,
+    Australian National University,
+    Canberra, \AUSTRALIA.
+    \DEC\ 2009.
+  \item First Workshop of the DFG Research Unit on Hybrid Reasoning for Intelligent Systems,
+    RWTH Aachen University, Aachen\xGERMANY.
+    \NOV\ 2012.
+  \item School of Science and Technology,
+    Orebro University, \SWEDEN.
+    \NOV\ 2012.
+  \end{itemize}
+
+\item Tutorial (8h)
+  \emph{Answer Set Solving in Practice}.
+  \begin{itemize}
+  \item Twenty-second International Joint Conference on Artificial Intelligence (IJCAI'11),
+    Barcelona, \SPAIN,
+    \JUL\ 2011.
+  \item SIEMENS AG,
+    \VIENNA, \AUSTRIA,
+    \SEP\ 2011.
+  \end{itemize}
+
+\item Tutorial (3h)
+  \emph{Modeling and Solving in Answer Set Programming}.
+  Third International SAT/SMT Summer School,
+  Helsinki, \FINLAND.
+  \JUL\ 2013.
+
+\item Tutorial (4h)
+  \emph{Answer Set Solving in Practice}.
+  \begin{itemize}
+  \item Twenty-seventh Conference on Artificial Intelligence (AAAI'13),
+    Bellevue, Washington, \USA,
+    \JUL\ 2013.
+  \item Twenty-third International Joint Conference on Artificial Intelligence (IJCAI'13),
+    Beijing, \CHINA,
+    \AUG\ 2013.
+  \end{itemize}
+
+\item Tutorial (6h)
+  \emph{Answer Set Solving in Practice}.
+  \begin{itemize}
+  \item Summer School on Verification Technology, Systems, and Applications (VTSA'13),
+    Nancy, \FRANCE,
+    \SEP\ 2013.
+  \item Second NICTA International Summer School on Optimisation,
+    Kioloa, \AUSTRALIA,
+    \JAN\ 2014.
+  \item ICCL Summer School,
+    Dresden\xGERMANY,
+    \SEP\ 2015.
+  \item Advanced Courses in Artificial Intelligence (ACAI’15; Summer School of EurAI),
+    Lille, \FRANCE,
+    \OCT\ 2015.
+  \end{itemize}
+
+\item Tutorial (4h)
+  \emph{Answer set programming for systems biology}.
+  Workshop on Integrative-Omics.
+  Pucón, Chile,
+  \DEC\ 2013.
+
+\item Tutorial (8h)
+  \emph{Answer set programming  and its application to robotics}.
+  Winter PhD School on AI and Robotics.
+  Orebro, \SWEDEN,
+  \DEC\ 2014.
+
+\item Tutorial (8h)
+  \emph{Answer Set Solving in Practice: Advanced techniques}.
+  Twenty-fourth International Joint Conference on Artificial Intelligence (IJCAI'15),
+  Buenos Aires, \ARGENTINA,
+  \JUL\ 2015.
+
+\item Tutorial (3h)
+  \emph{Towards embedded Answer Set Solving}.
+  Eleventh Reasoning Web Summer School (RW'15),
+  Berlin\xGERMANY,
+  \AUG\ 2015.
+
+\item Tutorial (1h)
+  \emph{Towards embedded Answer Set Solving}.
+  Twenty-first International Conference on Principles and Practice of Constraint Programming (CP'15),
+  Cork, \IRELAND,
+  \SEP\ 2015.
+
+\item Tutorial (3h)
+  \emph{ASP foundations and applications}.
+  Autumn School on
+  Logic programming for verification and constraint solving,
+  New York, \USA,
+  \OCT\ 2016.
+
+\item Tutorial (3h)
+  \emph{Hybrid Answer Set Solving with Clingo}.
+  Thirteenth Reasoning Web Summer School (RW'17),
+  London, \UK,
+  \JUL\ 2017.
+\end{itemize}
+
+\subsection*{Estimated number of participants} 20-30 participants
+
+\subsection*{Prerequisite knowledge} Basic notions of ASP and Python are advantageous but not imperative
+
+\subsection*{Content}
+
+\begin{enumerate}
+\item Introduction to Answer Set Programming
+  \begin{enumerate}
+  \item Motivation
+  \item Modeling
+  \item Grounding
+  \item Solving
+  \end{enumerate}
+\item Multi-shot ASP solving
+  \begin{enumerate}
+  \item Language
+  \item API
+  \item State changes
+  \item Examples
+  \item Case study
+  \end{enumerate}
+\item Theory reasoning in ASP
+  \begin{enumerate}
+  \item Theory Grammar
+  \item Propagator interface
+  \item Case study
+  \end{enumerate}
+\item Case study: Qualitative and quantitative optimization
+\end{enumerate}
+
+\subsection*{Supplementary materials}
+
+In order of relevance:
+
+\begin{enumerate}
+\item%{kascwa17a}
+  R.~Kaminski, T.~Schaub, P.~Wanko.
+  A Tutorial on Hybrid Answer Set Solving with clingo.
+  In {\em Proceedings of the Thirteenth International Summer School of the Reasoning Web (RW'17)},
+  167-203, Springer, 2017.
+
+\item%{gekakasc12a}
+  M.~Gebser, R.~Kaminski, B.~Kaufmann, T.~Schaub.
+  \emph{Multi-shot {ASP} solving with clingo}.
+  \emph{Theory and Practice of Logic Programming}.
+  \APPEARS{ 2018}.
+
+\item % {gekakaosscwa16a}
+  M.~Gebser, R.~Kaminski, B.~Kaufmann, et~al.
+  Theory solving made easy with clingo~5.
+  In {\em Technical Communications of the Thirty-second International Conference on Logic Programming (ICLP'16)},
+  52(2):1--2:15, OASIcs, 2016.
+
+\item%{brderosc15a}
+  G.~Brewka, J.~Delgrande, J.~Romero, and T.~Schaub.
+  asprin: Customizing answer set preferences without a headache.
+  In {\em Proceedings of the Twenty-Ninth National Conference on Artificial Intelligence (AAAI'15)}.
+  AAAI Press, 2015.
+
+\item%{gekakasc12a}
+  M.~Gebser, R.~Kaminski, B.~Kaufmann, T.~Schaub.
+  \emph{Answer Set Solving in Practice}.
+  Morgan and Claypool Publishers, 2012, 238~pages.
+
+\end{enumerate}
+
+\newpage
+\subsection*{CVs of presenters}
+
+Note that proposers R.~Kaminski, T.~Schaub, and P.~Wanko were conducting the predecessor of this tutorial at RW'17
+(cf.\ Publication 1.\ above).
+J.~Romero and T.~Schaub run since several years a 60h MSc course on ASP at the University of Potsdam.
+
+\paragraph{Roland Kaminski}
+%
+is a research engineer at the University of Potsdam, Germany.
+%
+His scientific interests are focused on the implementation of systems for Answer Set Programming (ASP).
+%
+He is the main developer of the widely used ASP system clingo.
+Recently, his focus is the improvement of CLINGO's application programming interface,
+providing the basis for systems extending core ASP solving, like for example, ASPRIN and CLINGO[DL].
+%
+He has co-authored more than 40 publications, among them a text book on Answer Set Solving.
+
+\paragraph{Javier Romero}
+%
+is a researcher at the University of Potsdam, Germany.
+He received a MSc.\ in Computer Science from the University of Corunna in 2006, and in Philosophy from the University of Santiago de Compostela in 2008, both in Spain.
+His research interests are knowledge representation and logic programming, and his research focuses in extensions of ASP for declarative heuristics and
+preference reasoning. He is a member of the open source project potassco.org developed at Potsdam, and the main developer of ASPRIN.
+%
+He has co-authored several international conference publications in top venues (\mbox{IJCAI}, AAAI, KR\ldots),
+he has co-supervised multiple M.Sc.\ theses, and has taught university courses for several years.
+
+\paragraph{Torsten Schaub}
+%
+received his diploma and dissertation in informatics in 1990 and 1992, respectively, from the Technical University of Darmstadt, Germany, and his
+habilitation in informatics in 1995 from the University of Rennes I, France. From 1990 to 1993 he was a research assistant at the Technical University
+at Darmstadt. From 1993 to 1995, he was a research associate at IRISA/INRIA at Rennes. In 1995 he became University Professor at the University of
+Angers. Since 1997, he is University Professor for knowledge processing and information systems at the University of Potsdam. In 1999, he became
+Adjunct Professor at the School of Computing Science at Simon Fraser University, Canada; and since 2006 he is also an Adjunct Professor in the
+Institute for Integrated and Intelligent Systems at Griffith University, Australia. Since 2014, Torsten Schaub holds an Inria International Chair at
+Inria Rennes. Torsten Schaub has become a fellow of the European Association for Artificial Intelligence EurAI in 2012. In 2014 he was elected
+President of the Association of Logic Programming. He served as program (co-)chair of LPNMR'09, ICLP'10, and ECAI'14. The research interests of
+Torsten Schaub range from the theoretic foundations to the practical implementation of reasoning from incomplete, inconsistent, and evolving
+information. His current research focus lies on ASP and materializes at potassco.org, the home of the open source project Potassco
+bundling software for ASP developed at the University of Potsdam.
+
+\paragraph{Philipp Wanko}
+%
+is a doctoral student and researcher since 2015 at the University of Potsdam, Germany,
+where he received a  MSc.\ in Computer Science the same year.
+His interests are focused on hybrid reasoning and multi-objective optimization using ASP.
+Both fields are of particular interest to his main field of application Design Space Exploration,
+where implementations of embedded systems featuring a complex network-like hardware structure are automatically synthesized.
+To tackle ASP's shortcomings to effectively encode timing constraints featured in this application,
+he developed the system CLINGO[DL] that combines ASP with difference constraints.
+Furthermore, he extended CLINGO[DL] with the capacity for multi-objective optimization,
+in particular enumerating Pareto-optimal (non-dominated) solutions.
+The results were published in the renowned system synthesis conference DATE'17 and DATE'18,
+as well as, presented to the logic programming community in LPMNR'17 and ICLP'16.
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

@@ -7,3 +7,21 @@
 [submodule "include/macros"]
 	path = include/macros
 	url = git@github.com:krr-up/asp-macros.git
+[submodule "pub/abjoossctowa21a"]
+	path = pub/abjoossctowa21a
+	url = git@github.com:krr-up/train-scheduling-with-clingodl-tplp.git
+[submodule "pub/cafascwa20a"]
+	path = pub/cafascwa20a
+	url = git@github.com:krr-up/htc-aggregates-ecai.git
+[submodule "pub/cafascwa20b"]
+	path = pub/cafascwa20b
+	url = git@github.com:krr-up/htc-aggregates-kr.git
+[submodule "pub/cafascwa21a"]
+	path = pub/cafascwa21a
+	url = git@github.com:krr-up/founded-linear-constraints.git
+[submodule "pub/gekaotroscwa13a/pub/karoscwa20a"]
+	path = pub/gekaotroscwa13a/pub/karoscwa20a
+	url = git@github.com:krr-up/potassco-long-paper.git
+[submodule "pub/karoscwa20a"]
+	path = pub/karoscwa20a
+	url = git@github.com:krr-up/potassco-long-paper.git

@@ -1,0 +1,4 @@
+#program check(n).
+:- not dead(n); query(n).
+:- not &sum { at(n) } <= 100; query(n).
+:- do(shoot,n); not &sum { at(n) } > 35.

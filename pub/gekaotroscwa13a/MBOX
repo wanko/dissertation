@@ -1,0 +1,2216 @@
+From gebser@cs.uni-potsdam.de  Thu Mar  7 21:54:13 2013
+Return-Path: <gebser@cs.uni-potsdam.de>
+Received: from mail.cs.uni-potsdam.de [141.89.48.7]
+	by re with IMAP (fetchmail-6.3.19)
+	for <torsten@localhost> (single-drop); Thu, 07 Mar 2013 21:54:12 +0100 (CET)
+Received: from mail.cs.uni-potsdam.de ([unix socket])
+	 by mail (Cyrus v2.2.13-Debian-2.2.13-13ubuntu3) with LMTPA;
+	 Thu, 07 Mar 2013 10:46:53 +0100
+X-Sieve: CMU Sieve 2.2
+Received: from localhost (localhost [127.0.0.1])
+	by mail.cs.uni-potsdam.de (Postfix) with ESMTP id 8AA6810305
+	for <torsten@cs.uni-potsdam.de>; Thu,  7 Mar 2013 10:46:53 +0100 (CET)
+X-Virus-Scanned: Debian amavisd-new at cs.uni-potsdam.de
+X-Spam-Flag: NO
+X-Spam-Score: -3.7
+X-Spam-Level: 
+X-Spam-Status: No, score=-3.7 tagged_above=-9999 required=5
+	tests=[ALL_TRUSTED=-1.8, AWL=0.699, BAYES_00=-2.599]
+Received: from mail.cs.uni-potsdam.de ([127.0.0.1])
+	by localhost (mail.cs.uni-potsdam.de [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id yezhb0Y6A2q1; Thu,  7 Mar 2013 10:46:48 +0100 (CET)
+Received: from [141.89.59.119] (groix.haiti.cs.uni-potsdam.de [141.89.59.119])
+	(using TLSv1 with cipher AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mail.cs.uni-potsdam.de (Postfix) with ESMTPSA id 9547010217;
+	Thu,  7 Mar 2013 10:46:48 +0100 (CET)
+Message-ID: <51386208.3040700@cs.uni-potsdam.de>
+Date: Thu, 07 Mar 2013 10:46:48 +0100
+From: Martin Gebser <gebser@cs.uni-potsdam.de>
+Reply-To: gebser@cs.uni-potsdam.de
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:10.0.12) Gecko/20130119 Icedove/10.0.12
+MIME-Version: 1.0
+To: torsten@cs.uni-potsdam.de
+CC: sthiele@irisa.fr, sven.thiele@irisa.fr, anne.siegel@irisa.fr, 
+ Sylvain.S.Prigent@irisa.fr
+Subject: Re: Expansion
+References: <87vc941363.fsf@re.haiti.cs.uni-potsdam.de>
+In-Reply-To: <87vc941363.fsf@re.haiti.cs.uni-potsdam.de>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+X-RMAIL-ATTRIBUTES: ---F----
+
+Hi Torsten and all,
+
+> Actually, the current version of hclasp adds constraints so that only inclusion minimal solutions
+> are found. Hence, I do not see a problem why the cautious or brave reasoning should not work.
+
+That's right, and the modified solution recording of hclasp is OK. With 
+some reconsideration (on the S-Bahn), I came to the conclusion that the 
+fixed phases of literals, used for representing intersections or unions 
+in brave and cautious reasoning, are sensitive to signs of literals to 
+minimize/maximize. I better don't spread the toy examples I was looking 
+at now. When Javier is back, we can discuss things with him to see how 
+we can avoid "shaky" behavior w.r.t. signs.
+
+However, I think that cautious reasoning should readily work for 
+subset-minimization of a set of atoms (unless hclasp misses low-level 
+functionalities). For brave reasoning, the complements of the atoms to 
+minimize should be represented by new atoms that are shown, and the 
+original brave consequences are the union of the atoms to minimize in 
+enumerated answer sets (the original atoms probably need to be renamed 
+to begin with a "_"). I also think that additional solution recording is 
+unnecessary when doing brave/cautious reasoning because the intersection 
+or union "eats" the solutions.
+
+Anyway, we need to think more in depth how to do brave and cautious 
+reasoning nicely in hclasp. The fixed signs determined by the output 
+atoms are not general enough and require tricks by the user for 
+compatibility with subset-minimization of arbitrary literals.
+
+Cheers,
+Martin
+
+From jromerod@udc.es  Tue Mar 12 21:36:35 2013
+Return-Path: <jromerod@udc.es>
+Received: from mail.cs.uni-potsdam.de [141.89.48.7]
+	by re with IMAP (fetchmail-6.3.19)
+	for <torsten@localhost> (single-drop); Tue, 12 Mar 2013 21:36:35 +0100 (CET)
+Received: from mail.cs.uni-potsdam.de ([unix socket])
+	 by mail (Cyrus v2.2.13-Debian-2.2.13-13ubuntu3) with LMTPA;
+	 Tue, 12 Mar 2013 19:00:38 +0100
+X-Sieve: CMU Sieve 2.2
+Received: from localhost (localhost [127.0.0.1])
+	by mail.cs.uni-potsdam.de (Postfix) with ESMTP id 8E7551007B;
+	Tue, 12 Mar 2013 19:00:38 +0100 (CET)
+X-Virus-Scanned: Debian amavisd-new at cs.uni-potsdam.de
+X-Spam-Flag: NO
+X-Spam-Score: -5.168
+X-Spam-Level: 
+X-Spam-Status: No, score=-5.168 tagged_above=-9999 required=5
+	tests=[AWL=0.737, BAYES_00=-2.599, HTML_MESSAGE=0.001,
+	RCVD_IN_DNSWL_MED=-4, SPF_FAIL=0.693]
+Received: from mail.cs.uni-potsdam.de ([127.0.0.1])
+	by localhost (mail.cs.uni-potsdam.de [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id I-4Uoej3wrrb; Tue, 12 Mar 2013 19:00:30 +0100 (CET)
+Received: from ironin.rz.uni-potsdam.de (ironin.rz.uni-potsdam.de [141.89.64.18])
+	by mail.cs.uni-potsdam.de (Postfix) with ESMTP id 0ECBB10065;
+	Tue, 12 Mar 2013 19:00:30 +0100 (CET)
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-Anti-Spam-Result: AhoCALdrP1HBkyiQe2dsb2JhbABAAwKEBYQQvFOBSxYOAQEWJgUjOQGBbwEBAQECAQ4MAQgEPhQFBw8RAwECAREECwEJAlEIBhMUB4dnAwkKCK8LgkCGFA2JRBMEjEV8HHwjAQUGBQcGBAeCHIETA5MRg0WUAYIn
+X-IronPort-AV: E=Sophos;i="4.84,832,1355094000"; 
+   d="scan'208,217";a="6495066"
+Received: from smtpout2.correo.udc.es ([193.147.40.144])
+  by ironin.rz.uni-potsdam.de with ESMTP; 12 Mar 2013 19:00:26 +0100
+Received: from localhost (localhost.localdomain [127.0.0.1])
+	by smtpout2.correo.udc.es (Postfix) with ESMTP id B0578EF810;
+	Tue, 12 Mar 2013 19:00:25 +0100 (CET)
+X-Virus-Scanned: amavisd-new at smtpout2.correo.udc.es
+Received: from smtpout2.correo.udc.es ([127.0.0.1])
+	by localhost (smtpout2.correo.udc.es [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id nA7R+yyeMmgK; Tue, 12 Mar 2013 19:00:20 +0100 (CET)
+Received: from ms1.correo.udc.es (ms1b.correo.udc.es [10.8.13.102])
+	by smtpout2.correo.udc.es (Postfix) with ESMTP id E807CEF894;
+	Tue, 12 Mar 2013 19:00:19 +0100 (CET)
+Date: Tue, 12 Mar 2013 19:00:19 +0100 (CET)
+From: Javier Romero Davila <jromerod@udc.es>
+To: Javier Romero Davila <jromerod@udc.es>
+Cc: gebser@cs.uni-potsdam.de, 
+	"Torsten Schaub (Mobile)" <torsten@cs.uni-potsdam.de>, 
+	Benjamin Kaufmann <kaufmann@cs.uni-potsdam.de>, otero@udc.es, 
+	Philipp Wanko <phil.wanko@googlemail.com>
+Message-ID: <567003363.30764.1363111219739.JavaMail.root@ms1b.correo.udc.es>
+In-Reply-To: <1481629215.19578.1363056862346.JavaMail.root@ms1b.correo.udc.es>
+Subject: Re: AAAI-13 Author Response Open (paper 209)
+MIME-Version: 1.0
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_30763_885118476.1363111219737"
+X-Originating-IP: [193.147.40.146]
+X-Mailer: Zimbra 6.0.7_GA_2470.RHEL5_64 (zclient/6.0.7_GA_2470.RHEL5_64)
+X-RMAIL-ATTRIBUTES: A--F----
+
+------=_Part_30763_885118476.1363111219737
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+
+Hi all, 
+
+Follow my notes on the questions of Reviewer 4. 
+
+I don't know what's the plan for answering the reviews, but i am available for anything :-)
+
+Best wishes, javier
+
+
+--------------------------------------------------------------------------------------------------------------------------------
+
+BAIER ET AL., Exploiting procedural domain control knowledge in state-of-the-art planners
+
+Paper Description:
+1. Define a GOLOG-like language for PDDL-planning.
+   The GOLOG-like programs contrain the set of valid plans to the original PDDL problem.
+   This way the search space becomes smaller and search is easier.
+   Technically, the GOLOG-like programs are translated to PDDL-language and integrated 
+     with the original PDDL problem into a new PDDL problem.
+   The approach allows to use normal PDDL-planners with GOLOG-like programs 
+     using as input the new PDDL problem generated.
+2. Modify a PDDL-planner heuristic to improve the performance.
+     GOLOG-like program leave room for indeterminism, so search is still needed. 
+     The normal heuristics do not work well with the new PDDL problem generated.
+     Two modifications of the normal heuristic of the planner are proposed, 
+     and the experiments show that the results are better.
+     
+They cite: 
+  SON ET AL., Domain dependent knowledge in answer set planning
+where they define a GOLOG-like language for ASP-planning, 
+with a translation of GOLOG-like sentences to ASP sentences.
+So here they did step 1 of BAIER ET AL. for ASP, but not step 2.
+-> With hclasp we could do step 2 for ASP planning
+
+Our mailbot experiments:
+1. Torsten's encoding approached step 1, 
+   adding contraints to a basic ASP encoding to constrain the search space.
+   Results were much better than with no constraints
+2. I used hclasp to do step 2, forcing hclasp to do a forward search on actions, 
+   and the results were much better than only with step 1.
+ 
+COMMENTS:
+  GOLOG-like languages constrain the set of valid plans. This can be done in ASP with rules and constraints.
+  Hclasp can be used to guide the search but not to eliminate plans.
+  So hclasp can be used (i) to complement an asp encoding of golog programs (as in step 2 of mailbot experiments)
+  or (ii) simply to guide the search with the basic encoding.
+  
+An example of (ii) could be as follows. 
+In BAIER ET AL. they consider the Trucks IPC domain, and the following control knowledge:
+
+  Repeat the following until all packages have been delivered:
+    Unload everything from the truck, and, 
+    if there is any package in the current location whose destination is the current location, deliver it.
+    After that, if any of the local packages have destinations elsewhere, load them on the truck while there is space.
+    Drive to the destination of any of the loaded packages.
+    If there are no packages loaded on the truck, but there remain packages at locations
+      other than their destinations, drive to one of these locations.
+
+    This could be represented as heuristic knowledge with the following sentences,         (but note that this is heuristic knowledge, and does not delete any possible plan)
+ 
+
+
+		_heuristic(apply(A,T),true,5) :- poss(A,T), 
+										 A = deliver(Package,Location), goal(delivered_package(Package,Location)).
+
+		_heuristic(apply(A,T),true,4) :- poss(A,T), 
+										 A = unload(Package,Truck,TruckArea,Location),
+										 not apply(load(Package2,Truck,TruckArea,Location),T-1) : holds(in(Package2,Truck,TruckArea),T).
+										 % THERE IS A PROBLEM HERE, BECAUSE WE DONT WANT TO UNLOAD IF WE CANNOT DELIVER, 
+										 % WE WANT TO UNLOAD IF WE CANNOT DELIVER AND WE DID NOT START LOADING
+										 % SO WE HAVE TO ADD LAST LINE
+										 
+		_heuristic(apply(A,T),true,3)  :- poss(A,T), 
+										  A = load(Package,Truck,TruckArea,Location),
+										  goal(delivered_package(Package,Location2)), Location != Location2.
+		
+		_heuristic(apply(A,T),true,2)  :- poss(A,T), 
+										  A = drive(Truck,From,Location), 
+										  holds(in(Package,Truck,Area),T), goal(delivered_package(Package,Location)).
+		
+		_heuristic(apply(A,T),true,1)  :- poss(A,T), 
+										  A = drive(Truck,From,Location), 
+										  holds(at(Package,Location),T), not goal(delivered_package(Package,Location)).
+    
+    ---> I think the example is too complex to write it in the rebuttal.
+
+--------------------------------------------------------------------------------------------------------------------------------------------    
+    
+    LOOKAHEAD HEURISTICS
+    
+    The paper definition of hclasp allows to use lookahead heuristics, although we havent implemented that option.
+    However, right now i see no way to apply hclasp (even with lookahead heuristics) to simulate the lookahead heuristics that are used in planning.
+    For example, some PDDL planners solve for each possible next state a relaxed planning problem, 
+    and then depending on the result assign a score to each state and based on that choose an action.
+    In hclasp to do that we would have to somehow encode that relaxed planning problem for every possible state, 
+    and i dont know if that could be done, but surely it wouldnt be efficient.
+    Rather, for simulating lookahead heuristics it may be better to follow Rintanen's approach of
+    Jussi Rintanen: Planning with SAT, Admissible Heuristics and A*. IJCAI 2011: 2015-2020, using constraints.
+    
+    
+---------------------------------------------------------------------------------------------------------------------------------------------    
+    
+----- Mensaje original -----
+De: Javier Romero Davila <jromerod@udc.es>
+Para: gebser@cs.uni-potsdam.de
+CC: Torsten Schaub (Mobile) <torsten@cs.uni-potsdam.de>, Benjamin Kaufmann <kaufmann@cs.uni-potsdam.de>, otero@udc.es, Philipp Wanko <phil.wanko@googlemail.com>
+Enviado: Tue, 12 Mar 2013 03:54:22 +0100 (CET)
+Asunto: Re: AAAI-13 Author Response Open (paper 209)
+
+Hi all,
+
+I agree with Martin's comments,
+although maybe I would stress that even when we cannot make general recommendations 
+about what heuristic rules to write, the paper results already provide good heuristics for 
+the "general" problems of optimization and pddl-planning.
+
+I checked the paper of Fritz, Baier and McIlraith that mentions reviewer 4. 
+I will go deeper tomorrow, but from what i read, 
+they apply a GOLOG-like language to a pddl-planner to improve the search. 
+I think we dont know right now how to do something like that in hclasp (or whether it is possible).
+However, in the paper (that is attached) they present an example with the Trucks domain
+(that they use in their experiments) that is very easy to represent with hclasp, 
+so we could include the hclasp encoding of that in our answer. 
+
+Bis morgen :-)
+javier
+
+----- Mensaje original -----
+De: Martin Gebser <gebser@cs.uni-potsdam.de>
+Para: Torsten Schaub (Mobile) <torsten@cs.uni-potsdam.de>
+CC: Benjamin Kaufmann <kaufmann@cs.uni-potsdam.de>, otero@udc.es, Javier Romero Davila <jromerod@udc.es>, Philipp Wanko <phil.wanko@googlemail.com>
+Enviado: Tue, 12 Mar 2013 01:47:52 +0100 (CET)
+Asunto: Re: AAAI-13 Author Response Open (paper 209)
+
+On 03/12/2013 01:08 AM, Torsten Schaub (Mobile) wrote:
+> Ooops, my 'What do you think?' concerned the reviews :) -t
+
+Alright, I misunderstood this. After reading the reviews, I first think 
+that all are absolutely fair, so no need to complain.
+
+A crucial remark in Review 2 is the following:
+
+The authors start of the paper by making the bold claim that domain 
+specific solvers never need to be made again. That's a really strong 
+claim, and it's just not supported by the empirical evaluation.
+
+I didn't recheck the paper, but if the claim is in, some relativization 
+may be appropriate.
+
+Reviewer 1 and 2 are worried about whether the experiments can point out 
+general recipes for heuristics. As there seems to be no clear 
+recommendation at present, it may be good to say that we are still about 
+to explore the new possibilities and cannot make recommendations which 
+heuristics shall be implemented for the moment.
+
+Beyond this, I saw the questions in Review 4, but I'd like to leave 
+replies to one of you ;-)
+
+Cheers,
+Martin
+
+PS: The literature references in Review 1 and 3 as well as the remarks 
+in Review 4 are kind ouf coming-outs by the reviewers, which I would 
+interpret as signs of their goodwill :-)
+
+
+> Torsten Schaub >>
+>
+>
+> On Tue, Mar 12, 2013 at 12:58 AM, Martin Gebser
+>> wrote:
+>
+>     On 03/12/2013 12:44 AM, Torsten Schaub (Mobile) wrote:
+>
+>         I guess this time all marked as 'corresponding authors' got the
+>         reviews.
+>         What do you think? -t
+>
+>
+>     I'd also guess so for EasyChair. But I better don't count on it either.
+>
+>     Martin
+>
+>         --
+>         Torsten Schaub >
+>>>>
+>
+>
+>
+>         On Tue, Mar 12, 2013 at 12:09 AM, Martin Gebser
+>
+>>>> wrote:
+>
+>              Hi all,
+>
+>              maybe you already got the info from AAAI (which I didn't
+>         read in
+>              detail yet). As I'm first in the alphabetic author order, I
+>         forward
+>              things to be sure that you have them too.
+>
+>              Cheers,
+>              Martin
+>
+>
+>              -------- Original Message --------
+>              Subject: AAAI-13 Author Response Open (paper 209)
+>              Date: Mon, 11 Mar 2013 23:28:53 +0100
+>              From: AAAI-13 >>>>
+>              To: Martin Gebser >
+>>>>
+>
+>              Dear Martin,
+>
+>              Thank you for your submission to the AAAI-13. The AAAI-13
+>         review
+>              response period will be between NOW and March 13 at 5:00PM PDT.
+>
+>              During this time, you will have access to the current state
+>         of your
+>              reviews and have the opportunity to submit a response of up
+>         to 500
+>              words. Please keep in mind the following during this process:
+>
+>              * The response must focus on any factual errors in the
+>         reviews and
+>              any questions posed by the reviewers. It must not provide new
+>              research results or reformulate the presentation. Try to be as
+>              concise and to the point as possible.
+>
+>              * The review response period is an opportunity to react to the
+>              reviews, but not a requirement to do so. Thus, if you feel the
+>              reviews are accurate and the reviewers have not asked any
+>         questions,
+>              then you should not respond.
+>
+>              * The reviews are as submitted by the PC members, without any
+>              coordination between them. Thus, there may be inconsistencies.
+>              Furthermore, these are not the final versions of the
+>         reviews. The
+>              reviews will be updated to take into account the
+>         discussions at the
+>              program committee meeting, and we may find it necessary to
+>         solicit
+>              other outside reviews after the review response period.
+>
+>              * The program committee will read your responses carefully
+>         and take
+>              this information into account during the discussions. On
+>         the other
+>              hand, the program committee will not directly respond to your
+>              responses, either before the program committee meeting or
+>         in the
+>              final versions of the reviews.
+>
+>              * Your response will be seen by all PC members who have
+>         access to
+>              the discussion of your paper, so please try to be polite and
+>              constructive.
+>
+>              The reviews on your paper are attached to this letter. To
+>         submit
+>              your response you should log on the EasyChair Web site
+>
+>         (https://www.easychair.org/____account/signin.cgi?conf=aaai13
+>
+>>__>__) and
+>
+>              select your submission on the menu. The author response
+>         period ends
+>              promptly at 5:00pm PDT on Wednesday, March 13 and no author
+>         feedback
+>              will be allowed after that time.
+>
+>              Thank you,
+>
+>              Marie desJardins and Michael Littman
+>              AAAI-13 Program Cochairs
+>
+>              ----------------------- REVIEW 1 ---------------------
+>              PAPER: 209
+>              TITLE: Domain-specific Heuristics in Answer Set Programming
+>              AUTHORS: (anonymous)
+>
+>              1. Technical quality: 3 (adequate, not a basis for accepting or
+>              rejecting the paper)
+>              2. Experimental analysis: 3 (adequate, not a basis for
+>         accepting or
+>              rejecting the paper (or not applicable))
+>              3. Formal analysis: 3 (adequate, not a basis for accepting or
+>              rejecting the paper (or not applicable))
+>              4. Clarity/presentation: 3 (adequate, not a basis for
+>         accepting or
+>              rejecting the paper)
+>              5. Novelty/innovation of question addressed: 3 (adequate, not a
+>              basis for accepting or rejecting the paper)
+>              6. Novelty/innovation of solution proposed: 4 (positive, a
+>         factor in
+>              accepting the paper)
+>              7. Breadth of interest to the AI community: 3 (adequate,
+>         not a basis
+>              for accepting or rejecting the paper (or not applicable))
+>              8. Potential for impact to practical applications: 3
+>         (adequate, not
+>              a basis for accepting or rejecting the paper (or not
+>         applicable))
+>              SUMMARY RATING: 1 (Weak acceptance.  No 1, 5 or 6 in any
+>         category,
+>              overall above 3.)
+>
+>              ----------- QUALITY JUSTIFICATION -----------
+>              The paper presents an approach for integrating domain-specific
+>              heuristics into ASP solving. The approach is based on the
+>         use of
+>              heuristic atoms and rules in logic programs, and is
+>         implemented by
+>              modifying the heuristic functions of an existing algorithm
+>         (CDCL).
+>              The authors present clearly and in detail how the new heuristic
+>              predicate that they introduce are used in the non-deterministic
+>              assignment of literals. WIth some small examples, they
+>         describe the
+>              use of each of the four different heuristic modifiers.
+>         There are,
+>              though, some questions, for which the answers are not
+>         clear: how can
+>              someone select the appropriate heuristic rules for a specific
+>              problem? what is the scope of problems/programs that this
+>         approach
+>              is appropriate for? overall, it would help if the authors
+>         could give
+>              a bigger running example to describe their approach,
+>         instead of the
+>              small examples that they give for each different modifier.
+>
+>              The results of the experiments show that the proposed approach
+>              improves the performance of ASP reasoning in most cases.
+>         The authors
+>              comment on the results of the experiments, without, though,
+>              explaining, why some of the heuristics perform better in some
+>              problems and worse in others. Without a formal analysis on the
+>              selection of heuristics or some explanation of the results
+>         of the
+>              experiments, it is not clear how one could select the
+>         appropriate
+>              heuristics for a given problem - and by randomly selecting
+>              heuristics, someone may end up with a worse performance.
+>         The authors
+>              admit in the end that they just provide indications on the
+>         prospect
+>              of this approach, and that more systematic studies are
+>         needed to
+>              exploit the full power of the approach.
+>
+>              ----------- INNOVATION JUSTIFICATION -----------
+>              The problem of optimising algorithms for ASP solving is not
+>         new. It
+>              is, however, very challenging, and there are many different
+>              approaches to solve it, many of which are cited in the
+>         paper. Other
+>              similar approaches that the authors do not mention are:
+>
+>              Wolfgang Faber, Nicola Leone, Gerald Pfeifer: Experimenting
+>         with
+>              Heuristics for Answer Set Programming. IJCAI 2001: 635-640
+>
+>              Wolfgang Faber, Nicola Leone, Marco Maratea, Francesco Ricca:
+>              Experimenting with Look-Back Heuristics for Hard ASP
+>         Programs. LPNMR
+>              2007: 110-122
+>
+>              Wolfgang Faber, Nicola Leone, and Gerald Pfeifer. A
+>         Comparison of
+>              Heuristics for Answer Set Programming. In Proceedings of
+>         the 5th
+>              Dutch-German Workshop on Nonmonotonic Reasoning Techniques
+>         and their
+>              Applications (DGNMR 2001), pages 64-75, April 2001.
+>
+>              The novelty of the proposed approach is that it is not
+>         based on the
+>              modification of an ASP solver, but rather on extending the
+>         logic
+>              program with appropriate rules that contain the heuristic
+>         predicate.
+>              Although the idea has not been fully analyzed and evaluated
+>         yet, it
+>              is interesting and the initial results seem promising.
+>
+>              ----------- IMPACT JUSTIFICATION -----------
+>              Optimising ASP solvers is of interest to the AI community,
+>         because
+>              of this challenging characteristics but also because of the
+>              application of ASP. Although the results of the experiments
+>         show
+>              that the proposed approach is promising, it should be further
+>              analysed before its potential is actually proved and fully
+>              exploited. The authors have to explain how one can select the
+>              appropriate heuristic rules for a given problem, either by
+>         further
+>              analysing their approach or by appropriately interpreting and
+>              analysing the results of the experiments. They also have to
+>         define
+>              clearly the scope of problems that they can solve, and the
+>         range of
+>              applications that could benefit from this approach. For
+>         example, is
+>              it only relevant to planning problems? If not, how could
+>         someone
+>              adapt it to other types of problems?
+>
+>              ----------- SUMMARY OF REVIEW FOR AUTHORS -----------
+>              Overall, the paper presents an approach for optimising ASP
+>         solving
+>              using domain-specific heuristics. The proposed methodology
+>         is novel
+>              in ASP and the initial results are promising. However, the
+>         authors
+>              should better present it through one big example, so that
+>         the scope
+>              becomes more clear. Also, they should further analyse their
+>              approach, so that it's also clear how one can select the
+>         appropriate
+>              heuristics for a given problem, and convince in this way
+>         about the
+>              real potential of the approach.
+>
+>              ----------------------- REVIEW 2 ---------------------
+>              PAPER: 209
+>              TITLE: Domain-specific Heuristics in Answer Set Programming
+>              AUTHORS: (anonymous)
+>
+>              1. Technical quality: 4 (positive, a factor in accepting
+>         the paper)
+>              2. Experimental analysis: 2 (problematic, a factor in
+>         rejecting the
+>              paper)
+>              3. Formal analysis: 4 (positive, a factor in accepting the
+>         paper)
+>              4. Clarity/presentation: 2 (problematic, a factor in
+>         rejecting the
+>              paper)
+>              5. Novelty/innovation of question addressed: 4 (positive, a
+>         factor
+>              in accepting the paper)
+>              6. Novelty/innovation of solution proposed: 4 (positive, a
+>         factor in
+>              accepting the paper)
+>              7. Breadth of interest to the AI community: 4 (positive, a
+>         factor in
+>              accepting the paper)
+>              8. Potential for impact to practical applications: 3
+>         (adequate, not
+>              a basis for accepting or rejecting the paper (or not
+>         applicable))
+>              SUMMARY RATING: 1 (Weak acceptance.  No 1, 5 or 6 in any
+>         category,
+>              overall above 3.)
+>
+>              ----------- QUALITY JUSTIFICATION -----------
+>              The paper was very difficult to follow.  Descriptions of
+>         previous
+>              work, and even the problem being solved, were exceptionally
+>         brief.
+>                The notation used was also assumed to be understood, with a
+>              reference to another paper provided in place of an actual
+>              explanation.  There are several issues with the clarity of the
+>              writing with the work presented in the paper as well.
+>           Phrases like
+>              "Thus, while the atom occ(climb,1) is preferably made true,
+>         false
+>              should rather be assigned to occ(climb,1)" appear with some
+>              frequency.  Basically, things that seem contradictory at first
+>              glance and take a bit of puzzling to figure out the meaning
+>         of the
+>              authors.
+>
+>              The authors start of the paper by making the bold claim
+>         that domain
+>              specific solvers never need to be made again.  That's a really
+>              strong claim, and it's just not supported by the empirical
+>              evaluation. Specifically, we never see a comparison to a domain
+>              specific solver in the evaluation.  Further, we don't see a
+>         proof
+>              that the language provided here can provide any desirable
+>              heuristics, nor are we presented with any discussion of the
+>         kinds of
+>              heuristic information used by domain-specific solvers.
+>
+>              That said, the discussion of the heuristics provided by this
+>              technique, how and why they work, and what kinds of
+>         expressive power
+>              they give you is very thorough. You just have to work for
+>         it a bit
+>              harder than maybe is needed.
+>
+>              That sum of all runtimes are presented rather than mean
+>         runtimes
+>              seems a bit odd to me.  I understand the interest in the time
+>              required to solve an entire suite of problems, but I've
+>         always been
+>              interested in runtimes on single instances.  It would be
+>         nice to see
+>              both.
+>
+>              ----------- INNOVATION JUSTIFICATION -----------
+>              The idea of not wanting to write a large set of special-purpose
+>              solvers is basically the corner stone of AI. So, the
+>         problem being
+>              addressed isn't novel on its own. However, it feels like
+>         people are
+>              focusing on ever narrower aspects of particular domains and
+>              problems, and to see a paper come in and try to go in the other
+>              direction, towards the more general, is refreshing.
+>
+>              Trying to extrapolate heuristic information from the search
+>         space
+>              during solving is also not new. Heuristic search planners
+>         have been
+>              doing it for the last few years.  However, doing it by
+>         application
+>              of rules like these is something I've not seen the like of
+>         before,
+>              and it's very interesting.
+>
+>              ----------- IMPACT JUSTIFICATION -----------
+>              People in the automatic configuration of algorithms
+>         community may be
+>              very excited about this work.  Tweaking the various
+>         parameters of
+>              solvers to get better run-times is one thing, but tuning the
+>              heuristic information for solving a family of problems based on
+>              performance will be a new and exciting avenue for them to
+>         follow.
+>
+>              ----------- SUMMARY OF REVIEW FOR AUTHORS -----------
+>              This paper presents a new technique for encoding
+>         domain-specific
+>              heuristic information in a way where it can be used by a
+>              non-domain-specific solver.  The description of the
+>         technique is
+>              hard to follow for anyone not already intimately familiar with
+>              answer set programming, and beyond that several bits of the
+>         paper
+>              require multiple reads as the writing itself is sometimes
+>         unclear.
+>                The paper makes some very strong claims, namely the end of
+>              domain-specific solvers, which it doesn't really deliver
+>         on.  What
+>              it does present, a language for encoding heuristic
+>         information in
+>              answer set programming, is very interesting and is likely
+>         to open up
+>              new avenues of research in both answer-set programming as
+>         well as
+>              automatic algorithm configuration.
+>
+>              ----------------------- REVIEW 3 ---------------------
+>              PAPER: 209
+>              TITLE: Domain-specific Heuristics in Answer Set Programming
+>              AUTHORS: (anonymous)
+>
+>              1. Technical quality: 3 (adequate, not a basis for accepting or
+>              rejecting the paper)
+>              2. Experimental analysis: 4 (positive, a factor in
+>         accepting the paper)
+>              3. Formal analysis: 2 (problematic, a factor in rejecting
+>         the paper)
+>              4. Clarity/presentation: 3 (adequate, not a basis for
+>         accepting or
+>              rejecting the paper)
+>              5. Novelty/innovation of question addressed: 3 (adequate, not a
+>              basis for accepting or rejecting the paper)
+>              6. Novelty/innovation of solution proposed: 4 (positive, a
+>         factor in
+>              accepting the paper)
+>              7. Breadth of interest to the AI community: 4 (positive, a
+>         factor in
+>              accepting the paper)
+>              8. Potential for impact to practical applications: 4
+>         (positive, a
+>              factor in accepting the paper)
+>              SUMMARY RATING: 1 (Weak acceptance.  No 1, 5 or 6 in any
+>         category,
+>              overall above 3.)
+>
+>              ----------- QUALITY JUSTIFICATION -----------
+>              The usefulness of heuristics to guide search of Clasp
+>         sometimes, is
+>              illustrated by various experiments. The results are
+>         promising for
+>              development/improvement of ASP solvers. Although, it is not
+>         clear
+>              how to obtain heuristics that will lead to better computational
+>              efficiency.
+>
+>              The authors mention, just before the experimental
+>         evaluation,  some
+>              quarantees about preserving answer sets for the main
+>         program, as
+>              heuristic rules are added to it. However, no theoretical
+>         result is
+>              provided about that.
+>
+>              ----------- INNOVATION JUSTIFICATION -----------
+>              It is interesting that the heuristic functions be defined
+>         in ASP as
+>              well, in addition to the main ASP program describing the
+>         problem,
+>              and use these heuristic functions to modify the search of
+>         the ASP
+>              solver.
+>
+>              In that sense, the presented work is relevant to the
+>         following study
+>              where some externally defined functions are used to guide
+>         the search:
+>
+>              Cakmak et al.: Computing weighted solutions in ASP:
+>              representation-based method vs. search-based method. Ann. Math.
+>              Artif. Intell. 62(3-4): 219-258 (2011)
+>
+>              ----------- IMPACT JUSTIFICATION -----------
+>              ASP provides a powerful knowledge representation and
+>         reasoning tool
+>              for various real-world applications, includig planning,
+>         diagnosis,
+>              natural language understanding, robotics, etc.
+>
+>              ----------- SUMMARY OF REVIEW FOR AUTHORS -----------
+>              It is interesting to define heuristic function in ASP and
+>         use them
+>              to modify the search of an ASP solver for better computational
+>              efficiency results. Considering the usefulness of the proposed
+>              method illustrated by some examples and also various
+>         applications of
+>              ASP that may make use of such an ASP solver, this study is
+>         important
+>              to ASP and other areas as well.
+>
+>              On the other hand, since ASP provides a formal framework for
+>              representaton and reasoning, it would be good to provide some
+>              technical results about the requirements on heuristic functions
+>              (e.g., whatif the rules defining heuristic functions are
+>              contradictory with each other, can we use aggregates to defined
+>              heuristic functions, can we use heuristic functions in the
+>         problem
+>              description), and some properties of heuristic functions (e.g.,
+>              similar to admisssibility/consistency of heuristic
+>         functions used
+>              for search).
+>
+>              It will be good to discuss under what conditions and for
+>         what kind
+>              of problems it is a good idea to use the proposed method,
+>         compared
+>              to 1) encoding domain-specific heuristics as part of the main
+>              problem description, maybe utilizing preferences, weak
+>         cnstraints,
+>              consistency restoring rules, etc. and 2) defining
+>         domain-specific
+>              heuristics externally (not in ASP) and using them to compute
+>              weighted solutions.
+>
+>              It will be good to emphasize the usefulness of defining
+>         heuristic
+>              functions in ASP (for that some more sophisticated
+>         definitions would
+>              be useful, is possible).
+>
+>              Most of the examples and discussion are around planning
+>         problems. It
+>              may be good to discuss the formulation and use of heuristic
+>              functions used in planning, as part of the proposed approach to
+>              solve planning problems.
+>
+>              The title is misleading: The presented work is more about
+>         the use of
+>              some domain-specific heuristics in ASP solvers (rather than ASP
+>              representations of problems).
+>
+>              ----------------------- REVIEW 4 ---------------------
+>              PAPER: 209
+>              TITLE: Domain-specific Heuristics in Answer Set Programming
+>              AUTHORS: (anonymous)
+>
+>              1. Technical quality: 4 (positive, a factor in accepting
+>         the paper)
+>              2. Experimental analysis: 4 (positive, a factor in
+>         accepting the paper)
+>              3. Formal analysis: 4 (positive, a factor in accepting the
+>         paper)
+>              4. Clarity/presentation: 4 (positive, a factor in accepting
+>         the paper)
+>              5. Novelty/innovation of question addressed: 3 (adequate, not a
+>              basis for accepting or rejecting the paper)
+>              6. Novelty/innovation of solution proposed: 4 (positive, a
+>         factor in
+>              accepting the paper)
+>              7. Breadth of interest to the AI community: 3 (adequate,
+>         not a basis
+>              for accepting or rejecting the paper (or not applicable))
+>              8. Potential for impact to practical applications: 4
+>         (positive, a
+>              factor in accepting the paper)
+>              SUMMARY RATING: 1 (Weak acceptance.  No 1, 5 or 6 in any
+>         category,
+>              overall above 3.)
+>
+>              ----------- QUALITY JUSTIFICATION -----------
+>              TECHNICAL QUALITY: The addition of domain-dependent
+>         heuristics in
+>              ASP is an
+>              interesting result and the technical extensions are adequately
+>              described in
+>              the paper. I particularly like the connection to planning
+>         heuristics,
+>              especially since the ability to model planning domains
+>         seemed to be of
+>              interest to the authors. While the main technical details
+>         of the
+>              paper appear
+>              to be correct, it does raise a couple questions.
+>
+>              - The authors primarily focus on look-back heuristics while
+>         look-ahead
+>                 heuristics have proven to be quite successful,
+>         especially in the
+>              planning
+>                 community. My guess is that these are possible but would
+>         probably
+>              require
+>                 more support at the solver level. Is this the case?
+>
+>              - I was wondering if the authors were familiar with the work of
+>              "Baier, Fritz,
+>                 and McIlraith (2007). Exploiting procedural domain control
+>              knowledge in
+>                 state-of-the-art planners. Proc. of ICAPS 2007"? Are any
+>         of these
+>              techniques
+>                 applicable to your approach?
+>
+>              - While the present paper focuses on domain-specific
+>         heuristics,
+>              what are the
+>                 challenges of using domain-independent heuristics, or
+>         are such
+>              methods
+>                 better served by changes at the solver level? With the
+>         number of
+>              planning
+>                 examples in the paper I can't help but think about the
+>         domain
+>              independent
+>                 heuristic methods used in the planning community (namely
+>              something like FF's
+>                 relaxed plan heuristics). Are there any opportunities for
+>              adapting these
+>                 methods in an approach like the one in the paper?
+>
+>              EXPERIMENTAL ANALYSIS: The paper presents a series of
+>         experiments using
+>              planning problems from the IPC and abductive problems with
+>         optimisation.
+>              Especially in the case of the IPC domains, a variety of
+>         heuristics
+>              are tested
+>              and compared across the problem domains. The use of real
+>         PDDL domains
+>              (converted to ASP) and planning-inspired heuristics is an
+>              interesting result.
+>              My one complaint here, however, is the presentation of data
+>         in Table
+>              3. You
+>              appear to be testing on multiple problem instances of
+>         varying plan
+>              lengths,
+>              however, only the average runtime is given. Is this a
+>         useful measure
+>              given
+>              that the solution times may vary widely between different
+>         problem
+>              instances
+>              (i.e., different problem sizes)? Also, I assume that the
+>         average
+>              runtime only
+>              covers successful instances?
+>
+>              FORMAL ANALYSIS: The paper includes a formal description of
+>         the proposed
+>              heuristic extension and how it is incorporated into the
+>         language. A
+>              discussion
+>              of some of the tested heuristics is also given. Given the
+>         comparison
+>              with
+>              planning heuristics (especially, those of Rintanen 2011,
+>         2012), I
+>              would have
+>              liked to have seen a few more details of these approaches,
+>              especially since
+>              some of them differ from more mainstream
+>         (domain-independent) planning
+>              heuristics. A more formal account of the limitations of
+>         lookback
+>              heuristics in
+>              this setting (or the problems of using lookahead heuristics
+>         at the
+>              declarative
+>              level) might also be useful for the reader.
+>
+>              CLARITY/PRESENTATION: Overall, the paper is well written and is
+>              understandable. The balance between theory and
+>         experimentation is
+>              about right.
+>              My only small gripe from a presentation point of view was the
+>              description of
+>              the "decide" process on page 2 and page 4. I would have
+>         preferred if
+>              this was
+>              set apart as a separate algorithm rather than taken out of
+>         context
+>              in this
+>              way. One other small gripe: I'm not sure why the word "the" is
+>              referenced as
+>              Footnote 6.
+>
+>              ----------- INNOVATION JUSTIFICATION -----------
+>              In some sense, the question addressed in the paper is an
+>         obvious
+>              one, given
+>              the popularity of heuristic approaches in many fields of
+>         AI, and at
+>              first
+>              glance the solution doesn't appear to be particularly novel.
+>              However, I was
+>              impressed by the breadth of heuristics that could be
+>         modelled with this
+>              approach, especially those based on planning approaches like
+>              (Rintanen 2011),
+>              which help demonstrate the potential of this extension.
+>
+>              ----------- IMPACT JUSTIFICATION -----------
+>              This paper is primarily of interest to answer set programming
+>              researchers,
+>              however, its focus on incorporating domain-specific
+>         heuristics (in
+>              particular,
+>              using planning examples) into ASP encodings may widen its
+>         appeal.
+>              Heuristic
+>              approaches have been an active area of research in many
+>         AI-related
+>              fields and
+>              in some cases, these techniques have had significant
+>         impacts (e.g.,
+>              heuristic
+>              planners). As such, the approach in the paper has the
+>         potential to
+>              improve
+>              practical applications based on ASP techniques.
+>
+>              ----------- SUMMARY OF REVIEW FOR AUTHORS -----------
+>              This paper addresses the problem of introducing domain-specific
+>              heuristics
+>              into ASP solvers, by defining a language for specifying
+>         heuristics
+>              at the
+>              declarative level. The new facility is expressive enough to
+>              accommodate a
+>              range of heuristics, including those inspired by heuristic
+>              approaches in the
+>              planning community. A description of the required extensions is
+>              given at the
+>              formal and algorithmic levels and a set of empirical
+>         results are
+>              presented
+>              using common benchmarks, abductive domains, and IPC problems.
+>
+>              Although the heuristic extension is somewhat
+>         straightforward, the
+>              empirical
+>              results are promising and indicate a useful step forward. I
+>              particularly liked
+>              the references to heuristics arising in the planning community
+>              (i.e., the work
+>              of Rintanen). However, the approach does have its
+>         limitations since the
+>              heuristic must be defined at the declarative level (rather than
+>              within the
+>              solver), and in the present paper restricts its attention
+>         to lookback
+>              heuristics. Nevertheless, the paper is well written and the
+>         result is
+>              potentially useful to the wider ASP community.
+>
+>
+>
+>
+>
+>
+
+------=_Part_30763_885118476.1363111219737
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+<html><head><style> body {height: 100%; color:#000000; font-size:12pt; font=
+-family:Times New Roman;}</style></head><body>Hi all,&nbsp;<br><br><span>Fo=
+llow my notes on the questions of Reviewer 4.&nbsp;</span><br><br><span>I</=
+span><span style=3D"font-size: 12pt;">&nbsp;don't know what's the plan for =
+answering the reviews,&nbsp;</span>but i am available for anything :-)<br><=
+br><span>Best wishes, javier</span><br><br><br>----------------------------=
+---------------------------------------------------------------------------=
+-------------------------<br><br>BAIER ET AL., Exploiting procedural domain=
+ control knowledge in state-of-the-art planners<br><br>Paper Description:<b=
+r>1. Define a GOLOG-like language for PDDL-planning.<br>&nbsp; &nbsp;The GO=
+LOG-like programs contrain the set of valid plans to the original PDDL prob=
+lem.<br>&nbsp; &nbsp;This way the search space becomes smaller and search i=
+s easier.<br>&nbsp; &nbsp;Technically, the GOLOG-like programs are translat=
+ed to PDDL-language and integrated&nbsp;<br>&nbsp; &nbsp; &nbsp;with the or=
+iginal PDDL problem into a new PDDL problem.<br>&nbsp; &nbsp;The approach a=
+llows to use normal PDDL-planners with GOLOG-like programs&nbsp;<br>&nbsp; =
+&nbsp; &nbsp;using as input the new PDDL problem generated.<br>2. Modify a =
+PDDL-planner heuristic to improve the performance.<br>&nbsp; &nbsp; &nbsp;G=
+OLOG-like program leave room for indeterminism, so search is still needed.&=
+nbsp;<br>&nbsp; &nbsp; &nbsp;The normal heuristics do not work well with th=
+e new PDDL problem generated.<br>&nbsp;&nbsp;&nbsp;&nbsp; Two modifications=
+ of the normal heuristic of the planner are proposed,&nbsp;<br>&nbsp;&nbsp;=
+&nbsp;&nbsp; and the experiments show that the results are better.<br>&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;<br>They cite:&nbsp;<br>&nbsp; SON ET AL., Domain =
+dependent knowledge in answer set planning<br>where they define a GOLOG-lik=
+e language for ASP-planning,&nbsp;<br>with a translation of GOLOG-like sent=
+ences to ASP sentences.<br>So here they did step 1 of BAIER ET AL. for ASP,=
+ but not step 2.<br>-&gt; With hclasp we could do step 2 for ASP planning<b=
+r><br>Our mailbot experiments:<br>1. Torsten's encoding approached step 1,&=
+nbsp;<br>&nbsp; &nbsp;adding contraints to a basic ASP encoding to constrai=
+n the search space.<br>&nbsp; &nbsp;Results were much better than with no c=
+onstraints<br>2. I used hclasp to do step 2, forcing hclasp to do a forward=
+ search on actions,&nbsp;<br>&nbsp; &nbsp;and the results were much better =
+than only with step 1.<br>&nbsp;<br>COMMENTS:<br>&nbsp; GOLOG-like language=
+s constrain the set of valid plans. This can be done in ASP with rules and =
+constraints.<br>&nbsp; Hclasp can be used to guide the search but not to el=
+iminate plans.<br>&nbsp; So hclasp can be used (i) to complement an asp enc=
+oding of golog programs (as in step 2 of mailbot experiments)<br>&nbsp; or =
+(ii) simply to guide the search with the basic encoding.<br>&nbsp;&nbsp;<br=
+>An example of (ii) could be as follows.&nbsp;<br>In BAIER ET AL. they cons=
+ider the Trucks IPC domain, and the following control knowledge:<br><br>&nb=
+sp; Repeat the following until all packages have been delivered:<br>&nbsp; =
+&nbsp; Unload everything from the truck, and,&nbsp;<br>&nbsp;&nbsp;&nbsp;&n=
+bsp;if there is any package in the current location whose destination is th=
+e current location, deliver it.<br>&nbsp; &nbsp; After that, if any of the =
+local packages have destinations elsewhere, load them on the truck while th=
+ere is space.<br>&nbsp;&nbsp;&nbsp;&nbsp;Drive to the destination of any of=
+ the loaded packages.<br>&nbsp;&nbsp;&nbsp;&nbsp;If there are no packages l=
+oaded on the truck, but there remain packages at locations<br>&nbsp;&nbsp;&=
+nbsp;&nbsp; &nbsp;other than their destinations, drive to one of these loca=
+tions.<br><br>&nbsp;&nbsp;&nbsp;&nbsp;This could be represented as heuristi=
+c knowledge with the following sentences,&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; =
+(but note that this is heuristic knowledge, and does not delete any possibl=
+e plan)<br>&nbsp;<br><br><br><span class=3D"Apple-tab-span" style=3D"white-=
+space:pre">=09=09</span>_heuristic(apply(A,T),true,5) :- poss(A,T),&nbsp;<b=
+r><span class=3D"Apple-tab-span" style=3D"white-space:pre">=09=09=09=09=09=
+=09=09=09=09=09</span> A =3D deliver(Package,Location), goal(delivered_pack=
+age(Package,Location)).<br><br><span class=3D"Apple-tab-span" style=3D"whit=
+e-space:pre">=09=09</span>_heuristic(apply(A,T),true,4) :- poss(A,T),&nbsp;=
+<br><span class=3D"Apple-tab-span" style=3D"white-space:pre">=09=09=09=09=
+=09=09=09=09=09=09</span> A =3D unload(Package,Truck,TruckArea,Location),<b=
+r><span class=3D"Apple-tab-span" style=3D"white-space:pre">=09=09=09=09=09=
+=09=09=09=09=09</span> not apply(load(Package2,Truck,TruckArea,Location),T-=
+1) : holds(in(Package2,Truck,TruckArea),T).<br><span class=3D"Apple-tab-spa=
+n" style=3D"white-space:pre">=09=09=09=09=09=09=09=09=09=09</span> % THERE =
+IS A PROBLEM HERE, BECAUSE WE DONT WANT TO UNLOAD IF WE CANNOT DELIVER,&nbs=
+p;<br><span class=3D"Apple-tab-span" style=3D"white-space:pre">=09=09=09=09=
+=09=09=09=09=09=09</span> % WE WANT TO UNLOAD IF WE CANNOT DELIVER AND WE D=
+ID NOT START LOADING<br><span class=3D"Apple-tab-span" style=3D"white-space=
+:pre">=09=09=09=09=09=09=09=09=09=09</span> % SO WE HAVE TO ADD LAST LINE<b=
+r><span class=3D"Apple-tab-span" style=3D"white-space:pre">=09=09=09=09=09=
+=09=09=09=09=09</span>&nbsp;<br><span class=3D"Apple-tab-span" style=3D"whi=
+te-space:pre">=09=09</span>_heuristic(apply(A,T),true,3) &nbsp;:- poss(A,T)=
+,&nbsp;<br><span class=3D"Apple-tab-span" style=3D"white-space:pre">=09=09=
+=09=09=09=09=09=09=09=09</span> &nbsp;A =3D load(Package,Truck,TruckArea,Lo=
+cation),<br><span class=3D"Apple-tab-span" style=3D"white-space:pre">=09=09=
+=09=09=09=09=09=09=09=09</span> &nbsp;goal(delivered_package(Package,Locati=
+on2)), Location !=3D Location2.<br><span class=3D"Apple-tab-span" style=3D"=
+white-space:pre">=09=09</span><br><span class=3D"Apple-tab-span" style=3D"w=
+hite-space:pre">=09=09</span>_heuristic(apply(A,T),true,2) &nbsp;:- poss(A,=
+T),&nbsp;<br><span class=3D"Apple-tab-span" style=3D"white-space:pre">=09=
+=09=09=09=09=09=09=09=09=09</span> &nbsp;A =3D drive(Truck,From,Location),&=
+nbsp;<br><span class=3D"Apple-tab-span" style=3D"white-space:pre">=09=09=09=
+=09=09=09=09=09=09=09</span> &nbsp;holds(in(Package,Truck,Area),T), goal(de=
+livered_package(Package,Location)).<br><span class=3D"Apple-tab-span" style=
+=3D"white-space:pre">=09=09</span><br><span class=3D"Apple-tab-span" style=
+=3D"white-space:pre">=09=09</span>_heuristic(apply(A,T),true,1) &nbsp;:- po=
+ss(A,T),&nbsp;<br><span class=3D"Apple-tab-span" style=3D"white-space:pre">=
+=09=09=09=09=09=09=09=09=09=09</span> &nbsp;A =3D drive(Truck,From,Location=
+),&nbsp;<br><span class=3D"Apple-tab-span" style=3D"white-space:pre">=09=09=
+=09=09=09=09=09=09=09=09</span> &nbsp;holds(at(Package,Location),T), not go=
+al(delivered_package(Package,Location)).<br>&nbsp;&nbsp;&nbsp;&nbsp;<br>&nb=
+sp;&nbsp;&nbsp;&nbsp;---&gt;&nbsp;I think the example is too complex to wri=
+te it in the rebuttal.<br><br>---------------------------------------------=
+---------------------------------------------------------------------------=
+--------------------&nbsp;&nbsp;&nbsp;&nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;<br=
+>&nbsp;&nbsp;&nbsp;&nbsp;LOOKAHEAD HEURISTICS<br>&nbsp;&nbsp;&nbsp;&nbsp;<b=
+r>&nbsp;&nbsp;&nbsp;&nbsp;The paper definition of hclasp allows to use look=
+ahead heuristics, although we havent implemented that option.<br>&nbsp;&nbs=
+p;&nbsp;&nbsp;However, right now i see no way to apply hclasp (even with lo=
+okahead heuristics) to simulate the lookahead heuristics that are used in p=
+lanning.<br>&nbsp;&nbsp;&nbsp;&nbsp;For example, some PDDL planners solve f=
+or each possible next state a relaxed planning problem,&nbsp;<br>&nbsp;&nbs=
+p;&nbsp;&nbsp;and then depending on the result assign a score to each state=
+ and based on that choose an action.<br>&nbsp;&nbsp;&nbsp;&nbsp;In hclasp t=
+o do that we would have to somehow encode that relaxed planning problem for=
+ every possible state,&nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;and i dont know if =
+that could be done, but surely it wouldnt be efficient.<br>&nbsp;&nbsp;&nbs=
+p;&nbsp;Rather, for simulating lookahead heuristics it may be better to fol=
+low Rintanen's approach of<br>&nbsp;&nbsp;&nbsp;&nbsp;Jussi Rintanen: Plann=
+ing with SAT, Admissible Heuristics and A*. IJCAI 2011: 2015-2020, using co=
+nstraints.<br>&nbsp;&nbsp;&nbsp;&nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;<br>-----=
+---------------------------------------------------------------------------=
+-------------------------------------------------------------&nbsp;&nbsp;&n=
+bsp;&nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;<br>----- Mensaje original -----<br>D=
+e: Javier Romero Davila &lt;jromerod@udc.es&gt;<br>Para: gebser@cs.uni-pots=
+dam.de<br>CC: Torsten Schaub (Mobile) &lt;torsten@cs.uni-potsdam.de&gt;, Be=
+njamin Kaufmann &lt;kaufmann@cs.uni-potsdam.de&gt;, otero@udc.es, Philipp W=
+anko &lt;phil.wanko@googlemail.com&gt;<br>Enviado: Tue, 12 Mar 2013 03:54:2=
+2 +0100 (CET)<br>Asunto: Re: AAAI-13 Author Response Open (paper 209)<br><b=
+r>Hi all,<br><br>I agree with Martin's comments,<span><br>although maybe I =
+would stress that even when&nbsp;we cannot make general recommendations&nbs=
+p;<br>about what heuristic rules to write,&nbsp;</span><span>the paper resu=
+lts already provide good heuristics for&nbsp;</span><br>the "general" probl=
+ems of optimization and pddl-planning.<br><br><span>I checked the paper of =
+Fritz, Baier and McIlraith that mentions reviewer 4.&nbsp;</span><br><span>=
+I will go deeper tomorrow, but from what i read,&nbsp;<br>th</span><span>ey=
+ apply a GOLOG-like language to a pddl-planner to improve the search.&nbsp;=
+</span><br><span><span>I think we&nbsp;</span>dont know right now how to do=
+ something like that in hclasp (or whether it is possible).</span><br><span=
+>However, in the paper (that is attached) they present an example with the =
+Trucks domain</span><br><span>(that they use in their experiments)&nbsp;</s=
+pan><span>that is very easy to represent with hclasp,&nbsp;</span><br><span=
+>so we could include the hclasp encoding of that in our answer.&nbsp;</span=
+><br><br>Bis morgen :-)<br><span>javier</span><br><br>----- Mensaje origina=
+l -----<br>De: Martin Gebser &lt;gebser@cs.uni-potsdam.de&gt;<br>Para: Tors=
+ten Schaub (Mobile) &lt;torsten@cs.uni-potsdam.de&gt;<br>CC: Benjamin Kaufm=
+ann &lt;kaufmann@cs.uni-potsdam.de&gt;, otero@udc.es, Javier Romero Davila =
+&lt;jromerod@udc.es&gt;, Philipp Wanko &lt;phil.wanko@googlemail.com&gt;<br=
+>Enviado: Tue, 12 Mar 2013 01:47:52 +0100 (CET)<br>Asunto: Re: AAAI-13 Auth=
+or Response Open (paper 209)<br><br>On 03/12/2013 01:08 AM, Torsten Schaub =
+(Mobile) wrote:<br>&gt; Ooops, my 'What do you think?' concerned the review=
+s :) -t<br><br>Alright, I misunderstood this. After reading the reviews, I =
+first think <br>that all are absolutely fair, so no need to complain.<br><b=
+r>A crucial remark in Review 2 is the following:<br><br>The authors start o=
+f the paper by making the bold claim that domain <br>specific solvers never=
+ need to be made again. That's a really strong <br>claim, and it's just not=
+ supported by the empirical evaluation.<br><br>I didn't recheck the paper, =
+but if the claim is in, some relativization <br>may be appropriate.<br><br>=
+Reviewer 1 and 2 are worried about whether the experiments can point out <b=
+r>general recipes for heuristics. As there seems to be no clear <br>recomme=
+ndation at present, it may be good to say that we are still about <br>to ex=
+plore the new possibilities and cannot make recommendations which <br>heuri=
+stics shall be implemented for the moment.<br><br>Beyond this, I saw the qu=
+estions in Review 4, but I'd like to leave <br>replies to one of you ;-)<br=
+><br>Cheers,<br>Martin<br><br>PS: The literature references in Review 1 and=
+ 3 as well as the remarks <br>in Review 4 are kind ouf coming-outs by the r=
+eviewers, which I would <br>interpret as signs of their goodwill :-)<br><br=
+><br>&gt; Torsten Schaub &gt;&gt;<br>&gt;<br>&gt;<br>&gt; On Tue, Mar 12, 2=
+013 at 12:58 AM, Martin Gebser<br>&gt;&gt; wrote:<br>&gt;<br>&gt;&nbsp;&nbs=
+p;&nbsp;&nbsp; On 03/12/2013 12:44 AM, Torsten Schaub (Mobile) wrote:<br>&g=
+t;<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; I guess this tim=
+e all marked as 'corresponding authors' got the<br>&gt;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp; reviews.<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp; What do you think? -t<br>&gt;<br>&gt;<br>&gt;&nbsp;&nbsp=
+;&nbsp;&nbsp; I'd also guess so for EasyChair. But I better don't count on =
+it either.<br>&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp; Martin<br>&gt;<br>&gt;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; --<br>&gt;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Torsten Schaub &gt;<br>&gt;&gt;&gt;&gt;<br>&=
+gt;<br>&gt;<br>&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+ On Tue, Mar 12, 2013 at 12:09 AM, Martin Gebser<br>&gt;<br>&gt;&gt;&gt;&gt=
+; wrote:<br>&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Hi all,<br>&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;maybe you =
+already got the info from AAAI (which I didn't<br>&gt;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp; read in<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;detail yet). As I'm fir=
+st in the alphabetic author order, I<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp; forward<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;things to be sure that you have t=
+hem too.<br>&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Cheers,<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Martin<br>&gt;<br>=
+&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;-------- Original Message --------<br>&gt;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sub=
+ject: AAAI-13 Author Response Open (paper 209)<br>&gt;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Date: Mon, 1=
+1 Mar 2013 23:28:53 +0100<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;From: AAAI-13 &gt;&gt;&gt;&gt;<br=
+>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;To: Martin Gebser &gt;<br>&gt;&gt;&gt;&gt;<br>&gt;<br>&gt;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;Dear Martin,<br>&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Thank you for your submission to=
+ the AAAI-13. The AAAI-13<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp; review<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;response period will be between NOW and March=
+ 13 at 5:00PM PDT.<br>&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;During this time, you will have =
+access to the current state<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp; of your<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;reviews and have the opportunity to submit=
+ a response of up<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; t=
+o 500<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;words. Please keep in mind the following during this =
+process:<br>&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* The response must focus on any factual e=
+rrors in the<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; review=
+s and<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;any questions posed by the reviewers. It must not pro=
+vide new<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;research results or reformulate the presentation. =
+Try to be as<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;concise and to the point as possible.<br>&gt;<=
+br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;* The review response period is an opportunity to react to =
+the<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;reviews, but not a requirement to do so. Thus, if you f=
+eel the<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;reviews are accurate and the reviewers have not ask=
+ed any<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; questions,<b=
+r>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;then you should not respond.<br>&gt;<br>&gt;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* The r=
+eviews are as submitted by the PC members, without any<br>&gt;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;coor=
+dination between them. Thus, there may be inconsistencies.<br>&gt;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+Furthermore, these are not the final versions of the<br>&gt;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; reviews. The<br>&gt;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;reviews will=
+ be updated to take into account the<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp; discussions at the<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;program committee meet=
+ing, and we may find it necessary to<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp; solicit<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;other outside reviews after the r=
+eview response period.<br>&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* The program committee will=
+ read your responses carefully<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp; and take<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this information into account during t=
+he discussions. On<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+the other<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;hand, the program committee will not directly res=
+pond to your<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;responses, either before the program committee=
+ meeting or<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; in the<=
+br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;final versions of the reviews.<br>&gt;<br>&gt;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* Yo=
+ur response will be seen by all PC members who have<br>&gt;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; access to<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the discussion o=
+f your paper, so please try to be polite and<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;constructive.<=
+br>&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;The reviews on your paper are attached to this lett=
+er. To<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; submit<br>&g=
+t;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;your response you should log on the EasyChair Web site<br>&gt;<b=
+r>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (https://www.easycha=
+ir.org/____account/signin.cgi?conf=3Daaai13<br>&gt;<br>&gt;&gt;__&gt;__) an=
+d<br>&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;select your submission on the menu. The author re=
+sponse<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; period ends<=
+br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;promptly at 5:00pm PDT on Wednesday, March 13 and no author=
+<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; feedback<br>&gt;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;will be allowed after that time.<br>&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Thank you,<=
+br>&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;Marie desJardins and Michael Littman<br>&gt;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;AAAI-13 Program Cochairs<br>&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;----------------------- =
+REVIEW 1 ---------------------<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PAPER: 209<br>&gt;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;T=
+ITLE: Domain-specific Heuristics in Answer Set Programming<br>&gt;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+AUTHORS: (anonymous)<br>&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1. Technical quality: 3 (adequ=
+ate, not a basis for accepting or<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rejecting the paper)<br>&=
+gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;2. Experimental analysis: 3 (adequate, not a basis for<br>&gt;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; accepting or<br>&gt;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;rejecting the paper (or not applicable))<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3. Formal analys=
+is: 3 (adequate, not a basis for accepting or<br>&gt;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rejecting the=
+ paper (or not applicable))<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4. Clarity/presentation: 3 (ade=
+quate, not a basis for<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp; accepting or<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rejecting the paper)<br>&gt;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5. No=
+velty/innovation of question addressed: 3 (adequate, not a<br>&gt;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+basis for accepting or rejecting the paper)<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;6. Novelty/inno=
+vation of solution proposed: 4 (positive, a<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp; factor in<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;accepting the paper)<br>=
+&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;7. Breadth of interest to the AI community: 3 (adequate,<br>&g=
+t;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; not a basis<br>&gt;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;for accepting or rejecting the paper (or not applicable))<br>&gt;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;8. Potential for impact to practical applications: 3<br>&gt;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (adequate, not<br>&gt;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a basis=
+ for accepting or rejecting the paper (or not<br>&gt;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp; applicable))<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SUMMARY RATING: 1 (=
+Weak acceptance.&nbsp;&nbsp;No 1, 5 or 6 in any<br>&gt;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp; category,<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;overall above 3.)<br=
+>&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;----------- QUALITY JUSTIFICATION -----------<br>&gt;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;The paper presents an approach for integrating domain-specific<br>=
+&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;heuristics into ASP solving. The approach is based on the<br>&=
+gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; use of<br>&gt;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+heuristic atoms and rules in logic programs, and is<br>&gt;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; implemented by<br>&gt;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;modifying t=
+he heuristic functions of an existing algorithm<br>&gt;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp; (CDCL).<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The authors present cl=
+early and in detail how the new heuristic<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;predicate that th=
+ey introduce are used in the non-deterministic<br>&gt;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;assignment o=
+f literals. WIth some small examples, they<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp; describe the<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;use of each of the fou=
+r different heuristic modifiers.<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp; There are,<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;though, some questions, for which =
+the answers are not<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+ clear: how can<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;someone select the appropriate heuristic ru=
+les for a specific<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;problem? what is the scope of problems/p=
+rograms that this<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; a=
+pproach<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;is appropriate for? overall, it would help if the a=
+uthors<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; could give<b=
+r>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;a bigger running example to describe their approach,<br>&gt;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; instead of the<br>&gt;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;small examples that they give for each different modifier.<br>&gt;<br>=
+&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;The results of the experiments show that the proposed approach=
+<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;improves the performance of ASP reasoning in most cases.<b=
+r>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The authors<br>&gt;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;comment on the results of the experiments, without, though,<br>&gt;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;explaining, why some of the heuristics perform better in some<br>&=
+gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;problems and worse in others. Without a formal analysis on the<=
+br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;selection of heuristics or some explanation of the results<=
+br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; of the<br>&gt;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;experiments, it is not clear how one could select the<br>&gt;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; appropriate<br>&gt;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;heuristi=
+cs for a given problem - and by randomly selecting<br>&gt;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;heuristi=
+cs, someone may end up with a worse performance.<br>&gt;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The authors<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;admit in the end =
+that they just provide indications on the<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp; prospect<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;of this approach, and that =
+more systematic studies are<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp; needed to<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;exploit the full power of the approach.<=
+br>&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;----------- INNOVATION JUSTIFICATION -----------<br=
+>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;The problem of optimising algorithms for ASP solving is not<b=
+r>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; new. It<br>&gt;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;is, however, very challenging, and there are many different<br>&gt;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;approaches to solve it, many of which are cited in the<br>&gt;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; paper. Other<br>&gt;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;simil=
+ar approaches that the authors do not mention are:<br>&gt;<br>&gt;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+Wolfgang Faber, Nicola Leone, Gerald Pfeifer: Experimenting<br>&gt;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; with<br>&gt;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Heuristics fo=
+r Answer Set Programming. IJCAI 2001: 635-640<br>&gt;<br>&gt;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Wolfg=
+ang Faber, Nicola Leone, Marco Maratea, Francesco Ricca:<br>&gt;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ex=
+perimenting with Look-Back Heuristics for Hard ASP<br>&gt;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Programs. LPNMR<br>&gt;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2007: 110-1=
+22<br>&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;Wolfgang Faber, Nicola Leone, and Gerald Pfeifer=
+. A<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Comparison of<b=
+r>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;Heuristics for Answer Set Programming. In Proceedings of<br>=
+&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; the 5th<br>&gt;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;Dutch-German Workshop on Nonmonotonic Reasoning Techniques<br>&gt;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; and their<br>&gt;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Applica=
+tions (DGNMR 2001), pages 64-75, April 2001.<br>&gt;<br>&gt;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The no=
+velty of the proposed approach is that it is not<br>&gt;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp; based on the<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;modification of =
+an ASP solver, but rather on extending the<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp; logic<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;program with appropriate rule=
+s that contain the heuristic<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp; predicate.<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Although the idea has not been fully a=
+nalyzed and evaluated<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p; yet, it<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;is interesting and the initial results seem prom=
+ising.<br>&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;----------- IMPACT JUSTIFICATION -----------=
+<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;Optimising ASP solvers is of interest to the AI community,=
+<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; because<br>&gt;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;of this challenging characteristics but also because of the<br>&gt;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;application of ASP. Although the results of the experiments<br>&gt;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; show<br>&gt;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;that t=
+he proposed approach is promising, it should be further<br>&gt;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ana=
+lysed before its potential is actually proved and fully<br>&gt;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;exp=
+loited. The authors have to explain how one can select the<br>&gt;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+appropriate heuristic rules for a given problem, either by<br>&gt;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; further<br>&gt;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;analysing t=
+heir approach or by appropriately interpreting and<br>&gt;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;analysin=
+g the results of the experiments. They also have to<br>&gt;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; define<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;clearly the scope o=
+f problems that they can solve, and the<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp; range of<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;applications that could benef=
+it from this approach. For<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp; example, is<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;it only relevant to planning problems? =
+If not, how could<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; s=
+omeone<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;adapt it to other types of problems?<br>&gt;<br>&gt;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;----------- SUMMARY OF REVIEW FOR AUTHORS -----------<br>&gt;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;Overall, the paper presents an approach for optimising ASP<br>&gt;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; solving<br>&gt;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;using d=
+omain-specific heuristics. The proposed methodology<br>&gt;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; is novel<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;in ASP and the in=
+itial results are promising. However, the<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp; authors<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;should better present it thr=
+ough one big example, so that<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp; the scope<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;becomes more clear. Also, they should =
+further analyse their<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;approach, so that it's also clear how=
+ one can select the<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+ appropriate<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;heuristics for a given problem, and convince i=
+n this way<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; about th=
+e<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;real potential of the approach.<br>&gt;<br>&gt;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-=
+---------------------- REVIEW 2 ---------------------<br>&gt;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PAPER=
+: 209<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;TITLE: Domain-specific Heuristics in Answer Set Progr=
+amming<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;AUTHORS: (anonymous)<br>&gt;<br>&gt;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1. Tech=
+nical quality: 4 (positive, a factor in accepting<br>&gt;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; the paper)<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2. Experimental a=
+nalysis: 2 (problematic, a factor in<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp; rejecting the<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;paper)<br>&gt;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3. F=
+ormal analysis: 4 (positive, a factor in accepting the<br>&gt;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; paper)<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4. Clarity/prese=
+ntation: 2 (problematic, a factor in<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp; rejecting the<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;paper)<br>&gt;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5. N=
+ovelty/innovation of question addressed: 4 (positive, a<br>&gt;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; factor<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;in accepting th=
+e paper)<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;6. Novelty/innovation of solution proposed: 4 (pos=
+itive, a<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; factor in<=
+br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;accepting the paper)<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;7. Breadth of interest=
+ to the AI community: 4 (positive, a<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp; factor in<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;accepting the paper)<br>&gt;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;8. Potential for impact to practical applications: 3<br>&gt;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (adequate, not<br>&gt;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a ba=
+sis for accepting or rejecting the paper (or not<br>&gt;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp; applicable))<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SUMMARY RATING: =
+1 (Weak acceptance.&nbsp;&nbsp;No 1, 5 or 6 in any<br>&gt;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; category,<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;overall above 3.)=
+<br>&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;----------- QUALITY JUSTIFICATION -----------<br>&=
+gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;The paper was very difficult to follow.&nbsp;&nbsp;Descriptions=
+ of<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; previous<br>&gt=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;work, and even the problem being solved, were exceptionally<br>&g=
+t;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; brief.<br>&gt;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;The notation used was also assumed to be understood, with a<br>&=
+gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;reference to another paper provided in place of an actual<br>&g=
+t;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;explanation.&nbsp;&nbsp;There are several issues with the clarit=
+y of the<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;writing with the work presented in the paper as we=
+ll.<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Phr=
+ases like<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;"Thus, while the atom occ(climb,1) is preferably =
+made true,<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; false<br=
+>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;should rather be assigned to occ(climb,1)" appear with some<b=
+r>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;frequency.&nbsp;&nbsp;Basically, things that seem contradict=
+ory at first<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;glance and take a bit of puzzling to figure ou=
+t the meaning<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; of th=
+e<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;authors.<br>&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The authors start of the=
+ paper by making the bold claim<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp; that domain<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;specific solvers never need to be =
+made again.&nbsp;&nbsp;That's a really<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;strong claim, and it=
+'s just not supported by the empirical<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;evaluation. Specific=
+ally, we never see a comparison to a domain<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;specific solver=
+ in the evaluation.&nbsp;&nbsp;Further, we don't see a<br>&gt;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; proof<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;that the language=
+ provided here can provide any desirable<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;heuristics, nor ar=
+e we presented with any discussion of the<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp; kinds of<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;heuristic information used =
+by domain-specific solvers.<br>&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;That said, the discussi=
+on of the heuristics provided by this<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;technique, how and wh=
+y they work, and what kinds of<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp; expressive power<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;they give you is very thorough=
+. You just have to work for<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp; it a bit<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;harder than maybe is needed.<br>&gt;<br>&=
+gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;That sum of all runtimes are presented rather than mean<br>&gt;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; runtimes<br>&gt;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;s=
+eems a bit odd to me.&nbsp;&nbsp;I understand the interest in the time<br>&=
+gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;required to solve an entire suite of problems, but I've<br>&gt;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; always been<br>&gt;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;interested in runtimes on single instances.&nbsp;&nbsp;It would be<br>&gt=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nice to see<br>&gt;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;both.<br>&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;----------- INNOVATION JUSTIFICATION -----=
+------<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;The idea of not wanting to write a large set of spec=
+ial-purpose<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;solvers is basically the corner stone of AI. So=
+, the<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; problem being=
+<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;addressed isn't novel on its own. However, it feels like<b=
+r>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; people are<br>&gt;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;focusing on ever narrower aspects of particular domains and<br>&gt;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;problems, and to see a paper come in and try to go in the other<br>=
+&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;direction, towards the more general, is refreshing.<br>&gt;<br=
+>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;Trying to extrapolate heuristic information from the search<b=
+r>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; space<br>&gt;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;during solving is also not new. Heuristic search planners<br>&gt;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; have been<br>&gt;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;doing it=
+ for the last few years.&nbsp;&nbsp;However, doing it by<br>&gt;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; application<br>&gt;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;of rules =
+like these is something I've not seen the like of<br>&gt;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; before,<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;and it's very intere=
+sting.<br>&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;----------- IMPACT JUSTIFICATION -----------=
+<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;People in the automatic configuration of algorithms<br>&gt=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; community may be<br>&gt;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;very excited about this work.&nbsp;&nbsp;Tweaking the various<br>&g=
+t;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; parameters of<br>&gt;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;solvers to get better run-times is one thing, but tuning the<br>&gt;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;heuristic information for solving a family of problems based on<br>=
+&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;performance will be a new and exciting avenue for them to<br>&=
+gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; follow.<br>&gt;<br>&gt;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;----------- SUMMARY OF REVIEW FOR AUTHORS -----------<br>&gt;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;This paper presents a new technique for encoding<br>&gt;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; domain-specific<br>&gt;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;heuristic=
+ information in a way where it can be used by a<br>&gt;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;non-domain-=
+specific solver.&nbsp;&nbsp;The description of the<br>&gt;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; technique is<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;hard to follow=
+ for anyone not already intimately familiar with<br>&gt;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;answer set=
+ programming, and beyond that several bits of the<br>&gt;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; paper<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;require multiple reads=
+ as the writing itself is sometimes<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp; unclear.<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The paper makes some =
+very strong claims, namely the end of<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;domain-specific solve=
+rs, which it doesn't really deliver<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp; on.&nbsp;&nbsp;What<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;it does present, a lan=
+guage for encoding heuristic<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp; information in<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;answer set programming, is very in=
+teresting and is likely<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp; to open up<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;new avenues of research in both answer-set =
+programming as<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; well=
+ as<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;automatic algorithm configuration.<br>&gt;<br>&gt;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;----------------------- REVIEW 3 ---------------------<br>&gt;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+PAPER: 209<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;TITLE: Domain-specific Heuristics in Answer Set =
+Programming<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;AUTHORS: (anonymous)<br>&gt;<br>&gt;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.=
+ Technical quality: 3 (adequate, not a basis for accepting or<br>&gt;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;rejecting the paper)<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2. Experimental analysis: 4 (positi=
+ve, a factor in<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; acc=
+epting the paper)<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3. Formal analysis: 2 (problematic, a fac=
+tor in rejecting<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; th=
+e paper)<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;4. Clarity/presentation: 3 (adequate, not a basis =
+for<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; accepting or<br=
+>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;rejecting the paper)<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5. Novelty/innovation of=
+ question addressed: 3 (adequate, not a<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;basis for accepting=
+ or rejecting the paper)<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;6. Novelty/innovation of solution =
+proposed: 4 (positive, a<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp; factor in<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;accepting the paper)<br>&gt;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;7. Bre=
+adth of interest to the AI community: 4 (positive, a<br>&gt;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; factor in<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;accepting the p=
+aper)<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;8. Potential for impact to practical applications: 4<=
+br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (positive, a<br>&gt=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;factor in accepting the paper)<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SUMMARY RATING: 1 =
+(Weak acceptance.&nbsp;&nbsp;No 1, 5 or 6 in any<br>&gt;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp; category,<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;overall above 3.)<b=
+r>&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;----------- QUALITY JUSTIFICATION -----------<br>&gt=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;The usefulness of heuristics to guide search of Clasp<br>&gt;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sometimes, is<br>&gt;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+illustrated by various experiments. The results are<br>&gt;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; promising for<br>&gt;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;development/=
+improvement of ASP solvers. Although, it is not<br>&gt;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp; clear<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;how to obtain heuristics=
+ that will lead to better computational<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;efficiency.<br>&gt;=
+<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;The authors mention, just before the experimental<br>&gt;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; evaluation,&nbsp;&nbsp;some=
+<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;quarantees about preserving answer sets for the main<br>&g=
+t;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; program, as<br>&gt;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;heuristic rules are added to it. However, no theoretical<br>&gt;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; result is<br>&gt;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;provide=
+d about that.<br>&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;----------- INNOVATION JUSTIFICATION =
+-----------<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;It is interesting that the heuristic functions =
+be defined<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; in ASP a=
+s<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;well, in addition to the main ASP program describing the<=
+br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; problem,<br>&gt;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;and use these heuristic functions to modify the search of<br>&gt;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; the ASP<br>&gt;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;solver=
+.<br>&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;In that sense, the presented work is relevant to =
+the<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; following study=
+<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;where some externally defined functions are used to guide<=
+br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; the search:<br>&gt;=
+<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;Cakmak et al.: Computing weighted solutions in ASP:<br>&gt=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;representation-based method vs. search-based method. Ann. Math.<b=
+r>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;Artif. Intell. 62(3-4): 219-258 (2011)<br>&gt;<br>&gt;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;----------- IMPACT JUSTIFICATION -----------<br>&gt;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ASP provide=
+s a powerful knowledge representation and<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp; reasoning tool<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for various real-worl=
+d applications, includig planning,<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp; diagnosis,<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;natural language understanding, =
+robotics, etc.<br>&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;----------- SUMMARY OF REVIEW FOR AU=
+THORS -----------<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;It is interesting to define heuristic fun=
+ction in ASP and<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; us=
+e them<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;to modify the search of an ASP solver for better com=
+putational<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;efficiency results. Considering the usefulness o=
+f the proposed<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;method illustrated by some examples and also=
+ various<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; applicatio=
+ns of<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;ASP that may make use of such an ASP solver, this stu=
+dy is<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; important<br>=
+&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;to ASP and other areas as well.<br>&gt;<br>&gt;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;On the=
+ other hand, since ASP provides a formal framework for<br>&gt;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;repr=
+esentaton and reasoning, it would be good to provide some<br>&gt;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;t=
+echnical results about the requirements on heuristic functions<br>&gt;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;(e.g., whatif the rules defining heuristic functions are<br>&gt;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;contradictory with each other, can we use aggregates to defined<br>&gt;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;heuristic functions, can we use heuristic functions in the<br>&gt;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; problem<br>&gt;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;desc=
+ription), and some properties of heuristic functions (e.g.,<br>&gt;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;similar to admisssibility/consistency of heuristic<br>&gt;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; functions used<br>&gt;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for search)=
+.<br>&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;It will be good to discuss under what conditions =
+and for<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; what kind<b=
+r>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;of problems it is a good idea to use the proposed method,<br=
+>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; compared<br>&gt;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;to 1) encoding domain-specific heuristics as part of the main<br>&gt;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;problem description, maybe utilizing preferences, weak<br>&gt;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cnstraints,<br>&gt;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cons=
+istency restoring rules, etc. and 2) defining<br>&gt;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp; domain-specific<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;heuristics exter=
+nally (not in ASP) and using them to compute<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;weighted solut=
+ions.<br>&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;It will be good to emphasize the usefulness o=
+f defining<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; heuristi=
+c<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;functions in ASP (for that some more sophisticated<br>&gt=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; definitions would<br>&gt;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;be useful, is possible).<br>&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Most of the examp=
+les and discussion are around planning<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp; problems. It<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;may be good to discuss the=
+ formulation and use of heuristic<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;functions used in plannin=
+g, as part of the proposed approach to<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;solve planning probl=
+ems.<br>&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The title is misleading: The presented work is=
+ more about<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; the use=
+ of<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;some domain-specific heuristics in ASP solvers (rather =
+than ASP<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;representations of problems).<br>&gt;<br>&gt;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;----------------------- REVIEW 4 ---------------------<br>&gt;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+PAPER: 209<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;TITLE: Domain-specific Heuristics in Answer Set =
+Programming<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;AUTHORS: (anonymous)<br>&gt;<br>&gt;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.=
+ Technical quality: 4 (positive, a factor in accepting<br>&gt;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; the paper)<br>&gt;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2. Experimen=
+tal analysis: 4 (positive, a factor in<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp; accepting the paper)<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3. Formal analysis=
+: 4 (positive, a factor in accepting the<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp; paper)<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4. Clarity/presentation: 4 (po=
+sitive, a factor in accepting<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp; the paper)<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5. Novelty/innovation of question add=
+ressed: 3 (adequate, not a<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;basis for accepting or rejecting=
+ the paper)<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;6. Novelty/innovation of solution proposed: 4 (=
+positive, a<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; factor =
+in<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;accepting the paper)<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;7. Breadth of inter=
+est to the AI community: 3 (adequate,<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp; not a basis<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for accepting or rejecting t=
+he paper (or not applicable))<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;8. Potential for impact to pr=
+actical applications: 4<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp; (positive, a<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;factor in accepting the paper)<br>&gt;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;SUMMARY RATING: 1 (Weak acceptance.&nbsp;&nbsp;No 1, 5 or 6 in any<br=
+>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; category,<br>&gt;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;overall above 3.)<br>&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;----------- QUALITY JUSTIFIC=
+ATION -----------<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TECHNICAL QUALITY: The addition of domain=
+-dependent<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; heuristi=
+cs in<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;ASP is an<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;interesting result and the =
+technical extensions are adequately<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;described in<br>&gt;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;the paper. I particularly like the connection to planning<br>&gt;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; heuristics,<br>&gt;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;es=
+pecially since the ability to model planning domains<br>&gt;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; seemed to be of<br>&gt;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;interest =
+to the authors. While the main technical details<br>&gt;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp; of the<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;paper appear<br>&gt;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;to be correct, it does raise a couple questions.<br>&gt;<br>&gt;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;- The authors primarily focus on look-back heuristics while<br>&gt;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; look-ahead<br>&gt;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp; heuristics have proven to be quite successful,<br>&gt;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; especially in the<br>&gt;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pl=
+anning<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; community. My guess is that these are p=
+ossible but would<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; p=
+robably<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;require<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; more support a=
+t the solver level. Is this the case?<br>&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- I was wonde=
+ring if the authors were familiar with the work of<br>&gt;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"Baier, =
+Fritz,<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; and McIlraith (2007). Exploiting proced=
+ural domain control<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;knowledge in<br>&gt;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p; state-of-the-art planners. Proc. of ICAPS 2007"? Are any<br>&gt;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; of these<br>&gt;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;technique=
+s<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; applicable to your approach?<br>&gt;<br>&gt;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;- While the present paper focuses on domain-specific<br>&gt;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; heuristics,<br>&gt;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;what=
+ are the<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; challenges of using domain-independen=
+t heuristics, or<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ar=
+e such<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;methods<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; better served b=
+y changes at the solver level? With the<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp; number of<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;planning<br>&gt;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp; examples in the paper I can't help but think about the<br>&gt;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; domain<br>&gt;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;indepe=
+ndent<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; heuristic methods used in the planning c=
+ommunity (namely<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;something like FF's<br>&gt;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp; relaxed plan heuristics). Are there any opportunities for<br>&gt;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;adapting these<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; methods in an approach li=
+ke the one in the paper?<br>&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;EXPERIMENTAL ANALYSIS: The=
+ paper presents a series of<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp; experiments using<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;planning problems from the IPC a=
+nd abductive problems with<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp; optimisation.<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Especially in the case of the IPC dom=
+ains, a variety of<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+heuristics<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;are tested<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;and compared across t=
+he problem domains. The use of real<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp; PDDL domains<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(converted to ASP) and planni=
+ng-inspired heuristics is an<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;interesting result.<br>&gt;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;My one complaint here, however, is the presentation of data<br>&gt;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; in Table<br>&gt;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3. =
+You<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;appear to be testing on multiple problem instances of<b=
+r>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; varying plan<br>&gt;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;lengths,<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;however, only the average runtime is give=
+n. Is this a<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; useful=
+ measure<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;given<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;that the solution times may =
+vary widely between different<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp; problem<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;instances<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(i.e., differe=
+nt problem sizes)? Also, I assume that the<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp; average<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;runtime only<br>&gt;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;covers successful instances?<br>&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;FORMAL ANALYSIS: The=
+ paper includes a formal description of<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp; the proposed<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;heuristic extension and h=
+ow it is incorporated into the<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp; language. A<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;discussion<br>&gt;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;of some =
+of the tested heuristics is also given. Given the<br>&gt;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; comparison<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;with<br>&gt;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;planning heuristics (especially, those of Rintanen 2011,<br>&gt;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2012), I<br>&gt;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;would ha=
+ve<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;liked to have seen a few more details of these approache=
+s,<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;especially since<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;some of them differ fro=
+m more mainstream<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (=
+domain-independent) planning<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;heuristics. A more formal acco=
+unt of the limitations of<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp; lookback<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;heuristics in<br>&gt;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this setting =
+(or the problems of using lookahead heuristics<br>&gt;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp; at the<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;declarative<br>&gt;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;level) might also be useful for the reader.<br>&gt;<br>&gt;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CLA=
+RITY/PRESENTATION: Overall, the paper is well written and is<br>&gt;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;understandable. The balance between theory and<br>&gt;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp; experimentation is<br>&gt;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;about righ=
+t.<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;My only small gripe from a presentation point of view wa=
+s the<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;description of<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the "decide" process o=
+n page 2 and page 4. I would have<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp; preferred if<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this was<br>&gt;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set ap=
+art as a separate algorithm rather than taken out of<br>&gt;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; context<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;in this<br>&gt;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;way. One other small gripe: I'm not sure why the word "the" is<br>&g=
+t;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;referenced as<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Footnote 6.<br>&gt;<br>&gt;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;----------- INNOVATION JUSTIFICATION -----------<br>&gt;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;In some =
+sense, the question addressed in the paper is an<br>&gt;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp; obvious<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;one, given<br>&gt;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;the popularity of heuristic approaches in many fields of<br>&gt;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; AI, and at<br>&gt;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;firs=
+t<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;glance the solution doesn't appear to be particularly nov=
+el.<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;However, I was<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;impressed by the breadth=
+ of heuristics that could be<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp; modelled with this<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;approach, especially those bas=
+ed on planning approaches like<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Rintanen 2011),<br>&gt;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;which help demonstrate the potential of this extension.<br>&gt;<br>&gt=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;----------- IMPACT JUSTIFICATION -----------<br>&gt;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This=
+ paper is primarily of interest to answer set programming<br>&gt;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;r=
+esearchers,<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;however, its focus on incorporating domain-spec=
+ific<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; heuristics (in=
+<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;particular,<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;using planning examples) into =
+ASP encodings may widen its<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp; appeal.<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Heuristic<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;approaches have =
+been an active area of research in many<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp; AI-related<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fields and<br>&gt;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+in some cases, these techniques have had significant<br>&gt;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; impacts (e.g.,<br>&gt;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;heuristic<=
+br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;planners). As such, the approach in the paper has the<br>&g=
+t;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; potential to<br>&gt;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;improve<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;practical applications based on ASP techniques=
+.<br>&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;----------- SUMMARY OF REVIEW FOR AUTHORS -------=
+----<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;This paper addresses the problem of introducing domain=
+-specific<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;heuristics<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;into ASP solvers, by d=
+efining a language for specifying<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp; heuristics<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;at the<br>&gt;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;declarativ=
+e level. The new facility is expressive enough to<br>&gt;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;accommoda=
+te a<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;range of heuristics, including those inspired by heuri=
+stic<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;approaches in the<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;planning community. =
+A description of the required extensions is<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;given at the<br=
+>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;formal and algorithmic levels and a set of empirical<br>&gt;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; results are<br>&gt;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;presented<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;using common benchmarks, abductive domains, and =
+IPC problems.<br>&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Although the heuristic extension is s=
+omewhat<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; straightfor=
+ward, the<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;empirical<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;results are promising a=
+nd indicate a useful step forward. I<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;particularly liked<br>=
+&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;the references to heuristics arising in the planning community=
+<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;(i.e., the work<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;of Rintanen). However, the=
+ approach does have its<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp; limitations since the<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;heuristic must be defined at the=
+ declarative level (rather than<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;within the<br>&gt;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+solver), and in the present paper restricts its attention<br>&gt;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; to lookback<br>&gt;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;heuristi=
+cs. Nevertheless, the paper is well written and the<br>&gt;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; result is<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;potentially usef=
+ul to the wider ASP community.<br>&gt;<br>&gt;<br>&gt;<br>&gt;<br>&gt;<br>&=
+gt;<br></body></html>
+------=_Part_30763_885118476.1363111219737--
+

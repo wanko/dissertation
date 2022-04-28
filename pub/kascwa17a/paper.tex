@@ -1,0 +1,82 @@
+%% $Id:  $
+%% $HeadURL:  $
+\documentclass{llncs}
+
+\usepackage[T1]{fontenc}
+\usepackage{microtype}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb}
+\usepackage[lighttt]{lmodern}
+\usepackage{helvet,times,courier}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{listings}
+\AtBeginDocument{\DeclareCaptionSubType{lstlisting}}
+\usepackage{caption,subcaption}
+\usepackage{hyperref}
+\usepackage{tikz}
+\lstset{xleftmargin=2\parindent,aboveskip=\smallskipamount,belowskip=\smallskipamount,captionpos=b}
+\lstset{numbers=left,numberblanklines=false,basicstyle=\ttfamily}
+
+\lstdefinelanguage{clingo}{
+  keywordstyle=[1]\usefont{OT1}{cmtt}{m}{n},%
+  keywordstyle=[2]\textbf,%
+  keywordstyle=[3]\usefont{OT1}{cmtt}{m}{n},%\textit
+  alsoletter={\#,\&},%
+  keywords=[1]{not,from,import,def,if,else,elif,return,while,break,and,or,for,in,del,and,class,with,print,as,is},%
+  keywords=[2]{\#const,\#show,\#minimize,\#base,\#theory,\#count,\#external,\#program,\#script,\#end,\#heuristic,\#edge,\#project,\#show,\#sum},%
+  keywords=[3]{&,&dom,&sum,&diff,&show},%
+  morecomment=[l]{\#\ },%
+  morecomment=[l]{\%\ },%
+  morestring=[b]",%
+  stringstyle={\textit},%
+  commentstyle={\color{darkgray}}%
+}
+
+\input{macro} 
+
+\title{A Tutorial on Hybrid Answer Set Solving with \clingo}
+
+\author{%
+  Roland Kaminski\inst{1}
+  \and
+  Torsten Schaub\inst{1,2}\thanks{Affiliated with the
+                              School of Computing Science at
+                              Simon Fraser University,
+                              Burnaby, Canada,
+                              and the
+                              Institute for Integrated and Intelligent Systems
+                              at
+                              Griffith University,
+                              Brisbane, Australia.}
+  \and                            
+  Philipp Wanko\inst{1}
+  }
+
+\institute{University of Potsdam, Germany \and Inria, Bretagne Atlantique, Rennes}
+
+\begin{document}
+
+\maketitle
+
+\input{abstract}
+
+\input{introduction}
+\input{background}
+\input{multi}
+\input{theory}
+\input{case}
+\input{discussion}
+\appendix
+\input{aspif}
+
+\bibliographystyle{plain}
+% \bibliography{lit,akku,procs}
+\input{bbl}
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
+

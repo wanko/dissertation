@@ -1,0 +1,191 @@
+\section{Synthesis Framework}
+\label{sec:synthesis}
+In this section, we present a framework capable of finding a feasible implementation, i.e. binding, routing, and scheduling, for a given system specification $S$. Here, we consider static binding and routing. That is, tasks are mapped onto and messages are routed over the same resources in each iteration. Furthermore, a static non-preemptive periodic scheduling is assumed, i.e. the start time of each task instance (job) is determined at design time and a job completes execution before another job is started, resulting in a higher analyzability. Note that we only have to determine the start time of first occurrence of each task instance or communication hop\footnote{In the following, both task instances and communication hops are called jobs.} (job). Start times in subsequent iterations are derived from the period $P_i$ of the corresponding applications.
+%We now present a framework capable of finding a feasible implementation to a given synthesis problem instance.
+\vspace*{-2mm}
+\subsection{Overview}
+Our proposed system synthesis approach combines Boolean constraint solving, in our case ASP, that covers binding and routing, 
+and the background theory QF--IDL which encodes the timing constraints for scheduling.
+An overview of the system architecture is given in Figure~\ref{fig:overview}.
+In contrast to previous work using ASP, the background theory is tightly integrated in the solving process.
+This is enabled by the current release of the ASP solver \clingo~5~\cite{gekakaosscwa16a} 
+that allows for the definition of arbitrary theory languages and easy integration of custom theory propagators.
+
+The architecture provides three key advantages: 
+First, the system detects invalid schedules for \emph{partial} bindings and routings 
+and directly learns infeasible areas of the design space.
+Second, an additional \emph{post propagator} enables us to exclude cyclic schedules 
+where jobs might overlap in later periods
+without unfolding tasks over several iterations. 
+Third, only one encoding is necessary for binding, routing and scheduling
+allowing for a more succinct and \emph{elaboration tolerant} formulation.
+%And finally, since instance and encoding encompass all relevant information,
+%built-in features of \clingo, like \emph{domain-specific heuristic} or \emph{optimization},
+%might also be used for scheduling.
+
+As is common in ASP, we represent the synthesis problem instance $S=(A,P,M,e)$ as a set of facts that is then combined with a general problem encoding to obtain a feasible implementation. 
+The fact format is similar to \cite{Andres2013}, 
+yet extended with facts to fit our specification model. %represent execution times, deadlines, periods and the routing delay.
+A solution to the synthesis problem instance is comprised of the binding and routing, decided by the Boolean constraint solver and an assignment of start times for each job derived by two individual background theory propagators. 
+
+%The representation of the resulting implementation is comprised of two parts:
+%The solution to the Boolean constraint part assigning binding and routing,
+%and an assignment of start points for all tasks and communication hops in the first iteration.
+%The returned variable assignment underlies the ASAP semantics,
+%meaning all tasks and communications are executed as early as possible given the timing constraints.
+
+\subsection{Binding and Routing}
+
+The encoding for binding and routing is derived from \cite{Andres2013}.
+Among the possible mappings $(t,r)\in M$, for each task $t$, 
+exactly one mapping is chosen, denoted by $t \rightarrow r$.
+For every communication message $c$, a route is decided recursively from the receiver to the sender.
+We abbreviate $(t_1,c),~(c,t_2)\in E^i_A$ by $t_1 \xrightarrow{c}t_2$,
+and $r_1 \xrightarrow{c}r_2$ denotes that communication $c$ is routed over a link $(r_1,r_2)\in E_P$.
+The routing encoding is slightly adapted to include the index delay 
+and to respect point-to-point communication.
+In the following, $\mathcal{B}\subseteq M$ and \mbox{$\mathcal{R}\subseteq \{r_x\xrightarrow{c_k}r_y\mid r_x,r_y\in E_P,c_k\in C\}$} denote a (partial) binding and routing, respectively. 
+\subsection{Scheduling}
+              
+\label{subsec:scheduling}
+\begin{figure}[t]
+	\centering
+	\resizebox{\linewidth}{!}{%
+		\input{./figures/frameworkOverview}
+	}
+	\vspace*{-7mm}
+	\caption{Architectural overview of the proposed synthesis framework.}
+	\label{fig:overview}
+	\vspace*{-6mm}
+\end{figure}
+As ASP does not scale for numerical and non-linear constraints, we employ QF--IDL in the background theory that deals with constraints of form $x-y\leq k$,
+with variables $x,y\in\mathbb{Z}$ and constant $k\in\mathbb{Z}$, to encode timing constraints.
+To incorporate QF--IDL into ASP, we rely on the stateful propagator presented in \cite{gekakaosscwa16a}.
+The set of QF--IDL constraints $\mathbb{C}$ is formulated as follows:\par
+\vspace*{-6pt}
+{\footnotesize
+	\begin{align}
+		\mathbb{C} =&\{0-\tau(t)\leq0 \mid t\in T_i,(T_i\cup C_i,E^i_A,P_i,D_i,s_i)\in A\}\label{const:zero}\\
+		\cup&\{\tau(t)-0\leq D_i-e((t,r)) \mid t\rightarrow r \in \mathcal{B}\}\label{const:dl}\\
+		\cup&\{\tau(t_x)-\tau(t_y)\leq\mkern-2mu -e((t_x,r))+\mkern-2mu s(c)\cdot\mkern-2mu P\mkern-2mu \mid\mkern-2mu t_x\mkern-2mu\xrightarrow{c}\mkern-2mu t_y,\{t_x\mkern-2mu\rightarrow\mkern-2mu r,t_y\mkern-2mu\rightarrow\mkern-2mu r\}\mkern-2mu \subseteq\mkern-2mu \mathcal{B}\}\mkern-4mu\label{const:commsame}\\
+		\cup&\{\tau(t_x)-\tau(c^r)\leq -e((t_x,r)) \mid t_x\xrightarrow{c} t_y,\ t_x\rightarrow r\in \mathcal{B}, t_y\rightarrow r \notin \mathcal{B}\}\label{const:commfirst}\\
+		\cup&\{\tau(c^{r_x})-\tau(c^{r_y})\leq -D_P \mid r_x\xrightarrow{c} r_y \in \mathcal{R}\}\label{const:commhop}\\
+		\cup&\{\tau(c^{r_x})-\tau(t_y)\leq -D_P\mkern-2mu +\mkern-2mus(c)\mkern-2mu\cdot\mkern-2mu P\mkern-2mu \mid\mkern-2mu \{\mkern-2mu t_x\mkern-2mu\xrightarrow{c}\mkern-2mu t_y, r_x\mkern-2mu\xrightarrow{c}\mkern-2mu r_y\mkern-2mu\}\mkern-4mu \subseteq \mkern-4mu \mathcal{R},t_y\mkern-4mu\rightarrow\mkern-4mu r_y \mkern-2mu\in \mkern-2mu\mathcal{B}\}\mkern-10mu\label{const:commend}\\
+		\cup&\{\tau(t_x)-\tau(t_y)\leq -e((t_x,r)) \mid \{t_x\rightarrow r,t_y\rightarrow r\} \subseteq \mathcal{B},t_x\succ t_y\}\label{const:taskorder}\\
+		\cup&\{\tau(c_x^{r_x})-\tau(c_y^{r_x})\leq -D_P \mid \{r_x\xrightarrow{c_x}r_y,r_x\xrightarrow{c_y}r_y\} \subseteq \mathcal{R},c_x\succ c_y\}\label{const:commorder}
+	\end{align}}
+%\vspace*{-3pt}
+Here, $\tau(t)$ indicates the start time of task instance $t$.
+Analogously, $\tau(c^r)$ encodes the time point a communication message~$c$ is sent from resource $r$.
+The set $\mathbb{C}$ of QF--IDL constraints that are true during the solving process depends 
+on the instance $S$, the current (partial) binding $\mathcal{B}$ and routing $\mathcal{R}$
+as well as a strict, partial order between tasks $\succ$.
+We decide the order $\succ$ between two tasks in the ASP solver, i.e. either $t_x\succ t_y$ or $t_y\succ t_x$ holds. Integrity constraints ensure that no cyclic orders such as $(t_x\succ t_y,\ t_y\succ t_z,\ t_z\succ t_x)$ are induced.
+%We induce the order $\succ$ by introducing choices over ${\tt prio}$ variables in the encoding.
+%For two tasks $t_x$, $t_y$ either ${\tt prio}(t_x,t_y)$, ${\tt prio}(t_y,t_x)$, or none of them holds.
+%Integrity constraints make sure that no set of ${\tt prio}$ atoms during the solving induces cyclic priorities.
+%That is, we have $t_x\succ t_y$ iff ${\tt prio}(t_x,t_y)$ is true. 
+We extend the order to apply for communications $c_x,\ c_y$, such that $c_x\succ c_y$ iff 
+$(t_x,c_x)\in E^i_A,(t_y,c_y)\in E^j_A$ and $t_x\succ t_y$.
+Considering multiple applications $A_i$ with different periods $P_i$, we have to determine the hyper period $P_H$ by calculating the least common multiple of all periods: $P_H=\lcm_{A_i\in A}(P_i)$. The adapted deadline $D_{H,i}$ for each application $A_i$ is additionally calculated as: $D_{H,i}=P_H+(D_i-P_i)$.
+Intuitively, constraints \eqref{const:zero} and \eqref{const:dl} make sure that task instances in the first iteration are executed in between time point $0$ and their deadline $D_i$,
+constraints \eqref{const:commsame} to \eqref{const:commend} schedule communications $t_x\xrightarrow{c} t_y$ depending on the binding of $t_x,\ t_y$ and routing of $c$,
+and \eqref{const:taskorder} and \eqref{const:commorder} resolve conflicts between independent tasks and communications mapped to the same resource according to $\succ$.
+
+%Hereafter, we only consider one common period $p$.
+%The least common multiple is calculated
+%if not all periods are equal.
+
+
+
+
+As visualized in the green boxes in Fig.~\ref{fig:overview}, the validity of $\mathbb{C}$ is tested in a two part process.
+%\paragraph{Check for consistency of $C$}
+\subsubsection{Check for consistency of $\mathbb{C}$}
+\label{par:consistency}
+The QF--IDL propagator validates consistency by creating the constraint graph $G_\mathbb{C}$, 
+where all start times $\tau(t)$ and $\tau(c^r)$ occurring in constraints in $\mathbb{C}$ form the nodes.
+Additionally, for each inequality $x-y\leq k\in \mathbb{C}$ there exists an edge in $G_\mathbb{C}$ from $x$ to $y$ with weight $k$. 
+The propagator now intends to find the shortest path to each node, which results in the negated earliest possible start time $\tau$ for the corresponding node.
+If a negative cycle is detected in $G_\mathbb{C}$, no schedule can be determined. Hence, the variables representing the cycle are added as a conflict clause and the ASP solver has to backtrack.
+Otherwise, a valid partial assignment $v:V\rightarrow \mathbb{Z}$ is found. Note that the consistency is checked on partial assignments. That is, if a negative cycle is found, a large area of the the search space can be pruned early. 
+\begin{table*}[t]
+	\centering
+	\caption{Experimental Results of the randomly generated case studies}
+	\vspace*{-3mm}
+	\label{tab:results}
+	\begin{tabular}{@{}ccc|rrrr|rrrr@{}}
+		\toprule
+		\multirow{3}{*}{$\lvert R\rvert$} & \multirow{3}{*}{$\lvert T\rvert$} & \multirow{3}{*}{$\lvert C\rvert$} & \multicolumn{4}{c|}{Partial Assignments} & \multicolumn{4}{c}{Full Assignments}  \\ \cmidrule(l){4-11} 
+		&         &    & Choices   & Conflict Length & \multicolumn{2}{c|}{Runtime}  & Choices   & Conflict Length & \multicolumn{2}{c}{Runtime} \\ 
+		&         &    &           &    \multicolumn{1}{c}{(Conflicts)}  &    \multicolumn{1}{c}{Overall}    &  \multicolumn{1}{c|}{QF--IDL}  &  &   \multicolumn{1}{c}{(Conflicts)} &\multicolumn{1}{c}{Overall} &  \multicolumn{1}{c}{QF--IDL}       \\ \midrule
+		$2\times2$& 28 & 32 & \textbf{3364} & 40.6 (1253) & \textbf{12.70 s} & 11.93 s  & 135692    & \textbf{39.5 (1235)}  &   14.69 s & 2.65 s \\ %7tpr_2x2_1apps
+		$2\times2$& 20 & 44 & \textbf{11680} & \textbf{15.8} (\textbf{927})                   & \textbf{87.17 s} & 85.19 s              & 482870     & {22.9} (5272)                  &  173.08 s & 53.06 s  \\ %3tpr_3x3_1apps
+		$3\times3$& 18 & 18 & \textbf{181606} & \textbf{26.2 (109431)}             & \textbf{399.37 s} & 367.56 s           & 17445197  & 27.1 (119620)               &   994.80 s & 187.35 s    \\ %3tpr_3x3_2apps
+		$3\times3$& 45 & 50 & \textbf{47439}  &\textbf{37.7} (1343)                & 388.64 s & 380.17 s                  & 135546    & 48.2 (\textbf{495})                    & \textbf{91.47 s}  &   10.02 s      \\ %5tpr_3x3_5apps
+		$4\times4$& 48 & 58 & \textbf{20851}&  53.5 (\textbf{549})                  &  355.95 s & 347.17 s            &  287231    &  \textbf{45.8} (2256)                 &  \textbf{187.56 s} & 29.82 s \\ %3tpr_4x4_1apps
+		$4\times4$ (UNSAT) & 48 & 54 & \textbf{235214} & 25.5 (119953)    &   \textbf{1345.67 s} & 1231.92 s       & 18346301 & \textbf{20.4 (29024)}              & \multicolumn{2}{c}{T/O} \\ \bottomrule %3tpr_4x4_3apps
+	\end{tabular}
+	\vspace*{-4mm}
+\end{table*}
+\begin{figure*}[t]
+	\centering
+	\resizebox{0.8\textwidth}{!}{%
+		\input{./figures/periodic1.tex}
+	}
+	\vspace*{-3mm}
+	\caption{(a) Constraint graph $G_\mathbb{C}$ based on application $A_1$ and the order $\succ$ decided by the ASP-solver. (b) The corresponding  schedule (snapshot) visualized by a Gantt chart. The variant colors represent different iterations: blue indicates the current, orange the next, and green the previous iteration.}
+	\label{fig:periodicschedule1}
+	\vspace*{-6mm}
+\end{figure*}
+\subsubsection{Check for periodic overlapping}
+Even though the constraint Graph $G_\mathbb{C}$ is now consistent, jobs that are bound to the same resource might overlap with other jobs in later iterations whenever the deadline $D_{H,i}$ is greater than the hyper period $P_H$. This is checked by a dedicated propagator.
+Each job that is executed later than the first period is identified as a candidate for overlapping.
+%For them, the iterations they are executed in are calculated.
+Now, the execution time span of all other jobs on the same resources is projected to the iterations of the candidates in question.
+If the time span overlaps with the candidates time span, 
+a timing constraints has to be added to serialize the execution on the same resource in that iteration.
+Let $t_x \in A_i$ be the candidate and $t_y\in A_j$ be a job mapped to the same resource $r$, for which a conflict has been found.
+If $t_x\succ t_y$, the constraint $\tau(t_x)-\tau(t_y)\leq -e((t_x,r))+i_r\cdot P_j$ is added to $\mathbb{C}$,
+where $i_r$ is the difference between the iteration the conflict was found in and the first iteration $t_y$ is executed in.
+This forces $t_x$ to be executed before $t_y$ in the iteration where an overlapping was found.
+Analogously, if $t_y\succ t_x$, the constraint $\tau(t_y)-\tau(t_x)\leq -e((t_y,r))-i_r\cdot P_j$ is added to $\mathbb{C}$, forcing $t_x$ to be executed after $t_y$.
+In case no overlapping has been found, $v$ is a valid partial assignment. 
+If $\mathcal{B}$ and $\mathcal{R}$ are total assignments, $v$, $\mathcal{B}$, and $\mathcal{R}$ form a feasible implementation.
+Otherwise, the ASP solver proceeds with binding and routing.
+If overlapping was detected, we return to $1)$ with the extended set of constraints $\mathbb{C}$.
+
+
+As an example for the scheduling process, we consider application $A_1$ from Figure \ref{fig:specmodel}. 
+For the sake of brevity, we assume the communication between tasks to be instantaneous, i.e. the execution of a job $t_x$ is only dependent on its direct predecessor job(s). Furthermore, we presume the tasks $t_1, t_2$ and $t_4$ to be mapped to resource $r_1$ and $t_3$ to be mapped to $r_3$. 
+In the first step, a constraint graph $G_\mathbb{C}$ is built upon the dependencies and execution times. %(c.f. Eq.~\eqref{const:commsame} and \eqref{const:commfirst}). 
+This is represented by the black arrows in Fig.~\ref{fig:periodicschedule1}~(a). 
+By calculating the shortest path to each node of $G_\mathbb{C}$, we get the initial start times for the first iteration: $\tau(t_1)=0,\ \tau(t_2)=3,\ \tau(t_3)=5,\ \tau(t_4)=7$. 
+As the period $P_1$ of $A_1$ is equal to $7$, the post propagator detects periodic overlapping between task $t_1$ and $t_4$. 
+As a consequence, they have to be serialized. Considering $t_1\succ t_4$, the constraint \mbox{$t_1-t_4\leq -e(t_1)-i_r\cdot P_1=t_1-t_4\leq -10$} is added with $i_r=1$ since the overlap occurs one iteration apart (red arrow). 
+Now, $t_4$ overlaps with $t_2$ in the second iteration and, assuming $t_4\succ t_2$, the constraint $t_4-t_2\leq -e(t_4)+i_r\cdot P_1=t_4-t_2\leq 6$ is added, forcing $t_2$ to be executed one time step later (green arrow). 
+Finally, all overlaps have been resolved and $G_\mathbb{C}$ in Fig.~\ref{fig:periodicschedule1}~(a) represents a valid schedule which is visualized by a Gantt chart in Fig.~\ref{fig:periodicschedule1}~(b). 
+Note that $t_4\succ t_1$ would introduce a constraint forming a negative cycle in the constraint graph $G_\mathbb{C}$.
+
+\subsection{Experimental Results}
+Various specification instances consisting of a set of series-parallel applications as well as an architectural template implementing a regular, heterogeneous NoC have been generated randomly to test the proposed approach. All test cases were executed on a Core i7-5600U with 16~GiB RAM and a timeout of $1800\ s$. As shown in Tab.~\ref{tab:results}, our experiments indicate that ASPmT using partial assignment evaluation leverages promising results. In particular, the number of choices necessary to find a valid implementation when utilizing partial assignment checking is approximately one order of magnitude smaller compared to the evaluation of full assignments only. While the number of conflicts and average conflict length are comparable between both approaches, it shows that the search space is pruned more efficiently.
+
+Nevertheless, the reduction of necessary choices does not correlate with the overall runtime for all test cases. As seen in Tab.~\ref{tab:results}, most of the time is spend in the background propagators when using partial assignment checking. As this is still work in progress, the performance of said propagators are subject to implementational improvements in future iterations.
+
+
+%Figure~\ref{fig:periodicschedule1} shows an example of the scheduling process.
+%For simplicity, we assume communication to be instantaneous but each task depends on the execution of the task before
+%and constraints \eqref{const:zero} and \eqref{const:dl} are implied.
+%For the example, we observe $B=\{t_1\rightarrow r_1,t_2\mapsto r_1,t_3\mapsto r_2, t_4\mapsto r_1\}$ 
+%and the resulting set of constraints $C=\{t_1-t_2\leq -3,t_2-t_3\leq -2,t_3-t_4\leq -2\}$. 
+%Originally, tasks $t_1$ to $t_4$ are assigned time points $0$, $3$, $5$, and $7$ respectively.
+%$t_4$ is the only task to exceed the period $p=7$ and hence is the only candidate.
+%We detect that $t_1$ and $t_4$ overlap in the second iteration on resource $r_1$.
+%Assuming that $t_1\succ t_4$, we add the constraint $t_1-t_4\leq -e(t_1)-i_r\cdot p=t_1-t_4\leq -10$, with $e(t_1)=3$ and $i_r=1$ since the overlap occurs one iteration apart.
+%The resulting constraint set is still consistent and the assignment of $t_4$ is changed to $10$.
+%Now, $t_4$ overlaps with $t_2$ in the second iteration
+%and, assuming $t_4\succ t_2$, we add the constraint $t_4-t_2\leq -e(t_4)+i_r\cdot p=t_4-t_2\leq 6$,
+%forcing $t_4$ to be executed before $t_2$ in the next iteration.
+%Figure~\ref{fig:periodicschedule1}(a) shows the resulting valid constraint graph and Figure~\ref{fig:periodicschedule1}(b) the periodic schedule.
+
+

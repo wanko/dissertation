@@ -1,0 +1,26 @@
+\scalebox{0.85}{
+\begin{tikzpicture}[every text node part/.style={align=center},>=stealth,scale=2.7]
+%\linespread{0.6}
+\tikzstyle{block} = [draw=black,fill]
+\tikzstyle{file} = [draw=black, line width = 0.12cm,fill=myblue,text=white]
+\tikzstyle{arrow} = [->,line width=0.12cm,black]
+
+\node [block,anchor=north west,minimum width=13cm,minimum height=8.8cm,fill=none,line width=0.12cm] (input) at (-2.8,-0.9) {};
+\node[anchor=south east,font=\small] at (input.south east) {Input};
+\draw[dashed,line width=0.12cm] (input.north) -- (input.south);
+\draw[fill=myblue,line width=0.12cm] (-0.15,-1.4) node[above=0.5,anchor=west,font=\small,inner sep=0](encoding){Encoding} -- node[right,text=white,anchor=west,pos=0.3,font=\small]{Binding} node[right,text=white,anchor=west,pos=0.5,font=\small]{Routing} node[right,text=white,anchor=west,pos=0.7,font=\small]{Scheduling} (-0.15,-3.6) --  (1.65,-3.6) -- (1.65,-1.8) node (v2) {}--(1.25,-1.4) node (v1) {} -- cycle;
+\draw[line width=0.12cm] (v1.center) -- (1.25,-1.8) -- (v2.center);
+\draw[fill=myblue,line width=0.12cm] (-2.4,-1.4) node[above=0.5,anchor=west,font=\small,inner sep=0](inst){Specification} -- node[right,text=white,anchor=west,pos=0.3,font=\small]{Application} node[right,text=white,anchor=west,pos=0.5,font=\small]{Platform} node[right,text=white,anchor=west,pos=0.7,font=\small]{Constraints} (-2.4,-3.6) --  (-0.6,-3.6) -- (-0.6,-1.8) node (v2) {}--(-1,-1.4) node (v1) {} -- cycle;
+\draw[line width=0.12cm] (v1.center) -- (-1,-1.8) -- (v2.center);
+\draw[draw=black,fill=myblue,line width=0.12cm] (3,-1.4) -- node[](frameworkwest){} (3,-3.6) -- node[pos=0.5,text = white,font=\small,above=3.8] {\textbf{ASPmT Synthesis Framework}} (8.2,-3.6)--node[](frameworkeast){}(8.2,-1.4)--cycle;
+%\node [fill=myblue, rotate=0,font=\small ] (framework) at (6,-1) {\textbf{ASPmT Synthesis Framework}};
+\node [block, fill=myblue,text=white, rotate=0,font=\small,anchor=west,line width=0.12cm ] (implementation) at (9.2,-2.5) {Feasible Implementation};
+
+\draw [arrow] (input) -- (frameworkwest.center);
+\draw [arrow] (frameworkeast.center) -- (implementation);
+\node[circle,draw,line width=0.12cm,font=\footnotesize,inner sep=2,fill=myblue!50,text=white,minimum width=2.74cm] (asp) at (4.4,-2.8) {ASP};
+\node[circle,draw,line width=0.12cm,font=\footnotesize,inner sep=2,fill=myblue!50,text=white,minimum width=2.74cm] (idl) at (6.8,-2.8) {QF--IDL};
+\draw [arrow](asp) .. controls (5,-2.1) and (6.2,-2.1) .. (idl);
+\draw [arrow](idl) .. controls (6.2,-3.5) and (5,-3.5) .. (asp);
+\end{tikzpicture}}
+\vspace*{-1cm}

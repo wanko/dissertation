@@ -1,0 +1,161 @@
+% - paper-specifics ------------------------------------------------------------
+\newcommand{\hpredicate}{\texttt{\_h}}
+\newcommand{\hpred}[4]{\ensuremath{\hpredicate(#1,{#2},#3,#4)}}
+\newcommand{\hpre}[3]{\ensuremath{\hpredicate(#1,{#2},#3)}}
+
+% - syntax ---------------------------------------------------------------------
+\newcommand{\naf}[1]{\ensuremath{{\mathtt{not}\,{#1}}}} % {\ensuremath{{\sim\!{#1}}}}
+
+\newcommand{\head}[1]{\ensuremath{\mathit{head}(#1)}}
+\newcommand{\body}[1]{\ensuremath{\mathit{body}(#1)}}
+
+\newcommand{\atom}[1]{\ensuremath{\mathit{atom}(#1)}}
+
+\newcommand{\poslits}[1]{\ensuremath{{#1}^+}}
+\newcommand{\neglits}[1]{\ensuremath{{#1}^-}}
+
+\newcommand{\pbody}[1]{\poslits{\body{#1}}}
+\newcommand{\nbody}[1]{\neglits{\body{#1}}}
+
+\newcommand{\PRG}{\ensuremath{P}}
+
+\newcommand{\atbody}[2]{\ensuremath{\mathit{body}_{#1}(#2)}}
+
+\newcommand{\ground}[1]{\ensuremath{\mathit{grd}(#1)}}
+
+% - semantics ------------------------------------------------------------------
+\newcommand{\SM}[1]{\ensuremath{\mathit{SM}(#1)}}
+
+% - operators ------------------------------------------------------------------
+\newcommand{\Cn}[1]{\ensuremath{\mathit{Cn}(#1)}}
+\newcommand{\reduct}[2]{\ensuremath{#1^{#2}}}
+
+\newcommand{\To}[1]{\ensuremath{T_{#1}}}
+\newcommand{\T}[2]{\To{#1}#2}
+\newcommand{\TiO}[2]{\To{#2}^{#1}}
+\newcommand{\Ti}[3]{\TiO{#1}{#2}#3}
+
+\newcommand{\BF}[1]{\ensuremath{\mathit{BF}(#1)}}
+\newcommand{\CF}[1]{\ensuremath{\mathit{CF}(#1)}}
+\newcommand{\CFIF}[1]{\ensuremath{\overleftarrow{\mathit{CF}}(#1)}}
+\newcommand{\CFFI}[1]{\ensuremath{\overrightarrow{\mathit{CF}}(#1)}}
+\newcommand{\CFX}[1]{\ensuremath{\mathit{CF}^x(#1)}}
+
+\newcommand{\loops}[1]{\ensuremath{\mathit{loop}(#1)}}\message{*** loop already defined ***}
+\newcommand{\ES}[2]{\ensuremath{\mathit{ES}_{\!#2}(#1)}}
+\newcommand{\EB}[2]{\ensuremath{\mathit{EB}_{\!#2}(#1)}}
+\newcommand{\LFM}[2]{\ensuremath{\mathit{LF}_{\!#2}(#1)}}
+\newcommand{\LF}[1]{\ensuremath{\mathit{LF}(#1)}}
+
+% - tableaux -------------------------------------------------------------------
+\newcommand{\true}{\ensuremath{\boldsymbol{T}}}
+\newcommand{\false}{\ensuremath{\boldsymbol{F}}}
+
+\newcommand{\Tsigned}[1]{\ensuremath{\true{#1}}}\message{ *** RENAME *** }
+\newcommand{\Fsigned}[1]{\ensuremath{\false{#1}}}
+
+\newcommand{\TOP}[1]{\ensuremath{D_{#1}}}
+\newcommand{\COP}[1]{\ensuremath{D^*_{#1}}}
+
+\newcommand{\Proviso}[1]{\raisebox{-7pt}[0pt][0pt]{\ensuremath{(#1)}}}
+
+\newcommand{\plit}[1]{\ensuremath{\boldsymbol{t}{#1}}}
+\newcommand{\nlit}[1]{\ensuremath{\boldsymbol{f}{#1}}}
+
+% - nogoods, assigmemts, etc. --------------------------------------------------
+\newcommand{\domain}[1]{\ensuremath{\mathit{dom}(#1)}}
+
+\newcommand{\ass}{\ensuremath{A}}
+
+\newcommand{\tlits}[1]{\ensuremath{{#1}^{\true}}}
+\newcommand{\flits}[1]{\ensuremath{{#1}^{\false}}}
+\newcommand{\prefix}[2]{\ensuremath{#1[#2]}}
+
+% \newcommand{\clno}[1]{\ensuremath{\delta(#1)}}
+% \newcommand{\ClNo}[1]{\ensuremath{\Delta(#1)}}
+% \newcommand{\nocl}[1]{\ensuremath{\gamma(#1)}}
+% \newcommand{\NoCl}[1]{\ensuremath{\Gamma(#1)}}
+
+\newcommand{\CN}[1]{\ensuremath{\Delta_{#1}}}
+\newcommand{\LN}[1]{\ensuremath{\Lambda_{#1}}}
+
+\newcommand{\dl}[0]{\ensuremath{\mathit{dl}}}
+\newcommand{\dlevel}[1]{\ensuremath{\mathit{dlevel}(#1)}}
+\newcommand{\opp}[1]{\ensuremath{\overline{#1}}}
+
+\newcommand{\undef}[0]{\ensuremath{\circ}}
+\newcommand{\trdef}[0]{\ensuremath{\times}}
+\newcommand{\scc}[1]{\ensuremath{\mathit{scc}(#1)}}
+\newcommand{\source}[1]{\ensuremath{\mathit{source}(#1)}}
+
+% - incremental solving ----------------------------------------
+\newcommand{\grounder}{\textsc{Ground}}
+\newcommand{\addProgram}{\textsc{Add}}
+\newcommand{\solver}{\textsc{Solve}}
+\newcommand{\isolve}{\textsc{iSolve}}
+
+% % - algorithm2e ----------------------------------------------------------------
+% \DontPrintSemicolon
+
+% \SetKw{ForSome}{for some}
+% \SetKw{SuchThat}{such that}
+
+% \SetKwInOut{Input}{Input}
+% \SetKwInOut{Output}{Output}
+% \SetKwInOut{Global}{Global}
+% \SetKwInOut{Internal}{Internal}
+
+% \SetKwFor{Let}{let}{in}{tel}
+% \SetKwFor{Loop}{loop}{}{}
+
+% \SetFuncSty{sc}
+% \SetKwFunction{Select}{Select}
+% \SetKwFunction{UnFoundedSet}{Unfounded\-Set}
+% \SetKwFunction{Propagation}{Nogood\-Propagation}
+% \SetKwFunction{ConflictAnalysis}{Conflict\-Analysis}
+
+% \SetKwData{Grounder}{Grounder}
+% \SetKwData{Solver}{Solver}
+
+% \SetCommentSty{it}
+% \SetKwComment{AlgoComm}{// }{}
+
+% - systems ----------------------------------------------------------------------
+% >>> NOT USED in BOOK <<<
+\newcommand{\sysfont}{\textit}
+\newcommand{\smodels}{\sysfont{smodels}}
+\newcommand{\smodelsr}{\sysfont{smodels}$_r$}
+\newcommand{\smodelscc}{\sysfont{smodels$_{\!cc}$}}
+\newcommand{\dlv}{\sysfont{dlv}}
+\newcommand{\nomorepp}{\sysfont{nomore++}}
+\newcommand{\assat}{\sysfont{assat}}
+\newcommand{\cmodels}{\sysfont{cmodels}}
+\newcommand{\sag}{\sysfont{sag}}
+\newcommand{\clasp}{\sysfont{clasp}}
+\newcommand{\claspD}{\sysfont{claspD}}
+\newcommand{\claspfolio}{\sysfont{claspfolio}}
+\newcommand{\claspar}{\sysfont{claspar}}
+\newcommand{\gringo}{\sysfont{gringo}}
+\newcommand{\clingo}{\sysfont{clingo}}
+\newcommand{\iclingo}{\sysfont{iclingo}}
+\newcommand{\clingcon}{\sysfont{clingcon}}
+\newcommand{\gecode}{\sysfont{gecode}}
+\newcommand{\lparse}{\sysfont{lparse}}
+\newcommand{\mchaff}{\sysfont{mchaff}}
+\newcommand{\zchaff}{\sysfont{zchaff}}
+\newcommand{\siege}{\sysfont{siege}}
+\newcommand{\minisat}{\sysfont{minisat}}
+\newcommand{\berkmin}{\sysfont{berkmin}}
+\newcommand{\picosat}{\sysfont{picosat}}
+\newcommand{\lptosat}{\sysfont{lp2sat}}
+\newcommand{\lptodiff}{\sysfont{lp2diff}}
+\newcommand{\lua}{\textit{lua}}
+
+% % - latex ----------------------------------------------------------------------
+% \newcounter{excounter}
+% \newcommand{\labex}[1]{\refstepcounter{excounter}\label{#1}} % \index{\ensuremath{\PRG_{\ref{#1}}}}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End: 

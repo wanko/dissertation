@@ -1,0 +1,56 @@
+#include "incmode.lp".
+#include "csp.lp".
+
+#program base.
+%actions
+action(wait). action(load). action(shoot).
+duration(load,25). duration(shoot,5). duration(wait,36).
+unloaded(0).
+
+#program base.
+
+&sum{at(0)} = 0.
+&sum{armed(0)} = 0.
+&show{at(0)}.
+
+#program step(n).
+
+step(n).
+
+1{do(X,n) : action(X)}1.
+
+&sum { at(n) } = at(n-1)+D :- do(X,n); duration(X,D).
+&sum { at(n) } >= 0.
+
+%inertials
+loaded(n)   :- loaded(n-1); not unloaded(n).
+unloaded(n) :- unloaded(n-1); not loaded(n).
+
+&sum { armed(n) } = 0 :- unloaded(n-1).
+&sum { armed(n) } = armed(n-1)+D :- do(X,n); duration(X,D); loaded(n-1).
+
+% conditions and effects of actions
+loaded(n)   :- do(load,n).
+unloaded(n) :- do(shoot,n).
+:- do(shoot,n), unloaded(n-1).
+
+dead(n) :- do(shoot,n); &sum { armed(n) } <= 35.
+dead(n) :- dead(n-1).
+
+#program check(n).
+%goals
+:- not dead(n); query(n).
+:- &sum{at(n)}>100, query(n).
+:- do(shoot,n), &sum{at(n)} <= 35.
+
+
+#show do/2.
+#show dead/1.
+&show{at(n);armed(n)}.
+
+#show unloaded/1.
+#show loaded/1.
+
+#show n.
+
+%&dom{0..1000} = at(n).

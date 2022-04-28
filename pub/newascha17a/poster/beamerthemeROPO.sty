@@ -1,0 +1,215 @@
+\ProvidesPackage{beamerthemeROPO}
+\RequirePackage{tcolorbox}
+\RequirePackage{enumitem}
+\mode<presentation>
+
+\definecolor{ETH1}{RGB}{255,0,0}
+\definecolor{ETH3}{RGB}{255,0,0}
+\definecolor{ETH6}{RGB}{255,0,0}
+\definecolor{ETH8}{RGB}{255,0,0}
+\definecolor{ETH10}{RGB}{255,0,0}
+\definecolor{tlg}{RGB}{230,230,230}
+%\definecolor{HRO1}{cmyk}{1.00, 0.75, 0.00, 0.00}
+\definecolor{HRO1}{RGB}{0,74,153}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%It seems many of the following entries do not control any visible Behaviour. All such entries are
+%set to red, so that they are easy to spot if they ever become visible
+
+\setbeamercolor{headline}{fg=HRO1,bg=white} % This is the recommended color for Specialist community usage: change to ETH1 for general communication
+\setbeamercolor{headline2}{fg=white,bg=HRO1}
+\setbeamercolor{footline}{fg=red, bg=red}
+\setbeamerfont{footline}{size=\large}
+\setbeamercolor{separation line}{bg=HRO1}
+\setbeamercolor{title in headline}{fg=HRO1}
+\setbeamercolor{author in headline}{fg=HRO1}
+\setbeamercolor{institute in headline}{fg=HRO1}
+
+\setbeamercolor{framesubtitle}{fg=red, bg=black}
+\setbeamercolor{author in head/foot}{fg=HRO1, bg=white}
+\setbeamercolor{title in head/foot}{fg=red, bg=red}
+
+\setbeamercolor*{normal text}{fg=HRO1, bg=tlg}
+\setbeamercolor*{block body}{fg=black, bg=white}
+\setbeamercolor*{block title}{fg=white,bg=HRO1}
+\setbeamerfont{block title}{size=\large,series=\bf}
+\setbeamercolor{upper separation line head}{fg=red}
+
+\setbeamercolor*{example body}{fg=red,bg=red}
+\setbeamercolor*{example text}{fg=red,bg=red}
+\setbeamercolor*{example title}{bg=red,fg=red}
+
+\setbeamercolor{alerted text}{fg=red}
+\setbeamercolor{structure}{fg=HRO1}
+
+\setbeamercolor{item projected}{fg=black}
+
+\setlist[itemize]{label=\color{HRO1}\textbullet}
+
+%\setbeamertemplate{itemize items}{\color{HRO1}$\blacktriangleright$}
+\setbeamertemplate{navigation symbols}{}  % no navigation on a poster
+
+\setbeamertemplate{itemize items}[circle]
+
+\tcbset{  
+	every box/.style={                                             % set a custom tcolorbox  
+	bottom=5mm,                                    % distance between the body text and the bottom frame
+	top=5mm,                                      % distance between the body text and the top frame
+	boxrule=1mm,                                   % frame width
+	bottomtitle=2mm,                               % distance between the title text and the bottom title frame               
+	toptitle=2mm,                                  % distance between the title text and the top title frame
+	lefttitle=1cm,                                 % title text left margin
+	colframe=HRO1,
+	colback=white,
+	beforeafter skip=0.5cm,
+	center title,
+	fonttitle=\usebeamerfont{block title},
+	width=1.00\textwidth,
+	center,
+	arc=3mm
+}}
+
+
+\newenvironment<>{myblock}[2]{%
+ \begin{actionenv}%
+ \def\insertblocktitle{\centering#1}%
+ \def\group{#2}
+ \par%
+ \usebeamertemplate{block begin}\leftskip=14pt\rightskip=14pt\vspace{0pt}}
+ {\par\vspace{0pt}\usebeamertemplate{block end}
+ \end{actionenv}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\setbeamertemplate{block begin}{
+	\vskip.75ex
+	\begin{tcolorbox}[adjusted title=\insertblocktitle,equal height group=\group]%
+		
+	%\end{tcolorbox}%
+%	{\ifbeamercolorempty[bg]{block body}{}{\nointerlineskip\vskip-0.5pt}}%
+%	\usebeamerfont{block body}%
+	%\begin{tcolorbox}[colsep*=.75ex,sep=.75ex,vmode]{block body}%
+	%	\ifbeamercolorempty[bg]{block body}{\vskip-.25ex}{\vskip-.75ex}\vbox{}%
+}
+\setbeamertemplate{block end}{
+	%	\vspace*{-0.5cm}
+	\end{tcolorbox}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\setbeamertemplate{headline}{
+  \leavevmode
+	
+	\begin{beamercolorbox}[wd=\paperwidth]{headline2}
+		\leftskip=10pt\rightskip=10pt\vspace{1cm}
+		\begin{columns}
+			\begin{column}{.05\paperwidth}
+			\end{column}
+		    \begin{column}{.9\paperwidth}
+		    	\centering\textbf{\Huge{\inserttitle}}
+		    \end{column}
+		    \begin{column}{.05\paperwidth}
+		    \end{column}
+		\end{columns}
+		\vspace{1cm}
+	\end{beamercolorbox}
+	
+	\begin{beamercolorbox}[wd=\paperwidth]{headline}
+		\leftskip=10pt\rightskip=10pt\vspace{0.5cm}
+		\begin{columns}
+			\begin{column}{.05\paperwidth}
+			\end{column}
+			\begin{column}{.9\paperwidth}
+				\centering
+				\Large{\insertauthor}\\[1ex]
+				\normalsize{\insertinstitute}
+			\end{column}
+			\begin{column}{.05\paperwidth}
+			\end{column}
+		\end{columns}
+		\vspace{.5cm}
+	\end{beamercolorbox}
+%	\begin{beamercolorbox}[wd=\paperwidth]{headline}
+%    \begin{columns}
+%      \begin{column}{.07\paperwidth}
+%      \end{column}
+%      \begin{column}{.55\paperwidth}
+%        \vskip4ex
+%        \raggedright
+%%        \usebeamercolor{title in headline}{\color{fg}\textbf{\VERYHuge{\inserttitle}}\\[1ex]}
+%        \usebeamercolor{author in headline}{\color{fg}\large{\insertauthor}\\[1ex]}
+%        \usebeamercolor{institute in headline}{\color{fg}\large{\insertinstitute}\\[1ex]}
+%        \vskip1ex
+%      \end{column}
+%      \begin{column}{.35\paperwidth}
+%%        \vskip1cm
+%        \begin{center}
+%          \includegraphics[height=5cm]{img/UNI-Logo_Siegel_4c_115mm}\\\vspace{0.2cm}
+%          \includegraphics[height=4cm]{img/potassco_logo}\vspace{0.35cm}\quad\includegraphics[height=5cm]{img/logo_potsdam}
+%        \end{center}
+%%        \vskip-1.5cm
+%      \end{column}
+%      \begin{column}{.07\paperwidth}
+%      \end{column}
+%    \end{columns}
+%  \end{beamercolorbox}
+
+  \begin{beamercolorbox}[wd=\paperwidth]{lower separation line head}
+    \rule{0pt}{2mm}
+  \end{beamercolorbox}
+  \vskip-2cm
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\setbeamertemplate{footline}{
+  \begin{beamercolorbox}[wd=\paperwidth]{upper separation line foot}
+    \rule{0pt}{2mm}
+  \end{beamercolorbox}
+
+  \leavevmode%
+  \begin{beamercolorbox}[leftskip=3cm,rightskip=3cm]{author in head/foot}%
+%    \href{http://www.aic-fmi.ethz.ch}{www.aic-fmi.ethz.ch}
+%	\{kai.neubauer,christian.haubelt\}@uni-rostock.de
+%    \hfill
+%    DATE{\color{red}\emph{17}}, 27-31 MARCH, 2017
+%    \hfill
+%    \href{mailto:my_address@wikibooks.org}{ioanas@biomed.ee.ethz.ch}
+%	\{wanko,torsten\}@cs.uni-potsdam.de
+	\begin{columns}
+		\begin{column}{0.35\paperwidth}
+			\quad\textbf{Contact Info:}\\[1ex]
+			\quad{\{kai.neubauer,christian.haubelt\}@uni-rostock.de\\
+			\quad\{wanko,torsten\}@cs.uni-potsdam.de}
+		\end{column}
+		\begin{column}{0.65\paperwidth}
+			\begin{center}
+				\includegraphics[height=7cm]{img/UNI-Logo_Siegel_4c_115mm}\qquad\qquad
+				\includegraphics[height=7cm]{img/logo_potsdam}\qquad%\quad\includegraphics[height=4cm]{img/potassco_logo}
+			\end{center}
+		\end{column}
+%	\begin{center}	
+
+%	\end{center}
+	\end{columns}
+    \vskip1ex
+  \end{beamercolorbox}
+  \vskip0pt%
+  \begin{beamercolorbox}[wd=\paperwidth]{lower separation line foot}
+    \rule{0pt}{2pt}
+  \end{beamercolorbox}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Display a grid to help align images ... and it looks nice with this color scheme
+%\beamertemplategridbackground[0.2cm]
+
+%Some beamer customizations:
+\setbeamertemplate{bibliography item}[text]
+\setbeamercolor{bibliography item}{fg=black}
+\setbeamertemplate{bibliography entry author}{\color{black}}
+\setbeamertemplate{bibliography entry title}{\color{black}}
+\setbeamertemplate{bibliography entry location}{\color{black}}
+\setbeamertemplate{bibliography entry note}{}
+\setbeamertemplate{caption}[numbered]{}% Number float-like environments
+
+\mode<all>

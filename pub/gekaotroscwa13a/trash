@@ -1,0 +1,608 @@
+\begin{itemize}
+\item general rather than special-purpose approach
+\item relates work
+  \begin{itemize}
+  \item \cite{cacacale96a}
+    \begin{itemize}
+    % \item preferential reasoning
+    % \item modified DPLL procedure
+    % \item domain knowledge restricting the set of solutions
+    \item  \cite{giumar12a} \cite{giumar11a} \cite{rogima10a}
+    \end{itemize}
+%  \item \cite{silva99a}
+  \item \cite{backab00a,sierra04a}
+  \item \cite{rintanen12a}
+  \item \cite{balduccini11b}
+  % \item (subset) minimization via sign heuristic
+  %   \begin{itemize}
+  %   \item explicitly discussed in \cite{giumar06a}
+  %   % \item exploited as side effect of miniSAT's decision heuristic \cite{marive10a}
+  %   % \item relationship to \cite{giumar12a} \cite{giumar11a} needs to be checked
+  %   \end{itemize}
+  \item similar to \cite{backab00a} we use a logical language to express control information
+    This control information may but must not have a temporal nature.
+  \item \cite{jajuni05a}
+    \begin{itemize}
+    \item shown that the more restricted variations cannot polynomially simulate the less restricted ones.
+    \item Thus DPLL with the considered cut restrictions, such as allowing splitting only on the variables corresponding to the input gates, cannot polynomially simulate DPLL with unrestricted splitting.
+    \item factor/init versus level
+    \end{itemize}
+  \end{itemize}
+\item Our experiments confirm the observation of \cite{rogima10a} that sign selection does not
+  hamper overall performance, when looking for inclusion minimal models.
+% \item enumeration
+\item although chosen ASP, may also serve for studying heuristics in SAT, PB, and CP.
+\item take seamlessly advantage of ASP's rich input language and grounding capacities
+\item relieves us from the burden of modifying a solver's implementation
+\item correlation choices and runtime
+\item just showing progress, a lot of work remains to be done developing heuristics
+\item example have indicative nature illustrating the prospect of our approach
+\item our framework now enables systematic study of heuristic modifiers in ASP and beyond
+\end{itemize}
+
+
+
+@article{rogima10a,
+  author    = {Emanuele Di Rosa and
+               Enrico Giunchiglia and
+               Marco Maratea},
+  title     = {Solving satisfiability problems with preferences},
+  journal   = {Constraints},
+  volume    = {15},
+  number    = {4},
+  year      = {2010},
+  pages     = {485-515},
+  ee        = {http://dx.doi.org/10.1007/s10601-010-9095-y},
+  bibsource = {DBLP, http://dblp.uni-trier.de}
+}
+
+
+\tbr
+\begin{itemize}
+\item Advisor
+\item PUP
+\item scalability
+% \item domain choices
+% \item 32 instances
+% \item source: \texttt{???}
+% \item neutral a+f
+% \item sign: T, F
+% \item factor: 2,4,8,16
+% \item init: 2,4,8,16
+% \item level: 1,-1
+% \item ascending: factor, init, level
+% \item descending: factor, init, level
+\item Our experiments confirm the observation of \cite{rogima10a} that sign selection does not
+  hamper overall performance, when looking for inclusion minimal models.
+\end{itemize}
+
+
+\paragraph{Impact of heuristic modifiers}
+
+\begin{itemize}
+\item scalability
+% \item domain choices
+% \item 32 instances
+% \item source: \texttt{???}
+% \item neutral a+f
+% \item sign: T, F
+% \item factor: 2,4,8,16
+% \item init: 2,4,8,16
+% \item level: 1,-1
+% \item ascending: factor, init, level
+% \item descending: factor, init, level
+\item Our experiments confirm the observation of \cite{rogima10a} that sign selection does not
+  hamper overall performance, when looking for inclusion minimal models.
+\end{itemize}
+
+\begin{table}[ht]
+  \centering\small
+  \begin{tabular}{|l|r|r|r|r|r|}
+    \hline
+    Benchmark & \textit{clasp} & \texttt{s,1} & \texttt{s,1} \ \texttt{f,2}& \texttt{s,1} \ \texttt{f,8} & \texttt{s,1} \ \texttt{l,1}\\
+    \hline
+    \hline
+    \textit{Diagnosis}  &&&&&\\
+    \hline
+    \textit{Network}    &&&&&\\
+    \hline
+    \textit{Repair (H)} &&&&&\\
+    \textit{Repair (S)} &&&&&\\
+    \hline
+  \end{tabular}
+  \caption{Optimization in abductive applications}
+  \label{tab:opt}
+\end{table}
+
+\paragraph{Circuit diagnosis}
+
+
+\textbf{Explanation}
+We conducted experiments using ISCAS-85 benchmark circuits.
+%This benchmark suite includes combinatorial circuits from $160$ to $3512$ components.
+Test cases were generated randomly as in \cite{sidiqqi11a}.
+For each circuit, we randomly generated $5$ input/output vectors
+according to the correct behavior of the circuit.
+We then randomly flipped $k$ outputs, 
+with $k$ ranging from $1$ to $8$ (except for circuit $c432$, that only has $7$ outputs),
+in each input/output vector to get an abnormal observation.
+We did experiments with 1, 2, 4 and 8 priority classes.
+For $n$ priority classes we divided the gates in $n$ disjoint sets of gates of the same size, 
+and we assigned each set to a priority class.
+
+\textbf{Results}
+Subset minimization is done for free.
+Cardinality minimization improves with level and sign, 
+but is worse with sign and sign+factor.
+
+
+% ------------------------------------------------------------
+\begin{table}[ht]
+  \centering
+  \begin{tabular}{|c|ccccc|}
+    \hline
+%    \input{planning}
+    \hline
+  \end{tabular}
+  \caption{Impact of heuristic modifiers}
+  \label{tab:planning}
+\end{table}
+% ------------------------------------------------------------
+
+\paragraph{Miscellaneous}
+
+\paragraph{Circuit diagnosis}
+
+
+\textbf{Explanation}
+We conducted experiments using ISCAS-85 benchmark circuits.
+%This benchmark suite includes combinatorial circuits from $160$ to $3512$ components.
+Test cases were generated randomly as in \cite{sidiqqi11a}.
+For each circuit, we randomly generated $5$ input/output vectors
+according to the correct behavior of the circuit.
+We then randomly flipped $k$ outputs, 
+with $k$ ranging from $1$ to $8$ (except for circuit $c432$, that only has $7$ outputs),
+in each input/output vector to get an abnormal observation.
+We did experiments with 1, 2, 4 and 8 priority classes.
+For $n$ priority classes we divided the gates in $n$ disjoint sets of gates of the same size, 
+and we assigned each set to a priority class.
+
+\textbf{Results}
+Subset minimization is done for free.
+Cardinality minimization improves with level and sign, 
+but is worse with sign and sign+factor.
+
+
+% ------------------------------------------------------------
+\begin{table*}[ht]
+  \centering
+  \begin{tabular}{|c|ccccccc|}
+    \hline
+    \input{DATA/circuit-cardinality}
+    \hline
+  \end{tabular}
+  \caption{Cardinality minimization for ISCAS85 circuit diagnosis}
+  \label{tab:circuit-card}
+\end{table*}
+% ------------------------------------------------------------
+
+% % ------------------------------------------------------------
+% \begin{table*}[ht]
+%   \centering
+%   \begin{tabular}{|c|cccccc|}
+%     \hline
+%     \input{DATA/circuit-subset}
+%     \hline
+%   \end{tabular}
+%   \caption{Subset minimization for ISCAS85 circuit diagnosis}
+%   \label{tab:circuit-subset}
+% \end{table*}
+% % ------------------------------------------------------------
+
+
+\paragraph{Biological applications}
+
+\begin{itemize}
+\item Metabolic Network Expansion \cite{schthi09a}
+	\begin{itemize}
+		\item Second experiment where all targets are explained
+		\item Draft networks 404 to 484, with between 500 and 556 reactions removed.
+		\item Reference networks with 5000, ..., 9000 reactions from MetaCyc: 10 of each type
+		\item For each system: 50 reference networks *  9 draft networks = 450 instances
+		\item Data in tables: Average time (each timeout count 600) and number of timeouts
+		\item Systems for cardinality minimization: clasp, hclasp with sign -1 for atoms to minimize, 
+		      hclasp with false 1 for atoms to minimize, and hclasp with sign -1 for atoms to minimize 
+		      and factors 2, 4, 8 and 16.
+		\item Systems for subset minimization: clasp without minimization, 
+		      hclasp with false 1 for atoms to minimize, and hclasp with false 2, 4, 8 and 16 for atoms to minimize.
+		      For example, for 8 we use: $\_heuristic(xreaction(R),false,(R mod 8)+1)$. 
+	\end{itemize}
+\item Repair and prediction (under inconsistency) in large biological networks\cite{geguivscsithve10a}
+	\begin{itemize}
+		\item Experiment with repairs i, e and v and datasets 3\%, 6\%, 9\%, 12\% and 15\%
+		\item For each system: 200 instances/dataset * 5 datasets = 1000 instances
+		\item Data in tables: Average time (each timeout count 600) and number of timeouts
+		\item Systems for cardinality minimization: clasp, hclasp with sign -1 for atoms to minimize, 
+		      hclasp with false 1 for atoms to minimize, and hclasp with sign -1 for atoms to minimize 
+		      and factors 2, 4, 8 and 16.
+		\item Systems for subset minimization: clasp without minimization, 
+		      hclasp with false 1 for atoms to minimize, and hclasp ordering the different 3 repair operations
+		      in all possible combinations: iev, ive, eiv, evi, vie, vei. I.e., in iev repairs of type i have false 3, 
+		      of type e have false 2 and of type v have false 1. In vei, v have false 3, e have false 2 and i have false 1.
+  \end{itemize}
+\item Results: For both cases, prioritized circumscription minimization is done almost for free.
+      For cardinality minimization, all improve clasp: the best is false, then factor plus sign, and then sign alone. 
+\end{itemize}
+
+% ------------------------------------------------------------
+\begin{table*}[ht]
+  \centering
+  \begin{tabular}{|c|ccccccc|}
+    \hline
+    \input{DATA/bio-expansion-cardinality}
+    \hline
+  \end{tabular}
+  \caption{Cardinality minimization for Metabolic Network Expansion}
+  \label{tab:bio-exp-card}
+\end{table*}
+% ------------------------------------------------------------
+
+% % ------------------------------------------------------------
+% \begin{table*}[ht]
+%   \centering
+%   \begin{tabular}{|c|cccccc|}
+%     \hline
+%     \input{DATA/bio-expansion-subset}
+%     \hline
+%   \end{tabular}
+%   \caption{Subset minimization for Metabolic Network Expansion}
+%   \label{tab:bio-exp-sub}
+% \end{table*}
+% % ------------------------------------------------------------
+
+
+% ------------------------------------------------------------
+\begin{table*}[ht]
+  \centering
+  \begin{tabular}{|c|ccccccc|}
+    \hline
+    \input{DATA/bio-heat-cardinality}
+    \hline
+  \end{tabular}
+  \caption{Cardinality minimization for Repairs in Heatshock}
+  \label{tab:bio-heat-card}
+\end{table*}
+% ------------------------------------------------------------
+
+% % ------------------------------------------------------------
+% \begin{table*}[ht]
+%   \centering
+%   \begin{tabular}{|c|cccccccc|}
+%     \hline
+%     \input{DATA/bio-heat-subset}
+%     \hline
+%   \end{tabular}
+%   \caption{Subset minimization for Repairs in Heatshock}
+%   \label{tab:bio-heat-sub}
+% \end{table*}
+% % ------------------------------------------------------------
+
+% ------------------------------------------------------------
+\begin{table*}[ht]
+  \centering
+  \begin{tabular}{|c|ccccccc|}
+    \hline
+    \input{DATA/bio-stat-cardinality}
+    \hline
+  \end{tabular}
+  \caption{Cardinality minimization for Repairs in Stationary}
+  \label{tab:bio-stat-card}
+\end{table*}
+% ------------------------------------------------------------
+
+% % ------------------------------------------------------------
+% \begin{table*}[ht]
+%   \centering
+%   \begin{tabular}{|c|cccccccc|}
+%     \hline
+%     \input{DATA/bio-stat-subset}
+%     \hline
+%   \end{tabular}
+%   \caption{Subset minimization for Repairs in Stationary}
+%   \label{tab:bio-stat-sub}
+% \end{table*}
+% % ------------------------------------------------------------
+
+
+
+\paragraph{Planning}
+
+
+% \begin{table}[ht]
+%   \centering\small
+%   \begin{tabular}{|l|r|r|r|r|r|}
+%     \hline
+%     Benchmark           & \textit{clasp} & \texttt{s,1}   & \texttt{s,1} \ \texttt{f,2}& \texttt{s,1} \ \texttt{f,8} & \texttt{s,1} \ \texttt{l,1}\\
+%     \hline
+%     \hline
+%     \textit{Diagnosis}  \data{111.1}{115}\data{324.5}{407}\data{310.1}{387}\data{305.9}{376}\data{76.1}{83} \\
+%     \hline
+%     \textit{Network}    \data{161.5}{100}\data{  7.6}{  3}\data{  7.4}{  2}\data{  7.7}{  2}\data{ 6.6}{ 2} \\
+%     \hline
+%     \textit{Repair (H)} \data{101.3}{113}\data{  8.4}{  5}\data{  3.5}{  0}\data{  3.1}{  0}\data{ 0.8}{ 0} \\
+%     \textit{Repair (S)} \data{ 33.3}{ 27}\data{  3.1}{  0}\data{  3.2}{  1}\data{  2.9}{  0}\data{ 2.2}{ 1} \\
+%     \hline
+%   \end{tabular}
+%   \caption{Optimization in abductive applications}
+%   \label{tab:opt}
+% \end{table}
+
+\multicolumn{1}{|@{\,}l|}{\texttt{--heu=vsids}}
+
+
+    \multicolumn{1}{|@{\,}l|}{\texttt{--heu=dom}}    & \multicolumn{9}{c|}{}\\
+    \hline
+
+\data{308.0}{384} 
+\data{  6.6}{  2} 
+\data{  3.5}{  0} 
+\data{  3.2}{  0} 
+
+
+
+
+
+
+ \data{309.5}{386}
+ \data{7.2}{3}    
+ \data{3.4}{0}    
+ \data{3.2}{1}    
+
+
+
+    a sign T                      & \domheu{88}{11}{53}                 & \domheu{97}{3}{98}                   & \domheu{86}{9}{89}                    \\                
+
+
+\begin{itemize}
+\item deterministic and non-deterministic assignments
+\item take advantage of input language and grounding
+\item dynamic
+\item general
+\item heuristic language
+\item driven by the desire to bias/modify rather than replace
+\item no replacement but rather a domain-specific bias/orientation
+\item avoid application-specific algorithms and implementations
+\item preferential reasoning
+\end{itemize}
+
+
+A characteristic feature of this technology is its look-back based approach.
+Central to this are conflict-driven heuristics that score variables according to their prior conflict involvement.
+Even though the primary purpose of this technique is to guide non-deterministic variable assignments,
+it has a global impact in directing constraint learning and deletion.
+Moreover, look-based heuristics are dynamic and domain-independent.
+
+Yet despite the merits of such a general-purpose approach,
+
+Also note that we have not attributed any priorities, given that no conflicts occur in such a simple setting.
+
+
+Unlike this, \clasp's ASP-oriented default sign selection is based on variable types:
+atoms are preferably set to false, while variables standing for bodies or aggregates are made true.
+This aims at maximizing the number of resulting implications.
+
+
+\left\{
+  \begin{array}{rl}
+    \nu(V_{a,\mathtt{init}}(\ass_0))+h_0(a)&\text{if } V_{a,\mathtt{init}}(\ass_0)\neq\emptyset
+    \\
+                                     h_0(a)&\text{otherwise}
+  \end{array}
+\right.
+
+
+% The set of heuristic atoms is denoted as $\mathcal{H}$.
+
+
+\[
+\mathcal{H}
+=
+\{\hpred{a}{m}{v}{p}\mid a\in\mathcal{A}, m\in\{\mathtt{i},\mathtt{f},\mathtt{l},\mathtt{s}\},v,p\in\mathbb{Z}\}
+\]
+
+\comment{Martin: Proposal for macro expansion to four-argument atoms over predicate {\tt \_h},
+             making the (local) priority the third and the (global) sign the fourth argument}
+Moreover, we allow for certain simplified macros defaulting to predefinded values.
+\begin{itemize}
+\item \hpre{a}{true}{v}{}  to stand for \hpred{a}{level}{v}{|v|} and \hpred{a}{sign}{1}{|v|}, \ and
+\item \hpre{a}{false}{v}{} to stand for \hpred{a}{level}{v}{|v|} and \hpred{a}{sign}{-1}{|v|}\ .
+\end{itemize}
+\begin{verbatim}
+_h(A,true, V,#abs(V)) :- _h(A,true,V).
+_h(A,false,V,#abs(V)) :- _h(A,false,V).
+\end{verbatim}
+
+
+
+\begin{itemize}
+\item look-ahead and look-back based heuristics
+\item to model a look-based heuristics add $h:= d$
+\item EXAMPLE
+\end{itemize}
+
+
+\[
+h_i(v) := \gamma_i(v)
+% \qquad
+% s_i(v) := \gamma'_i(v)
+\]
+\end{itemize}
+
+
+\begin{itemize}
+% \item $\tau$ is a selection function on atoms, representing a solver's tie-breaking method that must
+%   select a variable among several equally good variables
+\item 
+
+
+\{v\mid\hpred{a}{level}{v}{p}\in\ass\}
+
+% - systems --------------------------------------------------------------------
+
+\newcommand{\claspD}{\textit{claspD}}
+\newcommand{\claspar}{\textit{claspar}}
+\newcommand{\claspfolio}{\textit{claspfolio}}
+\newcommand{\claspre}{\textit{claspre}}
+\newcommand{\clasp}{\textit{clasp}}
+\newcommand{\clingcon}{\textit{clingcon}}
+\newcommand{\clingo}{\textit{clingo}}
+\newcommand{\coala}{\textit{coala}}
+\newcommand{\gringo}{\textit{gringo}}
+\newcommand{\iclingo}{\textit{iclingo}}
+\newcommand{\plasp}{\textit{plasp}}
+
+\newcommand{\dlv}{\textit{dlv}}
+\newcommand{\lparse}{\textit{lparse}}
+\newcommand{\smodels}{\textit{smodels}}
+
+\newcommand{\lua}{\textit{lua}}
+
+\left\{
+  \begin{array}{rl}
+    \true &\text{if }
+           \nu(V)>0
+           \text{ for }
+           V=\{v\mid\hpred{a}{sign}{v}{p}\in\tlits{\ass_i}\}\\
+    \false&\text{if }
+           \nu(V)<0
+           \text{ for }
+           V=\{v\mid\hpred{a}{sign}{v}{p}\in\tlits{\ass_i}\}\\
+    s_i(a)&\text{otherwise}
+  \end{array}
+\right.
+
+
+                        \text{ for }
+                        V=\{v\mid\hpred{a}{factor}{v}{p}\in\tlits{\ass_i}\}
+
+
+                        \text{ for }
+                        V=\{v\mid\hpred{a}{init}{v}{p}\in\tlits{\ass_0}\}
+
+Moreover, we use
+\begin{itemize}
+\item \hpred{a}{true}{v}  to stand for \hpred{a}{level}{v} and \hpred{a}{value(t)}{v}, \ and
+\item \hpred{a}{false}{v} to stand for \hpred{a}{level}{v} and \hpred{a}{value(f)}{v}\ .
+\end{itemize}
+%
+\comment{Martin: Proposal for macro expansion to four-argument atoms over predicate {\tt \_h},
+             making the (local) priority the third and the (global) value the fourth argument}
+Moreover, we use
+\begin{itemize}
+\item \hpred{a}{true}{v}  to stand for \hpred{a}{level}{|v|,v} and \hpred{a}{sign}{|v|,1}, \ and
+\item \hpred{a}{false}{v} to stand for \hpred{a}{level}{|v|,v} and \hpred{a}{sign}{|v|,-1}\ .
+\end{itemize}
+For instance, \hpred{a}{true}{3} expands to 
+\hpred{a}{level}{3,3} and \hpred{a}{sign}{3,1},
+expressing a preference for both making a decision on~$a$ and
+assigning it to true.
+On the other hand,
+\hpred{a}{false}{-3} expands to 
+\hpred{a}{level}{3,-3} and \hpred{a}{sign}{3,-1},
+thus suggesting not to make a decision on~$a$ but to
+assign it to false if there is no ``better'' decision variable.
+%
+\tbrw
+Here, the integer $v$ is used to encode both the priority level as well as the preferred value.
+
+
+yielding the following forms of heuristic atoms
+for an atom $a\in\mathcal{A}$ and integer $v\in\mathbb{Z}$
+\begin{center}
+  \hpred{a}{init}{v},\
+  \hpred{a}{factor}{v},\
+  \hpred{a}{level}{v},\ 
+  \hpred{a}{value(t)}{v} and
+  \hpred{a}{value(f)}{v}\ .
+\end{center}
+
+
+
+
+
+
+
+
+                        \text{ and }
+                        i>0\\
+
+    \nu(V)             &\text{if }
+                        V\cap\tlits{\ass_0}\neq\emptyset
+                        \text{ for }
+                        V=\{v\mid\hpred{a}{init}{v}\in\tlits{\ass_0}\}
+                        \text{ and }
+                        i=0\\
+
+\begin{itemize}
+\item \textit{decide} and algorithm
+\item syntax \texttt{\_heuristic}
+\item semantic relative to assignment
+  \begin{itemize}
+  \item conflict resolution
+  \end{itemize}
+\item subset minimal stable models (enumeration via solution recoding)
+\end{itemize}
+
+                        %\text{if }\mathit{max}\{v\mid\hpred{a}{sign}{v}\in \ass_i, v>0\}>\\&\qquad\mathit{max}\{-v\mid\hpred{a}{sign}{v}\in \ass_i, v<0\}\\
+    \false&\text{if }\mathit{max}\{-v\mid\hpred{a}{sign}{v}\in \ass_i, v<0\}>\\&\qquad\mathit{max}\{v\mid\hpred{a}{sign}{v}\in \ass_i, v>0\}\\
+
+
+The initial value of our domain heuristics can be characterized as follows.
+\[
+d_0(a)=
+\left\{
+  \begin{array}{ll}
+         v&\hpred{a}{init}{v}\in \ass_0\\
+    h_0(a)&\text{otherwise}
+  \end{array}
+\right.
+\]
+A simple way to to extend the sign heuristic is as follows.
+\[
+t_i(a)=
+\left\{
+  \begin{array}{rl}
+    \true &\hpred{a}{sign}{v}\in \ass_i, v>0\\
+    \false&\hpred{a}{sign}{v}\in \ass_i, v<0\\
+    s_i(a)&\text{otherwise}
+  \end{array}
+\right.
+\]
+
+In view of the more elaborate handling of priorities, the following definition seems better suited,
+also in view of tie-breaking.
+
+
+For capturing a domain-specific sign heuristic, define
+\[
+t_i(a)=
+\left\{
+  \begin{array}{rl}
+    \true &\text{if }m^{\true }_i(a)>m^{\false}_i(a)\\
+    \false&\text{if }m^{\false}_i(a)>m^{\true }_i(a)\\
+    s_i(a)&\text{otherwise}
+  \end{array}
+\right.
+\]
+where
+\begin{align*}
+m^{\true}_i(a)
+&=
+\mathit{max}%\Psi
+\{v\mid\hpred{a}{sign}{v}\in \ass_i, v>0\}
+\\
+m^{\false}_i(a)
+&=
+\mathit{max}%\Psi
+\{-v\mid\hpred{a}{sign}{v}\in \ass_i, v<0\}
+\end{align*}

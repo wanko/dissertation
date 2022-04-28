@@ -1,0 +1,204 @@
+  \item
+    Related Work:
+    Truczcynski et al. defined and implemented two methods with $aso$ preferences, 
+    for computing an optimal model that is at a distance less or equal than $k$ of another stable model.
+  \item
+    Contributions: The method seems novel.
+
+  \begin{itemize}
+  \item 
+    Method:
+    Define a maxmin preference statement $s$ maximizing the minimal distance to any of the solutions in $\mathcal{X}$.
+    Add $s$ to $P$ for computing among the optimal models of $P$, one that is optimal wrt $s$. 
+    \comment{JR: I didn't manage to write this nicer.}
+  \item
+    Related Work:
+    The method appears in (Eiter et al., ICLP 2009) for logic programs without preferences.
+  \item
+    Contributions:
+    Extension of the method of (Eiter et al., ICLP 2009) to logic programs with preferences, 
+    applying the method for preferences over optimal models of \asprin,
+    that uses the method for queries on \asprin.
+  \end{itemize}
+
+More elaborate approaches are obtained by enhancing procedure $\mathit{solve}(P,\mathcal{X})$:
+%
+\begin{enumerate}
+\item
+  $\mathit{solve}(P,\mathcal{X})$ returns an optimal model of $P$ most dissimilar to those in $\mathcal{X}$.
+  \begin{itemize}
+  \item 
+    Method:
+    Define a maxmin preference statement $s$ maximizing the minimal distance to any of the solutions in $\mathcal{X}$.
+    Add $s$ to $P$ for computing among the optimal models of $P$, one that is optimal wrt $s$. 
+    \comment{JR: I didn't manage to write this nicer.}
+  \item
+    Related Work:
+    The method appears in (Eiter et al., ICLP 2009) for logic programs without preferences.
+  \item
+    Contributions:
+    Extension of the method of (Eiter et al., ICLP 2009) to logic programs with preferences, 
+    applying the method for preferences over optimal models of \asprin,
+    that uses the method for queries on \asprin.
+  \end{itemize}
+  
+\item $\mathit{solve}(P,\mathcal{X})$ first computes a partial interpretation $I$ distant to $\mathcal{X}$, 
+  and returns an optimal model of $P$ most similar to $I$.
+  \begin{enumerate}
+  \item Select a partial interpretation $I$ in one of the following ways:
+    \begin{enumerate}
+    \item
+      A random one
+    \item
+      The best according to $pguide$ heuristic from (A. Nadel, SAT 2011).
+    \item
+      The most dissimilar to the solutions in $\mathcal{X}$ (using ASP for the computation).
+    \item
+      Different to the last optimal model computed, 
+      taking into account either true atoms, or false atoms, or both.
+    \end{enumerate}
+  \item Define a $less(cardinality)$ preference statement $s$ minimizing the distance to $I$.  
+    Add $s$ to $P$ for computing among the optimal models of $P$, one that is optimal wrt $s$.
+  \item
+    Related Work:
+    Truczcynski et al. defined and implemented two methods with $aso$ preferences, 
+    for computing an optimal model that is at a distance less or equal than $k$ of another stable model.
+  \item
+    Contributions: The method seems novel.
+  \end{enumerate}
+  
+\item $\mathit{solve}(P,\mathcal{X})$ returns any optimal model (not in $\mathcal{X}$).
+\end{enumerate}
+
+Combining heuristics with the previous methods.
+\begin{itemize}
+\item For 2, fix the sign of the atoms to their value in the selected partial interpretation $I$.
+\item For 3, select a partial interpretation $I$ as for technique 2, 
+  and fix the sign of the atoms to their value in $I$.
+\item For 1 to 3, apply a dynamic heuristic. 
+  This heuristic, when the current assignment is very close to a previous solution, 
+  modifies the signs to get away from it.
+\item Furthermore, different priorities may be given to the atoms.
+\end{itemize}
+
+
+\begin{itemize}
+    \item
+    Step 1:
+    Translate the logic program with preferences $P$ into a disjunctive logic program $D$ 
+    applying the guess and check method in \asprin.
+    \item
+    Step 2:
+    Reify $D$ into $R_D$, and add a metaencoding $M$ replicating $P$, such that 
+    every stable model of the metaencoding along with the reified program ($R_D \cup M$), 
+    corresponds to $n$ optimal models of the original logic program $P$.
+    \item
+    Step 3:
+    Add a maxmin preference statement $s$ such that the optimal stable models of $R_D \cup M \cup s$ 
+    correspond to $n$ most diverse optimal stable models of the original program $P$.
+    \item
+    Related Work:
+    The method appears in (Eiter et al., ICLP 2009) for logic programs without preferences, 
+    but it is not automated, 
+    i.e., the user must modify himself the program $P$ for having $n$ solutions per stable model.
+    \item
+    Contributions: 
+    Automation of the method of (Eiter et al., ICLP 2009),
+    and extension to logic programs \emph{with} preferences. 
+    Method for replicating a logic program (Step 2), 
+    and maxmin preference statement for selecting most diverse optimal models (Step 3).
+\end{itemize}
+
+
+\begin{itemize}
+    \item
+    Step 1:
+    Enumerate all optimal models of the logic program $P$ with preferences. 
+    \item
+    Step 2:
+    Find among all optimal models already computed, those $n$ which are most diverse.
+    \item
+    Implementation:
+    Step 1 is implemented via \asprin\ enumeration mode, 
+    step 2 is implemented by a logic program with preferences.
+    \item
+    Related work: 
+    The method appears in (Eiter et al., ICLP 2009) for logic programs without preferences.
+    \item
+    Contributions:
+    Extension of the method of (Eiter et al., ICLP 2009) to logic programs \emph{with} preferences (this is trivial), 
+    and implementation in \asprin.
+  \end{itemize}
+
+
+\begin{itemize}
+    \item
+    Problem: Find an optimal model of a program $P$ with preferences, that 
+             %contains 
+             satisfies
+             a query atom $q$
+    \item
+    Methods:
+    \begin{enumerate}
+        \item Enumerate all \emph{optimal models} of $P$ until one satisfies $q$
+        \item Enumerate all \emph{models} of $P \cup \{ \bot \leftarrow not \ q \}$ and test each for optimality
+        \item Enumerate all \emph{optimal models} of $P \cup \{ \bot \leftarrow not \ q \}$ and test each for optimality
+        \item Modify \asprin\ improving algorithm, 
+              adding alternatively $\{ \bot \leftarrow not \ q \}$ or $\{ \bot \leftarrow q \}$ at each step, 
+              and enumerate solutions until one satisfies $q$.
+    \end{enumerate}
+    \item
+    Implemented in \asprin\
+    \item
+    Related Work: 
+    Truczcynski et al. defined and implemented the first two methods with $aso$ preferences, 
+    for computing an optimal model that is at a distance less or equal than $k$ of another stable model.
+    \item
+    Contributions:
+    Solve queries for \asprin\ preferences in general, and propose two more methods.  
+
+Modify \asprin\ improving algorithm, 
+  
+\end{itemize}
+
+
+\begin{itemize}
+    \item
+    Framework defined by \cite{eitpol06a} for representing and solving $\Sigma^p_2$ problems.
+    \item
+    Problem:
+    Given two logic programs $P$ and $Q$, $P$ guesses an stable model $X$,  
+    and $X$ is a solution if $Q \cup X$ is unsatisfiable.
+    \item
+    Method:
+    Tanslation to disjunctive logic programming, 
+    using the reification techniques and the metaencoding of metasp \cite{gekasc11b} 
+    \item
+    Implemented by a \python\ script.
+    \item
+    Application in \asprin\ for translating a normal logic program with preferences into a disjunctive logic program: 
+    \asprin\ translates a logic program with preferences into a guess and check problem, 
+    which is then translated into a disjunctive logic program by the \python\ script.
+    \item
+    Related Work: 
+    \cite{eitpol06a} devised the framework, and \cite{gekasc11b} the implementation techniques for \clingo.
+    \item
+    Contributions:
+    Implementation of the framework \cite{eitpol06a} for \clingo, using the techniques of metasp \cite{gekasc11b}.
+    Application to \asprin.
+\end{itemize}
+
+\begin{itemize}
+    \item
+    Definition of preference type $maxmin$:
+    Given a set of \#sum aggregates, maxmize the value of the aggregate with the minimum value among all in the set.
+    \item
+    Implementation of the preference type in \asprin.
+    \item
+    Related Work: 
+    Nothing special.
+    \item
+    Contributions:
+    Definition of preference type, and implementation in \asprin.
+\end{itemize}
+

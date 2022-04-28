@@ -1,0 +1,170 @@
+\section{Curriculum-based Course Timetabling}\label{sec:cb-ctt}
+
+As mentioned, we focus on the curriculum-based course timetabling
+(CB-CTT) problems used in the ITC-2007 competition.
+The problem description of CB-CTT presented here is based on 
+\citep{DBLP:journals/anor/BonuttiCGS12}.
+
+The CB-CTT instance consists mainly of
+\textit{curricula},
+\textit{courses},
+\textit{rooms},
+\textit{days}, and
+\textit{periods} per day.
+A curriculum is a set of courses that shares common students.
+We refer to a pair of day and period as \textit{timeslot}.
+%
+The CB-CTT problem is defined as the task of assigning all lectures
+of each course into a weekly timetable, 
+subject to a given set of hard and soft constraints.
+%
+Hard constraints must be strictly satisfied.
+Soft constraints are not necessarily satisfied,
+but the sum of their violations should be minimal.
+%
+A \textit{feasible solution} of the problem is an assignment
+so that the hard constraints are satisfied.
+The objective of the problem is to find a feasible solution with minimal penalty.
+%
+The CB-CTT problem has the following hard constraints.
+\begin{list}{}{}
+\item \bm{$H_1$}. \textbf{Lectures}: 
+  All lectures of each course must be scheduled, 
+  and they must be assigned to distinct timeslots.
+\item \bm{$H_2$}. \textbf{Conflicts}: 
+  Lectures of courses in the same curriculum or taught by the same
+  teacher must be all scheduled in different timeslots.
+\item \bm{$H_3$}. \textbf{RoomOccupancy}: 
+  Two lectures cannot take place in the same room in the same timeslot.
+\item \bm{$H_4$}. \textbf{Availability}: 
+  If the teacher of the course is unavailable to teach that course
+  at a given timeslot, then no lecture of the course can be scheduled at
+  that timeslot.
+\end{list}
+The CB-CTT problem has the following soft constraints.
+\begin{list}{}{}
+\item\bm{$S_1$}. \textbf{RoomCapacity}: 
+  For each lecture, the number of students that attend the course must
+  be less than or equal the number of seats of all the rooms that host
+  its lectures. 
+  The penalty points, reflecting the number of students above the
+  capacity, are imposed on each violation.
+\item\bm{$S_2$}. \textbf{MinWorkingDays}: 
+  The lectures of each course must be spread into a given minimum
+  number of days. 
+  The penalty points, reflecting the number of days below the minimum,
+  are imposed on each violation.
+\item\bm{$S_3$}. \textbf{IsolatedLectures}: 
+  Lectures belonging to a curriculum should be adjacent to each other
+  in consecutive timeslots. For a given curriculum we account
+  for a violation every time there is one lecture not adjacent to any
+  other lecture within the same day. 
+  Each isolated lecture in a curriculum counts as 1 violation.
+\item\bm{$S_4$}. \textbf{Windows}: 
+  Lectures belonging to a curriculum should not have time windows
+  (periods without teaching) between them. 
+  For a given
+  curriculum we account for a violation every time there is one
+  window between two lectures within the same day. 
+  The penalty points, reflecting the length in periods of time window,
+  are imposed on each violation.
+\item\bm{$S_5$}. \textbf{RoomStability}: 
+  All lectures of a course should be given in the same room. 
+  The penalty points, reflecting the number of distinct rooms but the first, 
+  are imposed on each violation.
+\item\bm{$S_6$}. \textbf{StudentMinMaxLoad}: 
+  For each curriculum the number of daily lectures should be within a
+  given range. 
+  The penalty points, reflecting the number of lectures below the minimum or above the
+  maximum, are imposed on each violation.
+\item\bm{$S_7$}. \textbf{TravelDistance}: 
+  Students should have the time to move from one building to another
+  one between two lectures. For a given curriculum we account for a
+  violation every time there is an \textit{instantaneous move}: 
+  two lectures in rooms located in different building in two adjacent
+  periods within the same day. 
+  Each instantaneous move in a curriculum counts as 1 violation.
+\item\bm{$S_8$}. \textbf{RoomSuitability}:
+  Some rooms may be not suitable for a given course because of the
+  absence of necessary equipment.
+  Each lecture of a course in an unsuitable room counts as 1
+  violation.
+\item\bm{$S_9$}. \textbf{DoubleLectures}:
+  Some courses require that lectures in the same day are grouped
+  together (\textit{double lectures}). For a course that requires grouped
+  lectures, every time there is more than one lecture in one day, 
+  a lecture non-grouped to another is not allowed. 
+  Two lectures are grouped if they are adjacent and in the same room. 
+  Each non-grouped lecture counts as 1 violation.
+\end{list}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table}
+\centering
+\caption{Problem Formulations}
+\label{table:problem_formulations}
+%\renewcommand{\arraystretch}{0.9}
+%\tabcolsep = 3mm
+\begin{tabular}[t]{l|ccccc}\hline
+Constraint & UD1 & UD2 & UD3 & UD4 & UD5\\\hline
+$H_1$. Lectures &  
+H &  H &  H &  H & H\\
+$H_2$. Conflicts &  
+H &  H &  H &  H & H\\
+$H_3$. RoomOccupancy &  
+H &  H &  H &  H & H\\
+$H_4$. Availability &  
+H &  H &  H &  H & H\\
+$S_1$. RoomCapacity &  
+1 & 1 & 1 & 1  & 1 \\
+$S_2$. MinWorkingDays &  
+5 &  5 & - & 1 & 5 \\
+$S_3$. IsolatedLectures &  
+1 & 2 & - & - & 1 \\
+$S_4$. Windows &  
+- & - & 4 & 1 & 2\\
+$S_5$. RoomStability &  
+- & 1 & - & - & -\\
+$S_6$. StudentMinMaxLoad &  
+- & - & 2 & 1 & 2\\
+$S_7$. TravelDistance &  
+- & - & - & - & 2\\
+$S_8$. RoomSuitability &  
+- & - & 3 & H & -\\
+$S_9$. DoubleLectures &  
+- & - & - & 1 & -\\\hline
+\end{tabular}
+\end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+A \textit{formulation} is defined as a specific set of soft constraints
+together with the weights associated with each of them.
+%
+The five formulations UD1--UD5 have been proposed so far.
+UD1 is the most basic formulation among them~\citep{DBLP:conf/patat/GasperoS02}.
+UD2 is a well known formulation used in the ITC-2007 competition~\citep{GasperoMS/ITC2007}.
+UD3, UD4, and UD5 have been recently proposed
+to capture more different scenarios~\citep{DBLP:journals/anor/BonuttiCGS12}.
+These formulations focus on 
+student load (UD3), 
+double lectures (UD4), and
+travel cost (UD5), respectively.
+%
+The weights of soft constraints in each formulation is shown in 
+Table~\ref{table:problem_formulations}.
+The symbol `H' stands for inclusion in a formulation as hard constraint.
+The symbol `-' stands for exclusion from a formulation.
+
+In this paper, we formulate the CB-CTT problem as a single-objective
+combinatorial optimization problem whose objective function is to
+minimize the weighted sum of penalty points in the same manner as
+ITC-2007, 
+as well as a multi-criteria optimization problem based on lexicographic ordering.
+Furthermore, we consider a multi-objective course timetabling problem
+combining CB-CTT and Minimal Perturbation Problem.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End:
+

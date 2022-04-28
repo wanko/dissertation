@@ -1,0 +1,136 @@
+
+\section{\clingo{} derivatives and related systems}\label{sec:system}
+
+In this section, we give an overview of systems extending ASP with linear constraints.
+We start with our own systems \clingod{dl} and \clingod{lp}
+both relying upon \clingo's interface for theory propagators.
+We also include \clingcon, since it is based on a much lower level API
+using the internal functions of \clingo{} (and \clasp) in \cpp.
+While \clingcon{} implements a highly sophisticated system using advanced preprocessing and solving techniques,
+the \python{} variants of \clingod{dl} and \clingod{lp} provide easily modifiable and maintainable propagators for difference and linear constraints,
+respectively.
+This carries over to the \cpp{} variant of \clingod{dl} since the \cpp{} and \python{} API share the same functionality. 
+% --------------------------------------------------------------------------------
+\input{tables/features}
+% --------------------------------------------------------------------------------
+Table~\ref{tab:features} shows a comparative list of features for these systems.
+The two flexible \clingo{} derivatives support all four combinations
+of strict/non-strict and defined/external lc-atom types,
+whereas \clingcon{} has a fixed one.
+Also the bandwidth of supported constraints is different.
+While \clingod{dl} only supports difference constraints,
+the other two support n-ary linear constraints.
+Notably, \clingod{dl} and \clingod{lp} support (approximations of) real numbers (see below).
+Moreover, all three \clingo{} derivatives allow for optimizing objective functions over
+numeric variables (in addition to optimization in ASP).
+% All systems are freely available at \url{https://potassco.org/{clingoDL,clingoLP,clingcon}}.
+
+\textbf{\clingod{dl}}
+extends \clingo{} with difference constraints of the form $x-y\leq k$,
+where $x$ and $y$ are integer (or real) variables and $k$ is an integer (real) constant.
+%
+Despite the restriction to two variables, 
+they allow for naturally encoding timing related problems, as e.g., in scheduling, % or timetabling,
+and are solvable in polynomial time.
+%Syntactically, a difference constraint $x-y\leq k$ is represented by a difference constraint atom of the form `\lstinline[mathescape]@&diff{x-y}<=k@'.
+%
+\clingod{dl} uses \clingo{}'s theory interface to realize a stateful propagator
+that checks during search whether the current set of implied difference constraints
+is satisfiable~\cite{cotmal06a}.
+%
+To this end,
+it makes use of the stateful nature of the theory interface
+that allows 
+for incrementally updating internal states
+and thus for backtracking to previous states without having to rebuild the internal representation.
+% \clingod{dl} is available using either the \python\ or \cpp\ interface at \url{https://github.com/potassco/clingoDL}.
+%
+By default, all difference constraint atoms are considered to be non-strict.
+In this case, it is only necessary to keep track of lc-atoms that are assigned true
+since only then the constraint is required to hold.
+In the strict case,
+false assignments to difference constraint atoms are considered as well.
+This is done by adding $y-x\leq-k-1$ 
+whenever `\lstinline[mathescape]@&diff{x-y}<=k@' is assigned false.
+%
+As a side-product of the satisfiability check,
+an integer (real) assignment for all variables is obtained
+and ultimately printed for all lc-stable models.
+Usually, several or even an infinite number of assignments exist. % if the set of difference constraints is satisfiable.
+The returned assignment is the one with the lowest sum of the absolute values of all variables.
+For instance, in terms of scheduling problems, this amounts to scheduling each job as soon as possible.
+%%%Besides binary constraints, it is possible to encode unary constraints
+%%%by using the constant `\lstinline[mathescape]@0@', 
+%%%where `\lstinline[mathescape]@0@' is treated as a dedicated variable being always $0$, 
+%%%eg $x\leq10$ is encoded as `\lstinline[mathescape]@&diff{x-0} <= 10@'.\comment{maybe remove mathescape or use it in the constraint?}
+
+\textbf{\clingod{lp}}
+fully covers the extension of \ASPm{lc} described in Section~\ref{sec:background}.
+This \clingo{} derivative accepts lc-atoms containing integer and real variables possibly subject to dynamic conditions.
+That is, \clingod{lp} extends ASP with constraints as dealt with in Linear Programming (LP;~\cite{dantzig63a})
+as well as according objective functions for optimization. 
+In \clingod{lp}, the latter are subject to dynamic conditions and thus depend on the respective Boolean assignment
+(as in regular ASP optimization).
+%
+As above,
+the theory interface of \clingo{} is used to integrate a stateful propagator that checks during search 
+the satisfiability of the current set of linear constraints.
+Here, however, this is done with a generic interface to dedicated LP solvers,
+currently supporting \cplex\ and \lpsolve.
+(Note that both LP solvers do an exponential consistency check.) % use the simplex algorithm. \comment{P: ref to simplex maybe} 
+%
+The \python\ interfaces of \cplex\ and \lpsolve\ natively support relations $=$, $\geq$, and $\leq$. 
+We add support for $<$, $>$, and $\neq$.
+To this end, %similar to \cplex\ linearization, %\footnote{See~\url{https://www.ibm.com/support/knowledgecenter/SS9UKU\_12.4.0/com.ibm.cplex.zos.help/Parameters/topics/EpLin.html} for detailed information.} 
+we translate $<$ and $>$ into $\leq$ and $\geq$ by subtracting or adding an $\varepsilon$ to the right-hand-side of a linear constraint, respectively.%
+\footnote{This $\varepsilon$ can be configured using the command line and defaults to $10^{-3}$ (as in \cplex).}
+Furthermore, $\neq$ is treated as a disjunction of $<$ and $>$.
+%
+By default, \clingod{lp} treats lc-atoms in a non-strict manner.
+Thus only linear constraints represented by true lc-atoms are considered.
+When treating them strictly, false lc-atoms are handled using the complementary relation.
+In this case, 
+the corresponding linear constraint is derived by using the complementary relation.
+%
+Notably, \clingod{lp} offers dynamic conditions in lc-atoms.
+This allows for linear constraints of variable length even during search.
+All conditions have to be decided before such a constraint is included in the consistency check.
+Furthermore, \clingod{lp} updates its internal state incrementally 
+but rebuilds the linear constraint system after backtracking to avoid accumulating rounding errors. 
+%
+%If the LP solver establishes inconsistency, a nogood is added  only consisting of literals associated with current linear constraints.
+%Naively, all assigned lc-atoms and conditions may be gathered as reason for the inconsistency.
+%But often only a subset of linear constraints is responsible for a conflict.  
+%To this end, we identify a core conflict using the Irreducible Inconsistent Set (IIS) algorithm \cite{ostsch12a,loon81}.
+Also, it uses an Irreducible Inconsistent Set algorithm~\cite{loon81}
+for extracting minimal sets of conflicting constraints to support conflict learning in the ASP solver.
+On the one hand, this extraction is expensive, on the other hand, such core conflicts may significantly reduce the search space. 
+To control this trade-off, \clingod{lp} only enables this feature after a certain percentage of lc-atoms and conditions is assigned (by default 20\%).
+Similarly,
+frequent theory consistency checks are expensive and a conflict is less likely to be found within a small assignment;
+accordingly, an analogous percentage based threshold allows for controlling their invocation (default 0\%). 
+%
+% \clingod{lp} is available at \url{https://github.com/potassco/clingoLP}.
+
+\textbf{\clingcon} series~3 offers a \clingo-based ASP system with handcrafted propagators for constraints over integers~\cite{bakaossc16a};
+it is implemented in \cpp{} and features a strict, external semantics.
+Sophisticated preprocessing techniques are supported
+and non-linear constraints such as the global \emph{distinct} constraint are translated into linear ones.
+Integer variables are represented using the order encoding~\cite{crabak94a},
+and customized propagators using state-of-the-art lazy nogood and variable generation are employed.
+The propagators do not only ensure bound consistency on the variables
+but also derive new bounds.
+%This means that new constraints are derived.
+Furthermore,
+multi-objective optimization on integer variables is supported.
+In contrast to \clingod{lp},
+conditions on integer variables must be static.
+% The system is available at \url{https://potassco.org/clingcon}.
+
+Our systems are available at \url{https://potassco.org/labs/{clingoDL,clingoLP}}
+and \url{https://potassco.org/clingcon}.
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End: 

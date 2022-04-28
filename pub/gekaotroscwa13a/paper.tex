@@ -1,0 +1,67 @@
+%% $Id: paper.tex 34991 2013-04-06 07:51:22Z torsten $
+%% $HeadURL: https://svn.cs.uni-potsdam.de/svn/reposWV/Papers/ASPDomHeu/trunk/paper.tex $
+\documentclass[letterpaper]{article}
+\usepackage{aaai}\nocopyright
+\usepackage{times,helvet,courier}
+\usepackage{amsmath,amssymb}
+
+\setlength{\pdfpagewidth}{8.5in}
+\setlength{\pdfpageheight}{11in}
+\usepackage{verbatim}
+
+\usepackage{listings}
+\lstset{aboveskip=\smallskipamount,belowskip=\smallskipamount}
+\lstset{basicstyle=\ttfamily\small}
+\input{macro} 
+
+\pdfinfo{
+/Title (Domain-specific Heuristics in Answer Set Programming)
+/Author (M. Gebser, B. Kaufmann, R. Otero, J. Romero, T. Schaub, P. Wanko)
+/Keywords(answer set programming, answer set solving, heuristics, conflict-driven clause learning) 
+} 
+
+\sloppy
+
+\title{Domain-specific Heuristics in Answer Set Programming}
+
+\author%
+{%
+  M.~Gebser$^*$
+  \and
+  B.~Kaufmann$^*$
+  \and
+  R.~Otero$^\star$
+  \and 
+  J.~Romero$^{*,\star}$
+  \and 
+  T.~Schaub$^*$%\thanks{Affiliated with Simon Fraser University, Canada, and Griffith University, Australia.}
+  \and
+  P.~Wanko$^*$
+  \\
+  \begin{tabular}{ccc}
+    Institute for Informatics$^*$       & & Department of Computer Science$^\star$\\
+    University of Potsdam               & & University of Corunna\\
+    14482 Potsdam, Germany	        & & 15071 Corunna, Spain
+  \end{tabular}
+}
+
+\date{}
+
+\begin{document}
+
+\maketitle
+\input{abstract}
+
+\input{introduction}
+\input{background}
+\input{cdcl}
+\input{approach}
+\input{experiments}
+\input{discussion}
+
+\input{acknowledgments}
+
+\bibliographystyle{aaai}
+% \bibliography{lit,akku,procs,local} % https://svn.cs.uni-potsdam.de/svn/reposWV/Papers/bibfiles/trunk
+\input{bbl}
+\end{document}

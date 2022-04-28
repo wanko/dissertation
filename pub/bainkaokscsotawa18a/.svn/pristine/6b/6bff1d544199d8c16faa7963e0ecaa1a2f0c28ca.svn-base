@@ -1,0 +1,3 @@
+soft_constraint("RoomCapacity",      1, 6).  soft_constraint("Windows",           2, 5).
+soft_constraint("MinWorkingDays",    5, 4).  soft_constraint("TravelDistance",    2, 3).
+soft_constraint("StudentMinMaxLoad", 2, 2).  soft_constraint("IsolatedLectures",  1, 1).

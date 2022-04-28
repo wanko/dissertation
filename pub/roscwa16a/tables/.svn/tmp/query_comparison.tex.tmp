@@ -1,0 +1,40 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb}
+\usepackage{times,helvet,courier}
+\usepackage[graphics,tightpage,active]{preview}
+\PreviewEnvironment{tabular}
+\newlength{\imagewidth}
+\newlength{\imagescale}
+\pagestyle{empty}
+\thispagestyle{empty}
+
+\begin{document}
+
+\begin{table}
+\begin{tabular}{|l|r||r|r|r|r|r|r|r|r|}
+
+\hline
+Class & \#inst & \multicolumn{2}{c|}{$Q$-$1$} & \multicolumn{2}{c|}{$Q$-$2$} & \multicolumn{2}{c|}{$Q$-$3$} & \multicolumn{2}{c|}{$Q$-$4$} \\ 
+ & &  T & I &  T & I & T & I & T & I \\ 
+\hline
+CTT & 12 & \textbf{452} & \textbf{44} & 455 & 58  & \textbf{452} & 58 & \textbf{452} & 58  \\ 
+\hline
+DSE & 60 & 460 & 1600 & 209 & 73 & 209 & \textbf{30} & \textbf{199} & 34 \\ 
+\hline
+card-4 & 186 & 406 & 426 & 376 & 171 &  368  & \textbf{37}  & \textbf{358} & 42 \\ 
+\hline
+sub-4 & 186 & 95 & 264 & \textbf{22} & 39  & \textbf{22} & 41 & \textbf{22} & \textbf{37}\\ 
+\hline
+card-8 & 186 & 355 & 477 & \textbf{241} & 75 & 250 & \textbf{40} & 245 & 42 \\ 
+\hline
+sub-8 & 186 & 84 & 230 & \textbf{19} & \textbf{38} & 22 & 43  & 22 & 53\\ 
+\hline\hline
+total & 816 & 309 & 463 & 220 & 91 & 221 & \textbf{42} & \textbf{216} & 44 \\ 
+
+\hline
+\end{tabular} 
+\end{table}
+
+\end{document}

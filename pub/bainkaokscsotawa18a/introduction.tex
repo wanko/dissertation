@@ -1,0 +1,197 @@
+\section{Introduction}\label{intro}
+
+\textit{Educational timetabling}~\citep{%
+DBLP:journals/eor/BurkeP02,%
+Lewis2007:survey,%
+DBLP:journals/air/Schaerf99}
+is generally defined as the
+task of assigning a number of events, such as lectures and examinations,
+to a limited set of timeslots (and perhaps rooms), 
+subject to a given set of hard and soft constraints.
+Hard constraints must be strictly satisfied.
+Soft constraints must not necessarily be satisfied but
+the overall number of violations should be minimal.
+%
+The educational timetabling problems can be 
+classified into three categories:
+\textit{school timetabling},
+\textit{examination timetabling}, and
+\textit{course timetabling}.
+In this paper, 
+we focus on \textit{curriculum-based course timetabling} 
+(CB-CTT;~\citep{Bettinelli2015}), 
+one of the most studied course timetabling problems.
+%as well as \textit{post-enrollment course timetabling}.
+
+The CB-CTT problems have been used in the third track of 
+the second international timetabling competition 
+(ITC-2007;~\citep{%
+  GasperoMS/ITC2007,%
+  DBLP:journals/informs/McCollumSPMLPGQB10}).
+%
+A web portal\footnote{\texttt{http://tabu.diegm.uniud.it/ctt/}}
+for CB-CTT has been actively maintained by the ITC-2007 organizers%
+~\citep{DBLP:journals/anor/BonuttiCGS12}.
+The web site provides necessary infrastructures for benchmarking
+such as validators, data formats, problem instances,
+solutions in different formulations (uploaded by researchers), 
+and visualizers.
+All problem instances on the web are based on
+real data from various universities in Europe.
+The best known bounds on the web have been obtained by 
+state-of-the-art CB-CTT solving techniques
+including the winner algorithm of ITC-2007:
+metaheuristics-based algorithms~\citep{%
+  DBLP:journals/heuristics/AbdullahTMM12,%
+%  ClarkHL/PATAT2008,%
+  DBLP:conf/patat/GasperoS02,%
+  DBLP:journals/jmma/GasperoS06,%
+  DBLP:journals/anor/Geiger12,%
+  DBLP:journals/eor/LuH10},
+Integer Programming~\citep{DBLP:journals/anor/LachL12},
+hybrid methods~\citep{DBLP:journals/anor/Muller09},
+SAT/MaxSAT~\citep{DBLP:journals/aicom/AchaN12},
+and many others.
+
+However, each method has strength and weakness.
+Metaheuristics-based dedicated implementations can quickly find better
+upper bounds, but cannot guarantee their optimality.
+Although complete methods such as SAT can guarantee the optimality, 
+it is costly to implement a dedicated encoder from the CB-CTT problems in SAT\@.
+Integer Programming has been widely used for CB-CTT solving,
+but in general it does not scale to large instances in complex formulations.
+It is therefore particularly challenging to develop a universal
+timetabling solver which can efficiently find optimal solutions 
+as well as better bounds for a wide range of CB-CTT instances in
+different formulations at present.
+
+Answer Set Programming (ASP;~\citep{%
+  baral03:cambridge,%
+  DBLP:conf/iclp/GelfondL88,%
+  DBLP:journals/amai/Niemela99})
+is an approach to declarative problem solving.
+Recent advances in ASP open up a successful direction to extend logic
+programming to be both more expressive as well as more effective.
+%
+ASP provides a rich language and 
+is well suited for modeling combinatorial (optimization) problems 
+in Artificial Intelligence and Computer Science.
+Recent remarkable improvements in the effectiveness of ASP systems
+have encouraged researchers to use ASP for solving problems in diverse areas,
+such as
+automated planning,
+constraint satisfaction,
+model checking,
+music composition,
+robotics,
+system biology,
+etc~\citep{ergele16a}.
+However, so far, little attention has been paid to using ASP for timetabling.
+
+In this paper, we describe an ASP-based approach for solving the
+CB-CTT problems and present the resulting {\asap} system.
+The {\asap} system reads a CB-CTT instance 
+of a standard input format~\citep{DBLP:journals/anor/BonuttiCGS12}
+and converts it into ASP facts.
+In turn, these facts are combined with a first-order encoding for
+CB-CTT solving, which is subsequently solved by an off-the-shelf ASP
+system, in our case {\clingo}.
+% ~\footnote{%
+% ASP system {\clingo} is a monolithic combination of the grounder {\gringo} with the solver {\clasp}.}.
+Figure~\ref{fig:arch} shows the \asap\ architecture.
+% ----------------------------------------------------------------------
+\input{fig_arch}
+% ----------------------------------------------------------------------
+
+The high-level approach of ASP has obvious advantages.
+First, the problems are solved by general-purpose ASP systems rather
+than dedicated implementation.
+Second,
+the elaboration tolerance of ASP allows for easy maintenance and
+modifications of encodings.
+And finally,
+it is easy to experiment with advanced techniques in ASP solving such
+as core-guided optimization, domain heuristics, and 
+portfolios of prefabricated expert configurations~\citep{gekakarosc15a}.
+%
+However, the question is whether the high-level approach of \asap\ matches the
+performance of dedicated systems.
+We empirically address this question by contrasting the performance of 
+\asap\ with the best known bounds on the CB-CTT web portal
+obtained by state-of-the-art CB-CTT solving techniques.
+
+From the perspective of applying ASP to educational timetabling, 
+an early work studied school timetabling with ASP~\citep{Faber98}.
+Recently, we showed in previous work~\citep{basotainsc13a} that ASP's
+modeling language is well-suited for course timetabling by providing
+a compact encoding for CB-CTT solving.
+However, at the same time, 
+we observed that a simple branch-and-bound optimization strategy
+is insufficient to decrease the upper bounds of large instances in complex formulations.
+In this paper, we provide insights into how more advanced solving techniques can be used 
+to overcome this practical issue.
+
+The main contributions of this paper are as follows.
+\begin{enumerate}
+\item We present a basic ASP encoding for solving CB-CTT problems, 
+  which is an enhancement of our previous encoding~\citep{basotainsc13a}. 
+  This enhancement provides the ability to use advanced ASP solving
+  techniques such as 
+  core-guided optimization, 
+  domain heuristics, 
+  portfolios of prefabricated expert configurations,
+  multi-criteria optimization based on lexicographic ordering, and
+  multi-shot ASP solving~\citep{gekakarosc15a,gekaobsc15a}.
+\item We extend the basic encoding in view of enhancing the
+  scalability and flexibility of solving (multi-criteria) CB-CTT problems.
+  The extended \asap\ encodings have the following features:
+  \begin{itemize}
+  \item A collection of optimized encodings for soft constraints
+  \item Easy composition of different formulations
+  \item Multi-criteria optimization based on lexicographic ordering
+%  \item Reusing legacy timetables in multi-shot ASP solving
+  \end{itemize}
+\item Our empirical analysis considers all 61 instances in 5
+  different formulations, which are publicly available from the CB-CTT
+  portal ($61\times 5 = 305$ combinations in a total)~\footnote{As of July 20, 2017}.
+  Overall, \asap\ managed to either improve or reproduce the best
+  known bounds for 182 combinations (59.7\% in the total).
+  In detail, \asap\ provided 54 better bounds, 
+  16 new optima,
+  and 128 same bounds, 
+  35 of which were proven optimal for the first time.
+  Furthermore,
+  \asap\ was able to produce upper bounds for very large instances in
+  the category \verb+erlangen+ with every formulation, and 24 of them
+  were unsolvable before.
+\item We also extend the {\asap} system to finding Pareto optimal solutions
+  of multi-objective course timetabling and consider
+  \textit{minimal perturbation problems}~\citep{%
+    BartakMR03,MullerRB04,RudovaMM11,Phillips2016}
+  by utilizing multi-shot ASP solving techniques~\citep{gekaobsc15a}.
+\end{enumerate}
+All in all, the proposed declarative approach represents a significant
+contribution to the state-of-the-art for CB-CTT.
+
+The rest of the paper is structured as follows.
+Section~\ref{sec:cb-ctt} provides the problem description of CB-CTT\@.
+Although we give a brief introduction to ASP and its basic language
+constructs in Section~\ref{sec:asp}, 
+we refer the reader to the literature~\citep{baral03:cambridge,gekakasc12a}
+for a comprehensive treatment of ASP\@.
+Section~\ref{sec:approach}
+describes {\asap}'s fact format of CB-CTT instances and then 
+presents a basic {\asap} encoding for solving CB-CTT problems.
+Section~\ref{sec:ext} presents a variety of features of
+extended {\asap} encodings for (multi-criteria) CB-CTT solving.
+Section~\ref{system} provides a detailed empirical analysis of {\asap}
+features and performance in contrast to 
+the best known bounds obtained by state-of-the-art CB-CTT solving techniques.
+Section~\ref{mpp} presents an extension of the {\asap} system to 
+minimal perturbation problems in course timetabling. 
+Finally, a conclusion is given in Section~\ref{conclusion}.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End:

@@ -1,0 +1,1410 @@
+%% $Id: paper.tex 34991 2013-04-06 07:51:22Z torsten $
+%% $HeadURL: https://svn.cs.uni-potsdam.de/svn/reposWV/Papers/ASPDomHeu/trunk/paper.tex $
+\documentclass[letterpaper]{article}
+\usepackage{aaai}
+\usepackage{times,helvet,courier}
+\usepackage{amsmath,amssymb}
+
+\setlength{\pdfpagewidth}{8.5in}
+\setlength{\pdfpageheight}{11in}
+\usepackage{verbatim}
+
+\usepackage{listings}
+\lstset{aboveskip=\smallskipamount,belowskip=\smallskipamount}
+\lstset{basicstyle=\ttfamily\small}
+%% \input{macro} 
+% - paper-specifics ------------------------------------------------------------
+\newcommand{\hpredicate}{\texttt{\_h}}
+\newcommand{\hpred}[4]{\ensuremath{\hpredicate(#1,{#2},#3,#4)}}
+\newcommand{\hpre}[3]{\ensuremath{\hpredicate(#1,{#2},#3)}}
+
+% - syntax ---------------------------------------------------------------------
+\newcommand{\naf}[1]{\ensuremath{{\mathtt{not}\,{#1}}}} % {\ensuremath{{\sim\!{#1}}}}
+
+\newcommand{\head}[1]{\ensuremath{\mathit{head}(#1)}}
+\newcommand{\body}[1]{\ensuremath{\mathit{body}(#1)}}
+
+\newcommand{\atom}[1]{\ensuremath{\mathit{atom}(#1)}}
+
+\newcommand{\poslits}[1]{\ensuremath{{#1}^+}}
+\newcommand{\neglits}[1]{\ensuremath{{#1}^-}}
+
+\newcommand{\pbody}[1]{\poslits{\body{#1}}}
+\newcommand{\nbody}[1]{\neglits{\body{#1}}}
+
+\newcommand{\PRG}{\ensuremath{P}}
+
+\newcommand{\atbody}[2]{\ensuremath{\mathit{body}_{#1}(#2)}}
+
+\newcommand{\ground}[1]{\ensuremath{\mathit{grd}(#1)}}
+
+% - semantics ------------------------------------------------------------------
+\newcommand{\SM}[1]{\ensuremath{\mathit{SM}(#1)}}
+
+% - operators ------------------------------------------------------------------
+\newcommand{\Cn}[1]{\ensuremath{\mathit{Cn}(#1)}}
+\newcommand{\reduct}[2]{\ensuremath{#1^{#2}}}
+
+\newcommand{\To}[1]{\ensuremath{T_{#1}}}
+\newcommand{\T}[2]{\To{#1}#2}
+\newcommand{\TiO}[2]{\To{#2}^{#1}}
+\newcommand{\Ti}[3]{\TiO{#1}{#2}#3}
+
+\newcommand{\BF}[1]{\ensuremath{\mathit{BF}(#1)}}
+\newcommand{\CF}[1]{\ensuremath{\mathit{CF}(#1)}}
+\newcommand{\CFIF}[1]{\ensuremath{\overleftarrow{\mathit{CF}}(#1)}}
+\newcommand{\CFFI}[1]{\ensuremath{\overrightarrow{\mathit{CF}}(#1)}}
+\newcommand{\CFX}[1]{\ensuremath{\mathit{CF}^x(#1)}}
+
+\newcommand{\loops}[1]{\ensuremath{\mathit{loop}(#1)}}\message{*** loop already defined ***}
+\newcommand{\ES}[2]{\ensuremath{\mathit{ES}_{\!#2}(#1)}}
+\newcommand{\EB}[2]{\ensuremath{\mathit{EB}_{\!#2}(#1)}}
+\newcommand{\LFM}[2]{\ensuremath{\mathit{LF}_{\!#2}(#1)}}
+\newcommand{\LF}[1]{\ensuremath{\mathit{LF}(#1)}}
+
+% - tableaux -------------------------------------------------------------------
+\newcommand{\true}{\ensuremath{\boldsymbol{T}}}
+\newcommand{\false}{\ensuremath{\boldsymbol{F}}}
+
+\newcommand{\Tsigned}[1]{\ensuremath{\true{#1}}}\message{ *** RENAME *** }
+\newcommand{\Fsigned}[1]{\ensuremath{\false{#1}}}
+
+\newcommand{\TOP}[1]{\ensuremath{D_{#1}}}
+\newcommand{\COP}[1]{\ensuremath{D^*_{#1}}}
+
+\newcommand{\Proviso}[1]{\raisebox{-7pt}[0pt][0pt]{\ensuremath{(#1)}}}
+
+\newcommand{\plit}[1]{\ensuremath{\boldsymbol{t}{#1}}}
+\newcommand{\nlit}[1]{\ensuremath{\boldsymbol{f}{#1}}}
+
+% - nogoods, assigmemts, etc. --------------------------------------------------
+\newcommand{\domain}[1]{\ensuremath{\mathit{dom}(#1)}}
+
+\newcommand{\ass}{\ensuremath{A}}
+
+\newcommand{\tlits}[1]{\ensuremath{{#1}^{\true}}}
+\newcommand{\flits}[1]{\ensuremath{{#1}^{\false}}}
+\newcommand{\prefix}[2]{\ensuremath{#1[#2]}}
+
+% \newcommand{\clno}[1]{\ensuremath{\delta(#1)}}
+% \newcommand{\ClNo}[1]{\ensuremath{\Delta(#1)}}
+% \newcommand{\nocl}[1]{\ensuremath{\gamma(#1)}}
+% \newcommand{\NoCl}[1]{\ensuremath{\Gamma(#1)}}
+
+\newcommand{\CN}[1]{\ensuremath{\Delta_{#1}}}
+\newcommand{\LN}[1]{\ensuremath{\Lambda_{#1}}}
+
+\newcommand{\dl}[0]{\ensuremath{\mathit{dl}}}
+\newcommand{\dlevel}[1]{\ensuremath{\mathit{dlevel}(#1)}}
+\newcommand{\opp}[1]{\ensuremath{\overline{#1}}}
+
+\newcommand{\undef}[0]{\ensuremath{\circ}}
+\newcommand{\trdef}[0]{\ensuremath{\times}}
+\newcommand{\scc}[1]{\ensuremath{\mathit{scc}(#1)}}
+\newcommand{\source}[1]{\ensuremath{\mathit{source}(#1)}}
+
+% - incremental solving ----------------------------------------
+\newcommand{\grounder}{\textsc{Ground}}
+\newcommand{\addProgram}{\textsc{Add}}
+\newcommand{\solver}{\textsc{Solve}}
+\newcommand{\isolve}{\textsc{iSolve}}
+
+% % - algorithm2e ----------------------------------------------------------------
+% \DontPrintSemicolon
+
+% \SetKw{ForSome}{for some}
+% \SetKw{SuchThat}{such that}
+
+% \SetKwInOut{Input}{Input}
+% \SetKwInOut{Output}{Output}
+% \SetKwInOut{Global}{Global}
+% \SetKwInOut{Internal}{Internal}
+
+% \SetKwFor{Let}{let}{in}{tel}
+% \SetKwFor{Loop}{loop}{}{}
+
+% \SetFuncSty{sc}
+% \SetKwFunction{Select}{Select}
+% \SetKwFunction{UnFoundedSet}{Unfounded\-Set}
+% \SetKwFunction{Propagation}{Nogood\-Propagation}
+% \SetKwFunction{ConflictAnalysis}{Conflict\-Analysis}
+
+% \SetKwData{Grounder}{Grounder}
+% \SetKwData{Solver}{Solver}
+
+% \SetCommentSty{it}
+% \SetKwComment{AlgoComm}{// }{}
+
+% - systems ----------------------------------------------------------------------
+% >>> NOT USED in BOOK <<<
+\newcommand{\sysfont}{\textit}
+\newcommand{\smodels}{\sysfont{smodels}}
+\newcommand{\smodelsr}{\sysfont{smodels}$_r$}
+\newcommand{\smodelscc}{\sysfont{smodels$_{\!cc}$}}
+\newcommand{\dlv}{\sysfont{dlv}}
+\newcommand{\nomorepp}{\sysfont{nomore++}}
+\newcommand{\assat}{\sysfont{assat}}
+\newcommand{\cmodels}{\sysfont{cmodels}}
+\newcommand{\sag}{\sysfont{sag}}
+\newcommand{\clasp}{\sysfont{clasp}}
+\newcommand{\claspD}{\sysfont{claspD}}
+\newcommand{\claspfolio}{\sysfont{claspfolio}}
+\newcommand{\claspar}{\sysfont{claspar}}
+\newcommand{\gringo}{\sysfont{gringo}}
+\newcommand{\clingo}{\sysfont{clingo}}
+\newcommand{\iclingo}{\sysfont{iclingo}}
+\newcommand{\clingcon}{\sysfont{clingcon}}
+\newcommand{\gecode}{\sysfont{gecode}}
+\newcommand{\lparse}{\sysfont{lparse}}
+\newcommand{\mchaff}{\sysfont{mchaff}}
+\newcommand{\zchaff}{\sysfont{zchaff}}
+\newcommand{\siege}{\sysfont{siege}}
+\newcommand{\minisat}{\sysfont{minisat}}
+\newcommand{\berkmin}{\sysfont{berkmin}}
+\newcommand{\picosat}{\sysfont{picosat}}
+\newcommand{\lptosat}{\sysfont{lp2sat}}
+\newcommand{\lptodiff}{\sysfont{lp2diff}}
+\newcommand{\lua}{\textit{lua}}
+
+% % - latex ----------------------------------------------------------------------
+% \newcounter{excounter}
+% \newcommand{\labex}[1]{\refstepcounter{excounter}\label{#1}} % \index{\ensuremath{\PRG_{\ref{#1}}}}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End: 
+
+
+\pdfinfo{
+/Title (Domain-specific Heuristics in Answer Set Programming)
+/Author (M. Gebser, B. Kaufmann, R. Otero, J. Romero, T. Schaub, P. Wanko)
+/Keywords(answer set programming, answer set solving, heuristics, conflict-driven clause learning) 
+} 
+
+\sloppy
+
+\title{Domain-specific Heuristics in Answer Set Programming}
+
+\author%
+{%
+  M.~Gebser$^*$
+  \and
+  B.~Kaufmann$^*$
+  \and
+  R.~Otero$^\star$
+  \and 
+  J.~Romero$^{*,\star}$
+  \and 
+  T.~Schaub$^*$%\thanks{Affiliated with Simon Fraser University, Canada, and Griffith University, Australia.}
+  \and
+  P.~Wanko$^*$
+  \\
+  \begin{tabular}{ccc}
+    Institute for Informatics$^*$       & & Department of Computer Science$^\star$\\
+    University of Potsdam               & & University of Corunna\\
+    14482 Potsdam, Germany	        & & 15071 Corunna, Spain
+  \end{tabular}
+}
+
+\date{}
+\setlength\textfloatsep{ 19pt plus 2pt minus 4pt}
+\begin{document}
+
+\maketitle
+%% \input{abstract}
+\begin{abstract}
+We introduce a general declarative framework for incorporating domain-specific heuristics into
+ASP solving.
+We accomplish this by extending the first-order modeling language of ASP by a distinguished
+heuristic predicate.
+The resulting heuristic information is processed as an equitable part of the logic program
+and subsequently exploited by the solver when it comes to non-deterministically assigning a 
+truth value to an atom.
+We implemented our approach as a dedicated heuristic in the ASP solver \textit{clasp} and 
+show its great prospect by an empirical evaluation.
+\end{abstract}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End: 
+
+
+%% \input{introduction}
+
+\section{Introduction}\label{sec:introduction}
+
+The success of modern Boolean constraint technology was greatly boosted by Satisfiability Testing
+(SAT;~\cite{SATHandbook}).
+Meanwhile, this technology has been taken up in many related areas, 
+like
+Answer Set Programming (ASP; \cite{baral02a}).
+This is because it provides highly performant yet general-purpose solving techniques for addressing demanding combinatorial search problems.
+%
+Sometimes, it is however advantageous to take a more application-oriented approach
+by including domain-specific information.
+On the one hand, domain-specific knowledge can be added for improving deterministic assignments
+through propagation.
+And on the other hand, domain-specific heuristics can be used for making better non-deterministic assignments.
+
+In what follows,
+we introduce a general declarative framework for incorporating domain-specific heuristics into ASP solving.
+The choice of ASP is motivated by its first-order modeling language offering an easy way to express and process
+heuristic information.
+To this end,
+we use a dedicated predicate \hpredicate\
+whose arguments allow us to express various modifications to the solver's heuristic treatment of atoms.
+The respective heuristic rules are seamlessly processed as an equitable part of the logic program
+and subsequently exploited by the solver when it comes to choosing an atom for a non-deterministic 
+truth assignment.
+%
+For instance, the rule
+\begin{lstlisting}
+_h(occ(A,T),factor,T) :- action(A), time(T).
+\end{lstlisting}
+favors later action occurrences over earlier ones (via multiplication by \texttt{T}).
+That is, when making a choice between two unassigned atoms \texttt{occ(a,2)} and \texttt{occ(b,3)},
+the solver's heuristic value of \texttt{occ(a,2)} is doubled while that of \texttt{occ(b,3)} is tripled.
+This results in a bias on the system heuristic that may or may not take effect.
+%
+Besides \texttt{factor}, our heuristic language extension offers the primitive heuristic modifiers
+\texttt{init}, \texttt{level}, and \texttt{sign}, from which even further modifiers can be defined.
+Our approach provides an easy and flexible access to the solver's heuristic,
+aiming at its modification rather than its replacement.
+Note that the effect of the modifications is generally dynamic,
+unless the truth of a heuristic atom is determined during grounding (as with the rule above).
+As a result, our approach offers a declarative framework for expressing domain-specific heuristics.
+As such, it appears to be the first of its kind.
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End: 
+
+%% \input{background}
+
+\section{Background}\label{sec:background}
+
+We assume some basic familiarity with ASP, its semantics as well as its basic language constructs,
+like normal rules, cardinality constraints, and optimization statements.
+Although our examples are self-explanatory, we refer the reader for details to~\cite{gekakasc12a}.
+%
+For illustrating our approach, 
+we consider selected rules of a simple planning encoding, following~\cite{lifschitz02a}.
+We use predicates \texttt{action} and \texttt{fluent} to distinguish the corresponding entities.
+The length of the plan is given by the constant \texttt{l}, which is used to fix all time points via
+the statement \lstinline{time(1..l).}
+Moreover, suppose our ASP encoding contains the rule
+\begin{lstlisting}
+1 { occ(A,T) : action(A) } 1 :- time(T).
+\end{lstlisting}
+stating that exactly one action occurs at each time step.
+Also, it includes a frame axiom of the following form.%
+\footnote{We use `\texttt{-}/1' to stand for classical negation.}
+\begin{lstlisting}
+holds(F,T) :- holds(F,T-1), not -holds(F,T).
+\end{lstlisting}
+In such a setting, actions and fluents are prime subjects to planning-specific heuristics.
+As we show below, these can be elegantly expressed by heuristic statements about atoms formed from
+predicates \texttt{occ} and \texttt{holds}, respectively.
+
+For computing the stable models of a logic program, we use
+a Boolean assignment, that is, a (partial) function mapping propositional variables in $\mathcal{A}$
+to truth values \true\ and \false.
+We represent such an assignment \ass\ as a set of signed literals of form $\Tsigned{a}$ or $\Fsigned{a}$,
+standing for $a\mapsto\true$ and $a\mapsto\false$, respectively.
+%
+We access the true and false variables in \ass\ via
+\(
+\tlits{\ass}
+=
+\{a\in\mathcal{A}\mid\Tsigned{a}\in\ass\}
+\)
+and
+\(
+\flits{\ass}
+=
+\{a\in\mathcal{A}\mid\Fsigned{a}\in \ass\}
+\), respectively.
+%
+\ass\ is conflicting, if $\tlits{\ass}\cap\flits{\ass}\neq\emptyset$;
+\ass\ is total, if it is non-conflicting and $\tlits{\ass}\cup\flits{\ass}=\mathcal{A}$.
+%
+For generality, we represent Boolean constraints by \emph{nogoods}~\cite{dechter03}.
+A nogood is a set $\{\sigma_1,\dots,\sigma_m\}$ of signed literals,
+expressing that any assignment containing $\sigma_1,\dots,\sigma_m$ is inadmissible.
+Accordingly,
+a total assignment \ass\ is a \emph{solution} for a set~$\Delta$ of nogoods
+if $\delta\not\subseteq\ass$ for all $\delta\in\Delta$.
+%
+While clauses can be directly mapped into nogoods,
+logic programs are subject to a more involved translation.
+For instance, 
+an atom $a$ defined by two rules $a\,\texttt{:-}\,b,\naf{c}$ and $a\,\texttt{:-}\,d$
+gives rise to three nogoods:
+$\{\Tsigned{a},\Fsigned{x_{\{b,\naf{c}\}}},\Fsigned{x_{\{d\}}}\}$,
+$\{\Fsigned{a},\Tsigned{x_{\{b,\naf{c}\}}}\}$, and
+$\{\Fsigned{a},\Tsigned{x_{\{d\}}}\}$,
+where $x_{\{b,\naf{c}\}}$ and $x_{\{d\}}$ are auxiliary variables for the bodies of the two previous rules.
+Similarly, the body ${\{b,\naf{c}\}}$ leads to nogoods
+$\{\Fsigned{x_{\{b,\naf{c}\}}},\Tsigned{b},\Fsigned{c}\}$,
+$\{\Tsigned{x_{\{b,\naf{c}\}}},\Fsigned{b}\}$, and
+$\{\Tsigned{x_{\{b,\naf{c}\}}},\Tsigned{c}\}$.
+See~\cite{gekakasc12a} for full details.
+%
+Note that translating logic programs into nogoods adds auxiliary variables.
+For simplicity, we restrict our formal elaboration to atoms in $\mathcal{A}$
+(also because our approach leaves such internal variables unaffected anyway).
+
+% Finally, we mention that
+% we use \textit{max} to give the maximum value in a set and 
+% \textit{argmax} to give the set of elements having the maximum value.
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End: 
+
+%% \input{cdcl}
+
+\section{Conflict-driven constraint learning}\label{sec:cdcl}
+
+Given that we are primarily interested in the heuristic machinery of a solver,
+we only provide a high-level description of the basic decision algorithm for 
+conflict-driven constraint learning (CDCL;~\cite{marsak99a,zamamoma01a})
+in Figure~\ref{algo:cdcl}.
+%
+% ----------------------------------------------------------------------
+\begin{figure}[t]
+\newcommand{\ITEMHACK}{\itemindent=-5pt\itemsep=0pt\parsep=\itemsep}
+\small
+\hrule\vspace{2pt}
+\noindent\textbf{loop}\\[-12pt]
+  \begin{itemize}\ITEMHACK
+  \item [] \textit{propagate}  
+    \hfill// compute deterministic consequences
+  \item [] \textbf{if} no conflict \textbf{then}
+    \begin{itemize}\ITEMHACK
+    \item [] \textbf{if} all variables assigned 
+      \textbf{then} 
+      \textbf{return} variable assignment
+    \item [] \textbf{else}
+      \textit{decide} 
+      \hfill// non-deterministically assign some literal
+    \end{itemize}
+  \item [] \textbf{else} 
+    \begin{itemize}\ITEMHACK
+    \item [] \textbf{if} top-level conflict %found 
+      \textbf{then} 
+      \textbf{return} unsatisfiable
+    \item [] \textbf{else}
+      \begin{itemize}\ITEMHACK
+      \item [] \textit{analyze}\hfill// analyze conflict and add a conflict constraint
+      \item [] \textit{backjump}\hfill// undo assignments until conflict constraint is unit
+      \end{itemize}
+    \end{itemize}
+  \end{itemize}
+  \hrule  
+  \caption{Basic decision algorithm: CDCL}
+  \label{algo:cdcl}
+\end{figure}
+% ----------------------------------------------------------------------
+CDCL starts by extending a (partial) {assignment} by deterministic (unit) propagation.
+% Importantly, every derived literal is ``implied'' by some {nogood}
+% % (set of literals that must not jointly be assigned), 
+% which would be violated if the literal's complement were assigned.
+Although propagation aims at forgoing nogood violations,
+assigning a literal implied by one nogood may lead to the violation of another nogood;
+this situation is called \emph{conflict}.
+If the conflict can be resolved, % (the violated nogood contains backtrackable literals),
+it is analyzed to identify a conflict constraint.
+The latter represents a ``hidden'' conflict reason that is recorded and
+guides backjumping to an earlier stage such that
+the complement of some formerly assigned literal is implied by the conflict constraint,
+thus triggering propagation.
+Only when propagation finishes without conflict,
+a (heuristically chosen) literal can be assigned % at a new \emph{decision level},
+provided that the assignment at hand is partial,
+while a {solution} % (total assignment not violating any nogood)
+has been found otherwise.
+% The eventual termination of CDCL is guaranteed
+% by either returning a solution or encountering an unresolvable conflict
+% (independent of (non-implied) decision literals).
+%
+See~\cite{SATHandbook} for details.
+
+A characteristic feature of CDCL is its look-back based approach.
+Central to this are conflict-driven mechanisms scoring variables according to their prior conflict involvement.
+These scores guide heuristic choices regarding literal selection as well as constraint learning and deletion.
+
+A decision heuristic is used to implement the non-deterministic assignment done via
+\emph{decide} in the CDCL algorithm in Figure~\ref{algo:cdcl}.
+In fact,
+the selection of an atom along with its sign relies on two such functions:
+\[
+h: \mathcal{A}\to[0,+\infty)
+\quad\text{and}\quad
+s: \mathcal{A}\to\{\true,\false\}
+\ .
+\]
+Both functions vary over time.
+To capture this, we use $h_i$ and $s_i$ to denote the specific mappings in the $i$th iteration of CDCL's main loop.
+Analogously, we use $\ass_i$ to represent the $i$th assignment (after \textit{propagation}).
+We use $i=0$ to refer to the initialization of both functions via $h_0$ and $s_0$;
+similarly, $A_0$ gives the initial assignment (after \textit{propagation}).
+
+The following lines give a more detailed yet still high-level account of the non-deterministic assignment done by
+\emph{decide} in the CDCL algorithm for $i\geq 1$ (and a given $h_0$):%
+\footnote{\label{fn:ass}For clarity, we keep using indexes in this algorithmic setting although this is
+  unnecessary in view of assignment operator `$:=$'.}
+% --------------------------------------------------
+\begin{enumerate}\itemindent 10pt
+\item $h_i(a) := \alpha_i\times h_{i-1}(a) + \beta_i(a)$ \hfill for each $a\in\mathcal{A}\qquad$
+\item $U:=\mathcal{A}\setminus (\tlits{\ass_{i-1}}\cup\flits{\ass_{i-1}})$
+\item $C:= \textit{argmax}_{a\in U}h_i(a)$
+\item $a:= \tau(C)$
+\item $\ass_i := \ass_{i-1}\cup\{s_i(a)a\}$
+\end{enumerate}
+% --------------------------------------------------
+The first line describes the development of the heuristic depending on a global decay parameter
+$\alpha_i$ and a variable-specific scoring function $\beta_i$.
+The set $U$ contains all atoms unassigned at step~$i$.
+Among them, the ones with the highest heuristic value are collected in $C$.
+Whenever $C$ contains several (equally scored) variables,
+the solver must break the tie by selecting one atom $\tau(C)$ from $C$.
+% Such tie-breaking is usually done by adhoc mechanisms.
+
+Look-back based heuristics rely on information gathered during conflict analysis in CDCL.
+Starting from some initial heuristic values in $h_0$,
+the heuristic function is continued as in Item~1 above,
+where
+$\alpha_i\in{[0,1]}$ is a global parameter decaying the influence of past values
+and
+$\beta_i(a)$ gives the conflict score attributed to variable $a$ within conflict analysis.
+The value of $\beta_i(a)$ can be thought of being 0 unless $a$ was scored by \textit{analyze} in CDCL.
+Similarly, $\alpha_i$ usually equals 1 unless it was lowered at some system-specific point, 
+such as after a \emph{restart}.
+%
+Occurrence-based heuristics like~\textit{moms}~\cite{pretolani96a} furnish initial heuristics.
+%
+Prominent look-back heuristics are
+\textit{berkmin}~\cite{golnov02a}
+and
+\textit{vsids}~\cite{momazhzhma01a}.
+% and \textit{vmtf}~\cite{ryan04a}.
+
+For illustration,
+let us look at a rough trace of atoms $a$, $b$, and $c$ in a fictive run of the CDCL algorithm.
+\[
+\begin{array}{|r|c|c@{\ }@{\ }c@{\,}@{\,}c@{\,}r@{\,}|c@{\,}@{\,}c@{\,}@{\,}c@{\,}r@{\,}|c|c|c@{\,}@{\,}c@{\,}@{\,}c@{\,}r@{\,}|}
+  \hline
+  i&\mathit{operation}&
+  \multicolumn{4}{|c|}{\ass}&
+  \multicolumn{4}{ c|}{h}&
+                       s &
+                       \alpha &
+  \multicolumn{4}{ c|}{\beta}\\
+  \hline
+   &                  &a     &b    &c&...&a&b&c   &...&     &  &a&b&c&...\\
+  \hline
+  \hline
+  0&                  &      &     & &   &0&1&1   &   &\true&1 &0&0&0&   \\
+  \hline
+  1&\mathit{propagate}&\false&     & &   &0&1&1   &   &\true&1 &0&0&0&   \\
+   &\mathit{decide}   &\false&\true& &   &0&1&1   &   &\true&1 &0&0&0&   
+\end{array}
+\]
+The initial heuristic $h_0$ prefers $b$, $c$ over $a$;
+the sign heuristic $s$ constantly assigns \true.
+Initial propagation assigns \false\ to $a$.
+This leaves all heuristics unaffected.
+When invoking \textit{decide}, we find $b$ and $c$ among the unassigned variables in $U$
+(in Item~2 above).
+Assuming the maximum value of $h_1$ to be 1, both are added to $C$.
+This tie is broken by selecting $\tau(C)=b$ in $C$.
+Given that the (constant) sign heuristic yields \true,
+Item~5 adds signed literal \Tsigned{b} to the current assignment.
+
+Next suppose we encounter a conflict involving $c$ at step~8.
+This leads to an incrementation of $\beta_8(c)$.
+\[
+\begin{array}{|r|c|c@{\,}@{\,}c@{\,}@{\,}c@{\,}r@{\,}|c@{\,}@{\,}c@{\,}@{\,}c@{\,}r@{\,}|c|c|c@{\,}@{\,}c@{\,}@{\,}c@{\,}r@{\,}|}
+   &                  &a     &b    &c     &...&a&b&c   &...&     &  &a&b&c&...\\
+  \hline
+  \hline
+  8&\mathit{propagate}&\false&\true&\false&   &0&2&2   &   &\true&1 &0&0&0&   \\
+   &\mathit{analyze}  &\false&\true&\false&   &0&2&2   &   &\true&1 &0&0&1&   \\
+   &\mathit{backjump} &\false&     &      &   &0&2&3   &   &\true&1 &0&0&0&   \\
+  \hline
+  9&\mathit{propagate}&\false&     &      &   &0&2&3   &   &\true&1 &0&0&0&   \\
+   &\mathit{decide}   &\false&     &\true &   &0&2&3   &   &\true&1 &0&0&0&
+\end{array}
+\]
+As at step~1, $b$ and $c$ are unassigned after backjumping.
+Unlike above, $c$ is now heuristically preferred to $b$ since it occurred more frequently within conflicts.
+
+Without going into detail, 
+we mention that at certain steps $i$,
+parameter $\alpha_i$ is decreased for decaying the values of $h_i$ and
+the conflict scores in $\beta_i$ are re-set (eg.~after \textit{analyze}).
+
+Also, look-back based sign heuristics take advantage of previous information.
+The common approach is to choose the polarity of a literal according to the higher
+number of occurrences in recorded nogoods~\cite{momazhzhma01a}.
+Another effective approach is \emph{progress saving}~\cite{pipdar07a},
+caching truth values of (certain) retracted variables and reusing them for sign selection.
+
+Although we focus on look-back heuristics,
+we mention that look-ahead heuristics 
+% are primarily used in DPLL-based solvers~\cite{davput60,dalolo62a}.
+% They 
+aim at shrinking the search space by selecting the (signed) variable offering most implications.
+This approach relies on failed-literal detection~\cite{freeman95a} for counting the number of
+propagations obtained by (temporarily) adding in turn the variable and its negation to the current
+assignment.
+This count can be used in Item~1 above for computing the values $\beta_i(a)$,
+while all $\alpha_i$ are set to 0 (because no past information is taken into account).
+% For instance, such an approach is used in \smodels~\cite{siniso02a} to select both the variable as
+% well as its sign.
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End: 
+
+%% \input{approach}
+
+\section{Heuristic language elements}\label{sec:approach}
+
+We express heuristic modifications via a set $\mathcal{H}$ of \emph{heuristic atoms} 
+disjoint from $\mathcal{A}$.
+Such a heuristic atom is formed from a dedicated predicate \hpredicate\ along with four arguments:
+a (reified) atom $a\in\mathcal{A}$,
+a heuristic modifier $m$,
+and two  integers $v,p\in\mathbb{Z}$.
+A heuristic modifier is used to manipulate the heuristic treatment of an atom $a$ via the 
+modifier's value given by $v$.
+The role of this value varies for each modifier.
+We distinguish four primitive heuristic modifiers:
+\begin{description}
+\item [\texttt{init}] for initializing the heuristic value of $a$ with $v$,
+\item [\texttt{factor}] for amplifying the heuristic value of $a$ by factor $v$,
+\item [\texttt{level}] for ranking all atoms; the rank of $a$ is $v$,
+\item [\texttt{sign}] for attributing the sign of $v$ as truth value to $a$.
+\end{description}
+While $v$ allows for changing an atom's heuristic behavior relative to \emph{other} atoms,
+the second integer $p$ allows us to express a priority for disambiguating similar
+heuristic modifications to the \emph{same} atom.
+This is particularly important in our dynamic setting, where varying heuristic atoms may be obtained
+in view of the current assignment.
+For instance, the heuristic atoms
+\hpred{b}{\mathtt{sign}}{1}{3}
+and
+\hpred{b}{\mathtt{sign}}{-1}{5}
+aim at assigning opposite truth values to atom $b$.
+This conflict can be resolved by preferring the heuristic modification with the higher priority,
+viz.\ 5 in \hpred{b}{\mathtt{sign}}{-1}{5}.
+Obviously such priorities can only support disambiguation but not resolve conflicting values sharing the same priority.
+
+For accommodating priorities,
+we define for an assignment \ass\ the \emph{preferred values} for modifier $m$ on atom $a$ as
+\[
+V_{a,m}(\ass)=
+\textit{argmax}_{v\in\mathbb{Z}}\{p\mid\Tsigned{\hpred{a}{m}{v}{p}}\in\ass\}.
+\]
+Heuristic values are dynamic;
+they are extracted from the current assignment and may thus vary during solving.
+Note that $V_{a,m}(\ass)$ returns the singleton set $\{v\}$,
+if the current assignment \ass\ contains a single true heuristic atom \hpred{a}{m}{v}{p} 
+involving $a$ and $m$.
+$V_{a,m}(\ass)$ is empty whenever there are no such heuristic atoms.
+%
+And whenever all heuristic atoms regarding $a$ and $m$ have the same priority $p$,
+$V_{a,m}(\ass)$ is equivalent to
+\(
+\{v\mid\Tsigned{\hpred{a}{m}{v}{p}}\in\ass\}
+\).
+
+Here are a few examples.
+We obtain % the preferred values
+$V_{b,\mathtt{sign}}(\ass_1)=\{-1\}$
+and
+$V_{c,\mathtt{init}}(\ass_1)=\emptyset$
+from assignment
+\(
+\ass_1=\{\Fsigned{a},\Tsigned{\hpred{b}{\mathtt{sign}}{1}{3}},\Tsigned{\hpred{b}{\mathtt{sign}}{-1}{5}}\}
+\),
+while assignment
+\(
+\ass_2=\{\Tsigned{\hpred{b}{\mathtt{sign}}{1}{3}},\Tsigned{\hpred{b}{\mathtt{sign}}{-1}{3}}\}
+\)
+results in $V_{b,\mathtt{sign}}(\ass_2)=\{1,-1\}$.
+
+For ultimately resolving ambiguities among alternative values for heuristic modifiers, 
+we propose for a set $V\subseteq\mathbb{Z}$ of integers the function $\nu(V)$ as
+\[
+%\nu(V)=
+\mathit{max}\big(\{v\in V\!\mid v\geq 0\}\cup\{0\}\big)
++
+\mathit{min}\big(\{v\in V\!\mid v\leq 0\}\cup\{0\}\big).
+\]
+Note that $\nu(\emptyset)=0$, attributing 0 the status of a neutral value.
+Alternative options exist, like taking means or median of $V$ or even time specific criteria
+relating to the emergence of values in the assignment.
+%
+In the above examples,
+we get $\nu(V_{b,\mathtt{sign}}(\ass_1))=-1$ and $\nu(V_{b,\mathtt{sign}}(\ass_2))=0$.
+
+Given this, we proceed by defining the \emph{domain-specific extension} $d$ to the heuristic function $h$ 
+for $a\in\mathcal{A}$ as
+\[
+d_0(a)=\nu(V_{a,\mathtt{init}}(\ass_0))+h_0(a)
+\]
+and for $i\geq 1$
+\[
+d_i(a)=
+\left\{
+  \begin{array}{rl}
+    \nu(V_{a,\mathtt{factor}}(\ass_i))\times h_i(a)&\text{if } V_{a,\mathtt{factor}}(\ass_i)\neq\emptyset
+    \\
+                                             h_i(a)&\text{otherwise}
+  \end{array}
+\right.
+\]
+First of all, it is important to note that $d$ is merely a modification and not a replacement of the
+system heuristic $h$.
+In fact, $d$ extends the range of $h$ to $(-\infty,+\infty)$.
+Negative values serve as penalties.
+The values of the \texttt{init} modifiers are added to $h_0$ in $d_0$.
+The use of addition rather than multiplication allows us to override an initial value of 0.
+Also, the higher the absolute value of the \texttt{init} modifier, the longer lasts its effect
+(given the decay of heuristic values).
+Unlike this, \texttt{factor} modifiers rely on multiplication because they aim at de- or increasing
+conflict scores gathered during conflict analysis.
+In view of $h$'s range,
+a factor greater than 1 amplifies the score, a negative one penalizes the atom, and 0 resets the atom's score.
+Enforcing a factor of 1 
+% (for instance, through assigning a high priority)
+transfers control back to the system heuristic $h$.
+
+Heuristically modified logic programs are simply programs over $\mathcal{A}\cup\mathcal{H}$,
+the original vocabulary extended by heuristic atoms (without restrictions).
+As a first example,
+let us extend our planning encoding by a rule favoring atoms expressing action occurrences close to
+the goal situation.
+\begin{lstlisting}
+_h(occ(A,T),factor,T,0) :- action(A),time(T).
+\end{lstlisting}
+With \texttt{factor}, we impose a bias on the underlying heuristic function $h$.
+Rather than comparing, for instance,
+the plain values $h(\mathtt{occ(a,2)})$ and $h(\mathtt{occ(a,3)})$,
+a decision is made by looking at $2\times h(\mathtt{occ(a,2)})$ and  $3\times h(\mathtt{occ(a,3)})$,
+even though it still depends on $h$.
+A further refined strategy may suggest considering climbing actions as early as possible.
+\begin{lstlisting}
+_h(occ(climb,T),factor,l-T,1) :- time(T).
+\end{lstlisting}
+Clearly, this rule conflicts with the more general rule above.
+However, this conflict is resolved in favor of the more specific rule by attributing it a higher
+priority (viz.~1 versus 0).
+
+% Similar statements can be formulated with the \texttt{init} modifier in order to change the initial heuristic values.
+
+For capturing a \emph{domain-specific extension} $t$ to the sign heuristic $s$,
+we define for $a\in\mathcal{A}$ and $i\geq 0$:
+\[
+t_i(a)=
+\left\{
+  \begin{array}{rl}
+    \true &\text{if }
+           \nu(V_{a,\mathtt{sign}}(\ass_i))>0
+           % \text{ and }
+           % V_{a,\mathtt{sign}}(\ass_i)\neq\emptyset
+           \\
+    \false&\text{if }
+           \nu(V_{a,\mathtt{sign}}(\ass_i))<0
+           % \text{ and }
+           % V_{a,\mathtt{sign}}(\ass_i)\neq\emptyset
+           \\
+    s_i(a)&\text{otherwise}
+  \end{array}
+\right.
+\]
+As with $d$ above, the extension $t$ to the sign heuristic is dynamic.
+The sign of the modifier's preferred value determines the truth value to assign to an atom at hand.
+No \texttt{sign} modifier (or enforcing a value of 0) leaves sign selection with the system's sign heuristic $s$.
+%
+For example, the heuristic rule
+\begin{lstlisting}
+_h(holds(F,T),sign,-1,0) :- fluent(F),time(T).
+\end{lstlisting}
+tells the solver to assign false to non-deterministically chosen fluents.
+%
+The next pair of rules is a further refinement of our strategy on climbing actions,
+favoring their effective occurrence in the first half of the plan.
+\begin{lstlisting}
+_h(occ(climb,T),sign, 1,0) :- T<l/2,time(T).
+_h(occ(climb,T),sign,-1,0) :- T>l/2,time(T).
+\end{lstlisting}
+Thus, while the atom $\mathtt{occ(climb,1)}$ is preferably made true,
+false should rather be assigned to $\mathtt{occ(climb,l)}$.
+
+Finally, for accommodating rankings induced by \texttt{level} modifiers,
+we define for an assignment \ass\ and $\mathcal{A}'\subseteq\mathcal{A}$:
+\[
+\ell_\ass(\mathcal{A}')=\textit{argmax}_{a\in\mathcal{A}'}\nu(V_{a,\mathtt{level}}(\ass))
+\]
+The set $\ell_\ass(\mathcal{A}')$ gives all atoms in $\mathcal{A}'$ with the highest \texttt{level} values relative to
+the current assignment \ass.
+Similar to $d$ and $t$ above, this construction is also dynamic and the rank of atoms may vary during solving.
+The function $\ell_\ass$ is then used to modify the selection of unassigned atoms in the above elaboration of \textit{decide}.
+For this purpose, we replace Item~2 by
+\(
+U:=\ell_\ass(\mathcal{A}\setminus (\tlits{\ass}\cup\flits{\ass}))
+\)
+in order to restrict $U$ to unassigned atoms of (current) highest rank.
+Unassigned atoms at lower levels are only considered once all atoms at higher levels have been assigned.
+Atoms without an associated level default to level 0 because $\nu(\emptyset)=0$.
+Hence, negative levels act as a penalty since the respective atoms are only taken into account
+once all atoms with non-negative or no associated level have been assigned.
+
+For a complementary example, 
+consider a \texttt{level}-based formulation of the previous (\texttt{factor}-based) heuristic rule.
+\begin{lstlisting}
+_h(occ(A,T),level,T,0) :- action(A),time(T).
+\end{lstlisting}
+Unlike the above, $\mathtt{occ(a,2)}$ and $\mathtt{occ(a,3)}$ are now associated with different ranks,
+which leads to strictly preferring $\mathtt{occ(a,3)}$ over $\mathtt{occ(a,2)}$ 
+whenever both atoms are unassigned.
+Hence, \texttt{level} modifiers partition the set of atoms and restrict $h$ to unassigned atoms at the highest level.
+
+The previous replacement along with the above amendments of $h$ and $s$ through the domain-specific extensions $d$ and $t$
+yields the following elaboration of CDCL's heuristic choice operation \textit{decide} for $i\geq 1$ (and given $d_0$).$^{\ref{fn:ass}}$
+% --------------------------------------------------
+\begin{enumerate}\addtocounter{enumi}{-1}\itemindent 10pt
+\item $h_{i-1}(a) := d_{i-1}(a)$                         \hfill for each $a\in\mathcal{A}\qquad$
+\item $h_i(a) := \alpha_i\times h_{i-1}(a) + \beta_i(a)$ \hfill for each $a\in\mathcal{A}\qquad$
+\item $U:=\ell_{\ass_{i-1}}(\mathcal{A}\setminus (\tlits{\ass_{i-1}}\cup\flits{\ass_{i-1}}))$
+\item $C:= \textit{argmax}_{a\in U}d_i(a)$
+\item $a:= \tau(C)$
+\item $\ass_i := \ass_{i-1}\cup\{t_i(a)a\}$
+\end{enumerate}
+% --------------------------------------------------
+Although we formally model both $h$ and $d$ (as well as $s$ and $t$) as functions,
+there is a substantial conceptual difference in practice in that $h$ is a system-specific data structure while $d$ is an associated method.
+This is also reflected above, where $h$ is subject to assignments.
+%
+Item~0 makes sure that our heuristic modifications take part in the look-back based evolution in Item~1,
+and are thus also subject to decay.
+We added this as a separate line rather than integrating it into Item~1 in order to stress that our
+modifications are modular in leaving the underlying heuristic machinery unaffected.
+%
+Item~2 gathers in $U$ all unassigned atoms of highest rank.
+%
+Among them, Item~3 collects in $C$ all atoms $a$ with a maximum heuristic value $d_i(a)$.
+%
+Since this is not guaranteed to yield a unique element, the system-specific tie-breaking function
+$\tau$ is evoked to return a unique atom.
+%
+Finally, the modified sign heuristic $t_i$ determines a truth value for $a$, and the resulting
+signed literal ${t_i(a)a}$ is added to the current assignment.
+
+Note that so far all sample heuristic rules were \emph{static} in the sense that they are turned into
+facts by the grounder and thus remain unchanged during solving.
+Examples of dynamic heuristic rules are given at the end of next section.
+
+Our simple heuristic language is easily extended by further heuristic atoms.
+For instance, \hpred{a}{\mathtt{true}}{v}{p} and \hpred{a}{\mathtt{false}}{v}{p} have turned out to be useful in practice.
+\begin{lstlisting}
+_h(A,level,V,P) :- _h(A,true, V,P).
+_h(A,sign, 1,P) :- _h(A,true, V,P).
+_h(A,level,V,P) :- _h(A,false,V,P).
+_h(A,sign,-1,P) :- _h(A,false,V,P).
+\end{lstlisting}
+%
+For instance, the heuristic atom \hpred{a}{\mathtt{true}}{3}{3} expands to 
+\hpred{a}{\mathtt{level}}{3}{3} and \hpred{a}{\mathtt{sign}}{1}{3},
+expressing a preference for both making a decision on~$a$ and
+assigning it to true.
+On the other hand,
+\hpred{a}{\mathtt{false}}{-3}{3} expands to 
+\hpred{a}{\mathtt{level}}{-3}{3} and \hpred{a}{\mathtt{sign}}{-1}{3},
+thus suggesting not to make a decision on~$a$ but to
+assign it to false if there is no ``better'' decision variable.
+
+Another shortcut of pragmatic value is the abstraction from specific priorities.
+For this, we use the following rule.
+\begin{lstlisting}
+_h(A,M,V,#abs(V)) :- _h(A,M,V).
+\end{lstlisting}
+With it,
+we can directly describe the heuristic restriction used in \cite{rintanen11a} to simulate planning
+by iterated deepening $A^*$ \cite{korf85a} in SAT solving through limiting choices to action variables,
+assigning those for time \texttt{T} before those for time \texttt{T+1}, and always assigning truth
+value \texttt{true} (where \texttt{l} is a constant indicating the planning horizon):
+\begin{lstlisting}
+_h(occ(A,T),true,l-T) :- action(A), time(T).
+\end{lstlisting}
+
+Although we impose no restriction on the occurrence of heuristic atoms within logic programs,
+it seems reasonable to require that the addition of rules containing heuristic atoms does not alter
+the stable models of the original program.
+That is, given a logic program $P$ over $\mathcal{A}$ and a set of rules $H$ over $\mathcal{A}\cup\mathcal{H}$,
+we aim at a one-to-one correspondence between the stable models of $P$ and $P\cup H$ and
+their identity upon projection on $\mathcal{A}$.
+This property is guaranteed whenever heuristic atoms occur only in the head of rules and thus only
+depend upon regular atoms.
+In fact, so far, this class of rules turned out to be expressive enough to model all heuristics of interest,
+including the ones presented in this paper.
+It remains future work to see whether more sophisticated schemes, eg., involving recursion, are useful.
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End: 
+
+%% \input{experiments}
+
+\section{Experiments}\label{sec:experiments}
+
+We implemented our approach as a dedicated heuristic module within the ASP solver \textit{clasp}
+(2.1; available at \cite{hclasp}).
+We consider \textit{moms} \cite{pretolani96a} as initial heuristic $h_0$ and
+\textit{vsids} \cite{momazhzhma01a} as heuristic function $h_i$.
+Accordingly, the sign heuristic \textsl{s} is set to the one associated with \textit{vsids}.
+As base configuration, we use \textit{clasp} with options \texttt{--heu=vsids} and \texttt{--init-moms}.
+%
+To take effect,
+the heuristic atoms as well as their contained atoms must be made visible to the solver via \texttt{\#show} directives.
+Once the option \texttt{--heu=domain} is passed to \texttt{clasp},
+it extracts the necessary information from the symbol table and applies the heuristic modifications
+when it comes to non-deterministic assignments.
+%
+Our experiments ran under Linux on dual Xeon E5520 quad-core processors with $2.26$GHz and $48$GB RAM.
+Each run was restricted to 600s CPU time.
+Timeouts account for 600s and performed choices.
+
+% ------------------------------------------------------------
+\newcommand{\rvsids}[4]{\multicolumn{3}{c|}{#1$s$ (#2)}}
+\newcommand{\cvsids}[4]{\multicolumn{3}{c|}{#4}}
+\newcommand{\domheu}[3]{#1\%&(#2)&#3\%}
+% ------------------------------------------------------------
+\begin{table}[t]
+  \centering\small
+  \begin{tabular}{|@{\,}r@{\,}|@{}r@{}@{}r@{}@{}r@{}|@{}r@{}@{}r@{}@{}r@{}|@{}r@{}@{}r@{}@{}r@{}|}
+    \hline
+    \multicolumn{1}{|c|}{Setting}                    & \multicolumn{3}{@{}c@{}|}{\textit{Labyrinth}}& \multicolumn{3}{@{}c@{}|}{\textit{Sokoban}}   & \multicolumn{3}{@{}c@{}|}{\textit{Hanoi Tower}} \\
+    \hline
+    \multicolumn{1}{|@{\;}l@{}|}{\textit{base configuration}} & \rvsids{9,108}{14}{5,908,451}{24,545,667}    & \rvsids{2,844}{3}{13,799,878}{19,371,267}     & \rvsids{9,137}{11}{34,126,406}{41,016,235}      \\   
+                                                     & \cvsids{9,108}{14}{5,908,451}{24,545,667}    & \cvsids{2,844}{3}{13,799,878}{19,371,267}     & \cvsids{9,137}{11}{34,126,406}{41,016,235}      \\
+    \hline
+    \hpre{a}{\texttt{init}}{\texttt{2}}              & \domheu{95}{12}{94}                          & \domheu{91}{\textbf{1}}{84}                   & \domheu{85}{9}{89}                              \\
+    \hpre{a}{\texttt{factor}}{\texttt{4}}            & \domheu{\textbf{78}}{\textbf{8}}{30}         & \domheu{120}{\textbf{1}}{107}                 & \domheu{109}{11}{110}                           \\
+    \hpre{a}{\texttt{factor}}{\texttt{16}}           & \domheu{\textbf{78}}{10}{23}                 & \domheu{120}{\textbf{1}}{107}                 & \domheu{109}{11}{110}                           \\
+    \hpre{a}{\texttt{level}}{\texttt{1}}             & \domheu{90}{12}{\textbf{5}}                  & \domheu{119}{2}{91}                           & \domheu{126}{15}{120}                           \\\cline{1-1}
+    \hpre{f}{\texttt{init}}{\texttt{2}}              & \domheu{103}{14}{123}                        & \domheu{\textbf{74}}{2}{\textbf{71}}          & \domheu{97}{10}{109}                            \\
+    \hpre{f}{\texttt{factor}}{\texttt{2}}            & \domheu{98}{12}{49}                          & \domheu{116}{3}{134}                          & \domheu{\textbf{55}}{\textbf{6}}{\textbf{70}}   \\
+    \hpre{f}{\texttt{sign}}{\texttt{-1}}             & \domheu{94}{13}{89}                          & \domheu{105}{\textbf{1}}{100}                 & \domheu{92}{12}{92}                             \\
+    \hline
+  \end{tabular}
+  \caption{Selection from evaluation of heuristic modifiers}
+  \label{tab:modifiers}
+\end{table}
+% ------------------------------------------------------------
+%
+To begin with,
+we report on a systematic study comparing single heuristic modifications.
+A selection of best results is given in Table~\ref{tab:modifiers};
+full results are available at~\cite{hclasp}.
+We focus on well-known ASP planning benchmarks in order to contrast heuristic modifications on comparable problems:
+\textit{Labyrinth}, \textit{Sokoban}, and \textit{Hanoi Tower}, each comprising 32 instances from the third ASP competition~\cite{contest11a}.%
+\footnote{All instances are satisfiable except for one third in \textit{Sokoban}.}
+We contrast the aforementioned base configuration with 38 heuristic modifications,
+(separately) promoting the choice of actions (\emph{a}) and fluents (\emph{f}) via the heuristic modifiers
+\texttt{factor} (1,2,4,8,16),
+\texttt{init} (2,4,8,16),
+\texttt{level} (1,-1),
+\texttt{sign} (1,-1),
+as well as attributing values to \texttt{factor}, \texttt{init}, and \texttt{level} by ascending and descending time points.
+%
+The first line of Table~\ref{tab:modifiers} gives the sum of times, timeouts, and choices obtained by the base configuration on all 32 instances of each problem class.
+The results of the two configurations using \texttt{factor,1} differ from these figures in the low per mille range, demonstrating that the infrastructure supporting heuristic
+modifications does not lead to a loss in performance.
+The seven configurations in Table~\ref{tab:modifiers} yield best values in at least one category (indicated in boldface).
+We express the accumulated times and choices as percentage wrt the base configuration; timeouts are total.
+We see that the base configuration can always be dominated by a heuristic modification.
+However, the whole spectrum of modifiers is needed to accomplish this.
+In other words, there is no dominating heuristic modifier and each problem class needs a customized heuristic.
+Looking at \textit{Labyrinth}, we observe that a preferred choice of action occurrences ($a$) pays off.
+The stronger this is enforced, the fewer choices are made.
+However, the extremely low number of choices with \texttt{level} does not result in less time or timeouts
+(compared to a ``lighter'' \texttt{factor}-based enforcement).
+While with \texttt{level} \emph{all} choices are made on heuristically modified atoms,
+both \texttt{factor}-based modifications result in only 43\% such choices and thus leave much more room to the solver's heuristic.
+For a complement, \textit{a},\texttt{init},2 as well as the base configuration (with \textit{a},\texttt{factor},1) 
+make 14\% of their choices on heuristically modified atoms
+(though the former produces in total 6\% less choices than the latter).
+Similar yet less extreme behaviors are observed on the two other classes.
+With \textit{Hanoi Tower}, a slight preference of fluents yields a strictly dominating configuration,
+whereas no dominating improvement was observed with \textit{Sokoban}.
+
+% ------------------------------------------------------------
+\newcommand{\data}[2]{&\,\ignorespaces#1$s$&(\ignorespaces#2)\,}
+% ------------------------------------------------------------
+\begin{table}[t]
+  \centering\small
+  \begin{tabular}{|@{}l@{}|@{}r@{}@{}r@{}|@{}r@{}@{}r@{}|@{}r@{}@{}r@{}@{}r@{}@{}r@{}|}
+    \hline
+    \multicolumn{1}{|@{}c@{}|}{Setting} & \multicolumn{2}{@{}c@{}|}{\textit{Diagnosis}} & \multicolumn{2}{@{}c@{}|}{\textit{Expansion}} & \multicolumn{2}{@{}c@{}}{\textit{Repair (H)}} & \multicolumn{2}{@{}c@{}|}{\textit{Repair (S)}}\\
+    \hline
+    \textit{base config.}            \data{        111.1}{        115}\data{        161.5}{      100}\data{       101.3}{       113}\data{        33.3}{        27}\\
+    \hline
+    \texttt{s,-1}                    \data{        324.5}{        407}\data{         7.6}{         3}\data{         8.4}{         5}\data{         3.1}{\textbf{0}}\\
+    \texttt{s,-1} \, \texttt{f,2}    \data{        310.1}{        387}\data{         7.4}{\textbf{2}}\data{         3.5}{\textbf{0}}\data{         3.2}{         1}\\
+    \texttt{s,-1} \, \texttt{f,8}    \data{        305.9}{        376}\data{         7.7}{\textbf{2}}\data{         3.1}{\textbf{0}}\data{         2.9}{\textbf{0}}\\
+    \texttt{s,-1} \, \texttt{l,1}    \data{\textbf{76.1}}{\textbf{83}}\data{\textbf{6.6}}{\textbf{2}}\data{\textbf{0.8}}{\textbf{0}}\data{         2.2}{         1}\\
+\multicolumn{1}{|r@{}|}{\texttt{l,1}}\data{         77.3}{         86}\data{        12.9}{         5}\data{         3.4}{\textbf{0}}\data{\textbf{2.1}}{\textbf{0}}\\
+    \hline
+  \end{tabular}
+  \caption{Abductive problems with optimization}
+  \label{tab:opt}
+\end{table}
+% ------------------------------------------------------------
+%
+Next, we apply our heuristic approach to problems using abduction in combination with a \texttt{\#minimize} statement
+minimizing the number of abducibles.
+We consider
+Circuit \textit{Diagnosis},
+Metabolic Network \textit{Expansion},
+and
+Transcriptional Network \textit{Repair} (including two distinct experiments, \textit{H} and \textit{S}).
+The first uses the ISCAS-85 benchmark circuits along with test cases generated as in \cite{sidiqqi11a};
+this results in 790 benchmark instances.
+The second one considers the completion of the metabolic network of \emph{E.coli} with reactions from \textit{MetaCyc} in view of generating target from seed metabolites~\cite{schthi09a}.
+We selected the 450 most difficult benchmarks in the suite.
+Finally, we consider repairing the transcriptional network of \emph{E.coli} from \textit{RegulonDB} in view of two distinct experiment series~\cite{geguivscsithve10a}.
+Selecting the most difficult triple repairs provided us with 1000 instances.
+%
+Our results are summarized in Table~\ref{tab:opt}.
+Each entry gives the average runtime and number of timeouts.
+% Otherwise the experimental setting is as above.
+%
+Here, heuristic modifiers apply only to abducibles subject to minimization.
+%
+For supporting minimization,
+we assign false to such abducibles (\texttt{s,-1})%
+\footnote{Assigning \true\ instead leads to a deterioration of performance.}
+and gradually increase the bias of their choice by imposing \texttt{factor} 2 and 8 (\texttt{f})
+or enforce it via a \texttt{level} modifier (\texttt{l,1}).
+%
+The second last setting%
+\footnote{This corresponds to using \hpre{a}{\texttt{false}}{1} for an abducible $a$.}
+in Table~\ref{tab:opt} is the winner, leading to speedups of one to two orders of magnitude over the base configuration.
+Interestingly, merely fixing the sign heuristics to \false\ leads at first to a deterioration of performance on \textit{Diagnosis} problems.
+This is finally overcome by the constant improvement observed by gradually strengthening the bias of choosing abducibles.
+The stronger the preference for abducibles, the faster the solver converges to an optimum solution.
+This limited experiment already illustrates that sometimes the right combination of heuristic
+modifiers yields the best result.
+
+Finally, let us consider true PDDL planning problems.
+For this, we selected 20 instances from the % and \textit{Freecell'02} in view of \textit{Freecell'00}.}
+STRIPS domains of the 2000 and 2002 planning competition~\cite{icaps-competition}.%
+\footnote{We discard \textit{Schedule'00} due to grounding issues.}
+In turn, we translated these PDDL instances into facts via \textit{plasp}~\cite{gekaknsc11a}
+and used a simple planning encoding with 15 different plan lengths (\verb+l=5,10,..,75+) to generate 3000 ASP instances.
+%
+Inspired yet different from \cite{rintanen12a}, we devised a dynamic heuristic that aims at propagating fluents' truth values backwards in time.
+Attributing levels via \texttt{l-T+1} aims at proceeding depth-first from the goal fluents.
+\begin{lstlisting}
+_h(holds(F,T-1),true, l-T+1) :- holds(F,T).
+_h(holds(F,T-1),false,l-T+1) :-
+        fluent(F), time(T), not holds(F,T).
+\end{lstlisting}
+% ------------------------------------------------------------
+\newcommand{\pdata}[3]{&\,\ignorespaces#1$s$&(\ignorespaces#2/\ignorespaces#3)}
+\newcommand{\sdata}[3]{&\,\ignorespaces#1$s$&(\ignorespaces#3)}
+% ------------------------------------------------------------
+\begin{table}[t]
+  \centering\scriptsize
+  \begin{tabular}{|@{}r@{\,}|@{}r@{}@{}r@{}|@{}r@{}@{}r@{}|@{}r@{}@{}r@{}|r@{}@{}r|}
+    \hline
+   \multicolumn{1}{|@{}c@{\,}|}{Problem} & \multicolumn{2}{@{}c@{}|}{\textit{base}} & \multicolumn{2}{@{}c@{}|}{\textit{base}+\texttt{\_h}} & \multicolumn{2}{@{}c@{}|}{\textit{base (SAT)}} & \multicolumn{2}{@{}c@{}|}{\textit{\textit{base}+\texttt{\_h} (SAT)}} \\
+    \hline
+    \textit{Blocks'00}    \pdata{134.4}{ 180}{  61}\pdata{  9.2}{ 239}{  3}\sdata{163.2}{180}{59}\sdata{ 2.6}{239}{0}\\
+    \textit{Elevator'00}  \pdata{  3.1}{ 279}{   0}\pdata{  0.0}{ 279}{  0}\sdata{  3.4}{279}{ 0}\sdata{ 0.0}{279}{0}\\
+    \textit{Freecell'00}  \pdata{288.7}{ 147}{ 115}\pdata{184.2}{ 194}{ 74}\sdata{226.4}{147}{47}\sdata{52.0}{194}{0}\\
+    \textit{Logistics'00} \pdata{145.8}{ 148}{  61}\pdata{115.3}{ 168}{ 52}\sdata{113.9}{148}{23}\sdata{15.5}{168}{3}\\
+    \hline
+    \textit{Depots'02}    \pdata{400.3}{  51}{ 184}\pdata{297.4}{ 115}{135}\sdata{389.0}{ 51}{64}\sdata{61.6}{115}{0}\\
+    \textit{Driverlog'02} \pdata{308.3}{ 108}{ 143}\pdata{189.6}{ 169}{ 92}\sdata{245.8}{108}{61}\sdata{ 6.1}{169}{0}\\
+    \textit{Rovers'02}    \pdata{245.8}{ 138}{ 112}\pdata{165.7}{ 179}{ 79}\sdata{162.9}{138}{41}\sdata{ 5.7}{179}{0}\\
+    \textit{Satellite'02} \pdata{398.4}{  73}{ 186}\pdata{229.9}{ 155}{106}\sdata{364.6}{ 73}{82}\sdata{30.8}{155}{0}\\
+    \textit{Zenotravel'02}\pdata{350.7}{ 101}{ 169}\pdata{239.0}{ 154}{116}\sdata{224.5}{101}{53}\sdata{ 6.3}{154}{0}\\
+    \hline
+    \textit{Total}          \pdata{252.8}{1225}{1031}\pdata{158.9}{1652}{657}\sdata{187.2}{1225}{430}\sdata{17.1}{1652}{3}\\
+    \hline
+  \end{tabular}
+  \caption{Planning Competition Benchmarks '00 and '02}
+  \label{tab:plan}
+\end{table}%
+% ------------------------------------------------------------
+%
+Our results are given in Table~\ref{tab:plan}.
+Each entry gives the average runtime along with the number of (solved satisfiable instances and) timeouts (in columns two and three).
+% Otherwise the experimental setting is as above.
+Our heuristic amendment (\textit{base}+\texttt{\_h}) greatly improves over the base configuration in terms of runtime and timeouts.
+On the overall set of benchmarks, it provides us with 427 more plans and 374 less timeouts.
+As already observed by \cite{rintanen12a}, the heuristic effect is stronger on satisfiable instances.
+This is witnessed by the two last columns restricting results to 1655 satisfiable instances solved by either system setup.
+Our heuristic extension allows us to reduce the total number of timeouts from 430 to 3;
+the reduction in solving time would be even more drastic with a longer timeout.
+
+Interestingly, the previous dynamic heuristic has no overwhelming effect on our initial ASP planning problems.
+An improvement was only observed on \textit{Hanoi Tower} problems (being susceptible to choices on fluents),
+viz.\ `{54\%}(7)\,\textbf{57\%}' in terms of the format used in Table~\ref{tab:modifiers}.
+However, restricting the heuristic to positive fluents by only using the first rule gives a substantial
+improvement, namely `\textbf{19\%}(\textbf{2})\,{66\%}', in terms of runtime and timeouts.
+A direct comparison of both heuristics shows that, although the latter performs 15\% more choices, 
+it encounters 75\% fewer conflicts than the former.
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End: 
+
+%% \input{discussion}
+
+\section{Discussion}\label{sec:discussion}
+
+Various ways of adding domain-specific information have been explored in the literature.
+%
+A prominent approach is to implement forms of preferential reasoning
+% , like reasoning wrt inclusion-minimal models, 
+by directing choices through
+a given partial order on literals~\cite{cacacale96a,rogima10a,giumar12a}.
+%
+To some degree, this can be simulated by heuristic modifiers like
+\hpre{a}{\texttt{false}}{1}
+that allow for computing a (single) inclusion-minimal model.
+However, as detailed in \cite{rogima10a}, enumerating all such models needs additional constraints
+or downstream tester programs.
+Similarly,
+\cite{balduccini11b} modifies the heuristic of the ASP solver \textit{smodels} to accommodate learning from smaller instances.
+See also~\cite{falepf01a,falemari07a}.
+Most notably,
+\cite{rintanen12a} achieves impressive results in planning by equipping a SAT solver with
+planning-specific heuristics.
+%
+All aforementioned approaches need customized changes to solver implementations.
+%
+Hence, it will be interesting to investigate how these approaches can be expressed and combined in
+our declarative framework.
+%
+Declarative approaches to incorporating control knowledge can be found in heuristic planning.
+For instance, \cite{backab00a} harness temporal logic formulas, while \cite{sierra04a} also uses
+dedicated predicates for controlling backtracking in a forward planner.
+%
+However,
+care must be taken when it comes to modifying a solver's heuristics.
+Although it may lead to great improvements, it may just as well lead to a degradation of search.
+In fact, the restriction of choice variables may result in exponentially larger search spaces~\cite{jajuni05a}.
+This issue is reflected in our choice of heuristic modifiers, 
+ranging from an \texttt{init}ial bias,
+over a continued yet scalable one by \texttt{factor},
+to a strict preference with \texttt{level}.
+
+To sum up,
+we introduced a declarative framework for incorporating domain-specific heuristics into ASP solving.
+The seamless integration into ASP's input language provides us with a general and flexible tool for
+expressing domain-specific heuristics.
+As such, we believe it to be the first of its kind.
+Our heuristic framework offers completely new possibilities of applying, experimenting, and studying
+domain-specific heuristics in a uniform setting.
+Our example heuristics merely provide first indications on the prospect of our approach,
+but much more systematic empirical studies are needed to exploit its full power.
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End: 
+
+
+%% \input{acknowledgments}
+\smallskip\noindent\emph{Acknowledgments.}
+%
+This work was partly funded 
+by 
+% the German Science Foundation (DFG)
+DFG grants 
+SCHA 550/8-3 % clasp et al
+and
+SCHA 550/9-1.   % Inc/ReaASP
+% SCHA 550/10-1  % Bio/clingcon
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End: 
+
+
+\bibliographystyle{aaai}
+% \bibliography{lit,akku,procs,local} % https://svn.cs.uni-potsdam.de/svn/reposWV/Papers/bibfiles/trunk
+%% \input{bbl}
+\begin{thebibliography}{}
+
+\bibitem[\protect\citeauthoryear{Bacchus and Kabanza}{2000}]{backab00a}
+Bacchus, F., and Kabanza, F.
+\newblock 2000.
+\newblock Using temporal logics to express search control knowledge for
+  planning.
+\newblock {\em Artificial Intelligence} 116(1-2):123--191.
+
+\bibitem[\protect\citeauthoryear{Balduccini}{2011}]{balduccini11b}
+Balduccini, M.
+\newblock 2011.
+\newblock Learning and using domain-specific heuristics in {ASP} solvers.
+\newblock {\em AI Communic.} 24(2):147--164.
+
+\bibitem[\protect\citeauthoryear{Baral}{2003}]{baral02a}
+Baral, C.
+\newblock 2003.
+\newblock {\em Knowledge Representation, Reasoning and Declarative Problem
+  Solving}.
+\newblock Cambridge University Press.
+
+\bibitem[\protect\citeauthoryear{Biere \bgroup et al\mbox.\egroup
+  }{2009}]{SATHandbook}
+Biere, A.; Heule, M.; {van Maaren}, H.; and Walsh, T., eds.
+\newblock 2009.
+\newblock {\em Handbook of Satisfiability}, volume 185 of {\em Frontiers in
+  Artificial Intelligence and Applications}.
+\newblock IOS Press.
+
+\bibitem[\protect\citeauthoryear{Calimeri \bgroup et al\mbox.\egroup
+  }{2011}]{contest11a}
+Calimeri, F. et al.
+\newblock 2011.
+\newblock The third answer set programming competition: Preliminary report of
+  the system competition track.
+\newblock In Delgrande and Faber \shortcite{lpnmr11},  388--403.
+
+\bibitem[\protect\citeauthoryear{Castell \bgroup et al\mbox.\egroup
+  }{1996}]{cacacale96a}
+Castell, T.; Cayrol, C.; Cayrol, M.; and {Le Berre}, D.
+\newblock 1996.
+\newblock Using the {D}avis and {P}utnam procedure for an efficient computation
+  of preferred models.
+\newblock In Wahlster, W., ed., {\em Proceedings of the Twelfth European
+  Conference on Artificial Intelligence (ECAI'96)},  350--354.
+\newblock John Wiley \& sons.
+
+\bibitem[\protect\citeauthoryear{Dechter}{2003}]{dechter03}
+Dechter, R.
+\newblock 2003.
+\newblock {\em Constraint Processing}.
+\newblock Morgan Kaufmann.
+
+\bibitem[\protect\citeauthoryear{Delgrande and Faber}{2011}]{lpnmr11}
+Delgrande, J., and Faber, W., eds.
+\newblock 2011.
+\newblock {\em Proceedings of the Eleventh International Conference on Logic
+  Programming and Nonmonotonic Reasoning (LPNMR'11)}. Springer.
+
+\bibitem[\protect\citeauthoryear{{Di Rosa}, Giunchiglia, and
+  Maratea}{2010}]{rogima10a}
+{Di Rosa}, E.; Giunchiglia, E.; and Maratea, M.
+\newblock 2010.
+\newblock Solving satisfiability problems with preferences.
+\newblock {\em Constraints} 15(4):485--515.
+
+\bibitem[\protect\citeauthoryear{Faber \bgroup et al\mbox.\egroup
+  }{2007}]{falemari07a}
+Faber, W.; Leone, N.; Maratea, M.; and Ricca, F.
+\newblock 2007.
+\newblock Experimenting with look-back heuristics for hard {ASP} programs.
+\newblock In Baral, C.; Brewka, G.; and Schlipf, J., eds., {\em Proceedings of
+  the Ninth International Conference on Logic Programming and Nonmonotonic
+  Reasoning (LPNMR'07)},  110--122.
+\newblock Springer.
+
+\bibitem[\protect\citeauthoryear{Faber, Leone, and Pfeifer}{2001}]{falepf01a}
+Faber, W.; Leone, N.; and Pfeifer, G.
+\newblock 2001.
+\newblock Experimenting with heuristics for answer set programming.
+\newblock In Nebel, B., ed., {\em Proceedings of the Seventeenth International
+  Joint Conference on Artificial Intelligence (IJCAI'01)},  635--640.
+\newblock Morgan Kaufmann.
+
+\bibitem[\protect\citeauthoryear{Freeman}{1995}]{freeman95a}
+Freeman, J.
+\newblock 1995.
+\newblock {\em Improvements to Propositional Satisfiability Search Algorithms}.
+\newblock Ph.D. Dissertation, University of Pennsylvania.
+
+\bibitem[\protect\citeauthoryear{Gebser \bgroup et al\mbox.\egroup
+  }{2010}]{geguivscsithve10a}
+Gebser, M.; Guziolowski, C.; Ivanchev, M.; Schaub, T.; Siegel, A.; Thiele, S.;
+  and Veber, P.
+\newblock 2010.
+\newblock Repair and prediction (under inconsistency) in large biological
+  networks with answer set programming.
+\newblock In Lin, F., and Sattler, U., eds., {\em Proceedings of the Twelfth
+  International Conference on Principles of Knowledge Representation and
+  Reasoning (KR'10)},  497--507.
+\newblock AAAI Press.
+
+\bibitem[\protect\citeauthoryear{Gebser \bgroup et al\mbox.\egroup
+  }{2011}]{gekaknsc11a}
+Gebser, M.; Kaminski, R.; Knecht, M.; and Schaub, T.
+\newblock 2011.
+\newblock plasp: A prototype for {PDDL}-based planning in {ASP}.
+\newblock In Delgrande and Faber \shortcite{lpnmr11},  358--363.
+
+\bibitem[\protect\citeauthoryear{Gebser \bgroup et al\mbox.\egroup
+  }{2012}]{gekakasc12a}
+Gebser, M.; Kaminski, R.; Kaufmann, B.; Schaub, T.
+\newblock 2012.
+\newblock {\em Answer Set Solving in Practice}.
+\newblock  Morgan and Claypool.
+% Synthesis Lectures on Artificial Intelligence and Machine Learning.
+
+
+\bibitem[\protect\citeauthoryear{Giunchiglia and Maratea}{2012}]{giumar12a}
+Giunchiglia, E., and Maratea, M.
+\newblock 2012.
+\newblock Algorithms for solving satisfiability problems with qualitative
+  preferences.
+\newblock In Erdem, E.; Lee, J.; Lierler, Y.; and Pearce, D., eds., {\em
+  Correct Reasoning: Essays on Logic-Based {AI} in Honour of {V}ladimir
+  {L}ifschitz},
+  327--344.
+\newblock Springer.
+
+\bibitem[\protect\citeauthoryear{Goldberg and Novikov}{2002}]{golnov02a}
+Goldberg, E., and Novikov, Y.
+\newblock 2002.
+\newblock {BerkMin}: A fast and robust {SAT} solver.
+\newblock In {\em Proceedings of the Fifth Conference on Design, Automation and
+  Test in Europe (DATE'02)},  142--149.
+\newblock IEEE Computer Society Press.
+
+\bibitem[\protect\citeauthoryear{hclasp\ignorespaces}{\ignorespaces}]{hclasp}
+\newblock hclasp. \texttt{http://www.cs.uni-potsdam.de/hclasp}.
+
+\bibitem[\protect\citeauthoryear{ICAPS\ignorespaces}{\ignorespaces}]{icaps-competition}
+\newblock ICAPS. \texttt{http://ipc.icaps-conference.org}.
+
+\bibitem[\protect\citeauthoryear{J{\"a}rvisalo, Junttila, and
+  Niemel{\"a}}{2005}]{jajuni05a}
+J{\"a}rvisalo, M.; Junttila, T.; and Niemel{\"a}, I.
+\newblock 2005.
+\newblock Unrestricted vs restricted cut in a tableau method for {B}oolean
+  circuits.
+\newblock {\em Annals of Mathematics and Artificial Intelligence}
+  44(4):373--399.
+
+\bibitem[\protect\citeauthoryear{Korf}{1985}]{korf85a}
+Korf, R.
+\newblock 1985.
+\newblock Depth-first iterative-deepening: An optimal admissible tree search.
+\newblock {\em Artificial Intelligence} 27(1):97--109.
+
+\bibitem[\protect\citeauthoryear{Lifschitz}{2002}]{lifschitz02a}
+Lifschitz, V.
+\newblock 2002.
+\newblock Answer set programming and plan generation.
+\newblock {\em Artificial Intelligence} 138(1-2):39--54.
+
+\bibitem[\protect\citeauthoryear{Marques-Silva and Sakallah}{1999}]{marsak99a}
+Marques-Silva, J., and Sakallah, K.
+\newblock 1999.
+\newblock {GRASP}: A search algorithm for propositional satisfiability.
+\newblock {\em IEEE Transactions on Computers} 48(5):506--521.
+
+\bibitem[\protect\citeauthoryear{Moskewicz \bgroup et al\mbox.\egroup
+  }{2001}]{momazhzhma01a}
+Moskewicz, M.; Madigan, C.; Zhao, Y.; Zhang, L.; and Malik, S.
+\newblock 2001.
+\newblock Chaff: Engineering an efficient {SAT} solver.
+\newblock In {\em Proceedings of the Thirty-eighth Conference on Design
+  Automation (DAC'01)},  530--535.
+\newblock ACM Press.
+
+\bibitem[\protect\citeauthoryear{Pipatsrisawat and Darwiche}{2007}]{pipdar07a}
+Pipatsrisawat, K., and Darwiche, A.
+\newblock 2007.
+\newblock A lightweight component caching scheme for satisfiability solvers.
+\newblock In Marques-Silva, J., and Sakallah, K., eds., {\em Proceedings of the
+  Tenth International Conference on Theory and Applications of Satisfiability
+  Testing (SAT'07)},
+  294--299.
+\newblock Springer.
+
+\bibitem[\protect\citeauthoryear{Pretolani}{1996}]{pretolani96a}
+Pretolani, D.
+\newblock 1996.
+\newblock Efficiency and stability of hypergraph {SAT} algorithms.
+\newblock In Johnson, D., and Trick, M., eds., {\em DIMACS Series in Discrete
+  Mathematics and Theoretical Computer Science}, volume~26,  479--498.
+\newblock American Mathematical Society.
+
+\bibitem[\protect\citeauthoryear{Rintanen}{2011}]{rintanen11a}
+Rintanen, J.
+\newblock 2011.
+\newblock Planning with {SAT}, admissible heuristics and {A}$^*$.
+\newblock In Walsh \shortcite{ijcai11},  2015--2020.
+
+\bibitem[\protect\citeauthoryear{Rintanen}{2012}]{rintanen12a}
+Rintanen, J.
+\newblock 2012.
+\newblock Planning as satisfiability: heuristics.
+\newblock {\em Artificial Intelligence} 193:45--86.
+
+\bibitem[\protect\citeauthoryear{Schaub and Thiele}{2009}]{schthi09a}
+Schaub, T., and Thiele, S.
+\newblock 2009.
+\newblock Metabolic network expansion with {ASP}.
+\newblock In Hill, P., and Warren, D., eds., {\em Proceedings of the
+  Twenty-fifth International Conference on Logic Programming (ICLP'09)},  312--326.
+\newblock Springer.
+
+\bibitem[\protect\citeauthoryear{Siddiqi}{2011}]{sidiqqi11a}
+Siddiqi, S.
+\newblock 2011.
+\newblock Computing minimum-cardinality diagnoses by model relaxation.
+\newblock In Walsh \shortcite{ijcai11},  1087--1092.
+
+\bibitem[\protect\citeauthoryear{Sierra-Santib{\'a}{\~n}ez}{2004}]{sierra04a}
+Sierra-Santib{\'a}{\~n}ez, J.
+\newblock 2004.
+\newblock Heuristic planning: A declarative approach based on strategies for
+  action selection.
+\newblock {\em Artificial Intelligence} 153(1-2):307--337.
+
+\bibitem[\protect\citeauthoryear{Walsh}{2011}]{ijcai11}
+Walsh, T., ed.
+\newblock 2011.
+\newblock {\em Proceedings of the Twenty-second International Joint Conference
+  on Artificial Intelligence (IJCAI'11)}. IJCAI/AAAI.
+
+\bibitem[\protect\citeauthoryear{Zhang \bgroup et al\mbox.\egroup
+  }{2001}]{zamamoma01a}
+Zhang, L.; Madigan, C.; Moskewicz, M.; and Malik, S.
+\newblock 2001.
+\newblock Efficient conflict driven learning in a {B}oolean satisfiability
+  solver.
+\newblock In {\em Proceedings of the International Conference on Computer-Aided
+  Design (ICCAD'01)},  279--285.
+\newblock ACM Press.
+
+\end{thebibliography}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End: 
+
+\end{document}

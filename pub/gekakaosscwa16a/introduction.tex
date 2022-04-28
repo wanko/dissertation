@@ -1,0 +1,67 @@
+
+\section{Introduction}\label{sec:introduction}
+
+The \clingo\ system, along with its grounding and solving components \gringo\ and \clasp, % respectively,
+is  nowadays among the most widely used tools for Answer Set Programming (ASP; \cite{lifschitz08b}).
+This does not only apply to end-users, but more and more to system developers who build upon \clingo's
+infrastructure for developing their own systems.
+Among them, we find (alphabetically)
+\clasp\emph{-nk}~\cite{eiererfi13a},
+\clingcon~\cite{ostsch12a},
+\dflat~\cite{abblchduhewo14a},
+\dingo~\cite{jalini11a},
+\dlvhex~\cite{eifikrre12a},
+\inca~\cite{drewal12a}, and
+\mingo~\cite{lijani12a}.
+None of these systems can use \clingo\ or its components without workarounds or even involved modifications to realize the desired functionality.
+%
+Moreover, since ASP is a model, ground, and solve paradigm, such modifications are rarely limited to a single component
+but often spread throughout the whole workflow.
+This begins with the addition of new language constructs to the input language,
+requiring in turn amendments to the grounder as well as
+syntactic means for passing the ground constructs to a downstream system.
+In case they are to be dealt with by an ASP solver,
+it must be enabled to treat the specific input and incorporate corresponding solving capacities.
+%
+Finally,
+each such extension is application-specific and requires different means at all ends.
+
+We address this challenge with the new \clingo\ series~5 and its components.
+%
+This is accomplished by introducing generic interfaces that allow for accommodating extensions to ASP at the salient stages of its workflow.
+%
+To begin with,
+we extend \clingo's grounder component \gringo\ with means for specifying simple theory grammars in which new theories can be represented.
+As theories are expressed using constructs close to ASP's basic modeling language,
+the existing grounding machinery takes care of instantiating them.
+%
+This also involves a new intermediate ASP format that allows for passing the enriched information from grounders to solvers in a transparent way.
+(Since this format is mainly for settings with stand-alone grounders and solvers,
+ and thus outside the scope of \clingo,
+ we delegate details to the Appendix in \ref{sec:aspif}.) % ~\cite{gekakaosscwa16b}.)
+%%
+For a complement,
+\clingo~5 provides several interfaces for reasoning with theory expressions.
+%
+On the one hand,
+the existing \lua\ and \python\ APIs are extended by high-level interfaces for
+augmenting propagation in \clasp\ with so-called \emph{theory propagators}.
+Several such propagators can be registered with \clingo,
+each implementing an interface of four basic methods.
+Our design is driven by the objective to provide means for rapid prototyping of dedicated reasoning procedures while enabling effective implementations.
+To this end,
+the interface supports, for instance, stateful theory propagators as well as multi-threading in the underlying solver.
+%
+On the other hand,
+the functionality of the aforementioned extended APIs is now also offered via a \C\ interface.
+This is motivated by the wide availability of foreign function interfaces for \C, which enable the import of \clingo\ % functionalities into
+in % many other
+programming languages like \java\ or \haskell.
+A first application of this is the integration of \clingo~5 into SWI-Prolog.\footnote{\url{https://github.com/JanWielemaker/clingo}}
+
+% For brevity, we concentrate below on the extensions to the \python\ interface, whose functionality is mirrored by the corresponding \lua\ and \C\ APIs.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End:

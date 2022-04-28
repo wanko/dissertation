@@ -1,0 +1,106 @@
+\section{Multi-Shot ASP Solving with Linear Constraints}
+\label{sec:multishot}
+Multi-shot solving~\cite{gekakasc14b} is about solving continuously changing logic programs in an operative way.
+This can be controlled via reactive procedures that loop on solving while reacting, for instance, to outside changes or previous solving results.
+These reactions may entail the addition or retraction of rules that the operative approach can accommodate by leaving the unaffected program parts
+intact within the solver.
+This avoids re-grounding and benefits from heuristic scores and nogoods learned over time.
+%
+In fact, 
+evolving logic programs with linear constraints can be extremely useful in dynamic applications, for example, to %:
+add new resources in a planning domain,
+or to set the value of an observed variable measured using sensors.
+The abstraction from actual constraints to constraint atoms
+allows us to easily extend multi-shot solving to lc-programs.
+
+To illustrate how seamlessly our systems \clingod{dl} and \clingod{lp} support multi-shot solving,
+we apply the exemplary \python\ script, shipped with \clingo\ to illustrate incremental solving,
+to model the spoiling Yale shooting scenario~\cite{caotpo00a}.
+%
+Multi-shot solving in \clingo\ relies on two directives (cf.~\cite{gekakasc14b}),
+the \texttt{\#program} directive for regrouping rules
+and
+the \texttt{\#external} directive for declaring atoms
+as being external to the program at hand.
+The truth value of such external atoms can be set via \clingo's API\@.
+The aforementioned \python\ script loops over increasing integers until a stop criterion is met.
+It presupposes three groups of rules declared via \texttt{\#program} directives.
+At step 0 the programs named \texttt{base} and \texttt{check(n)} are grounded and solved for $\texttt{n}=0$.
+Then, in turn programs \texttt{check(n)} and \texttt{step(n)} are added for $\texttt{n}>0$, grounded, and the resulting overall program solved.
+% Other names and components are definable by appropriate changes to the script.
+% Stop criteria can be the satisfiability or unsatisfiability of the respective program at each iteration.
+In addition, at each step $\texttt{n}$ an external atom \texttt{query(n)} is introduced;
+it is set to true for the current iteration $\texttt{n}$ and false for all previous instances with smaller integers than $\texttt{n}$.
+We refer the reader to~\cite{gekakasc14b} for further details on the \python{} part.
+Notably, for dealing with lc-programs,
+we can use the exemplary \python\ script as is---once the respective propagator is registered with the solver.
+
+In the spoiled Yale shooting scenario~\cite{caotpo00a},
+we have a gun and two actions, viz.\ load and shoot.
+If we load, the gun becomes loaded.
+If we shoot, it kills the turkey, if the gun was loaded for no more than 35 minutes.
+Otherwise, the gun powder is spoiled.
+We model this planning problem in \ASPm{lc}.
+% --------------------------------------------------------------------------------
+\lstinputlisting[caption={Spoiled Yale shooting instance},float=ht,label=encoding:yalebase,basicstyle=\ttfamily\footnotesize]{encodings/base.lps}
+% --------------------------------------------------------------------------------
+We start by including the incremental \python\ program,
+the grammar, and the propagator for linear constraints in the first line of Listing~\ref{encoding:yalebase}.%
+\footnote{For uniformity, we use semi-colons '\texttt{;}' rather than '\texttt{,}' for separating body elements.}
+This listing is the base program.
+All actions and their durations are introduced in Lines~4 and~5.
+At the initial situation, the gun is unloaded (Line~6).
+Line~7 and~8 initialize integer variables \texttt{at(0)} and \texttt{armed(0)} with 0 (see below).
+% --------------------------------------------------------------------------------
+\lstinputlisting[caption={Spoiled Yale shooting scenario},float=ht,label=encoding:yale,basicstyle=\ttfamily\footnotesize]{encodings/yale.lps}
+% --------------------------------------------------------------------------------
+Listing~\ref{encoding:yale} gives the dynamic part of the problem;
+it is grounded for each step \texttt{n}.
+Line~2 enforces that exactly one action is done per step.
+The exact times at which each step takes place is captured by the integer variables \texttt{at(n)}.
+The difference between two consecutive time steps is the duration
+of the respective action (Line~3).
+%
+The next three lines make the fluents inertial, viz.\
+the gun stays loaded/unloaded if it was loaded/unloaded before,
+and the turkey remains dead.
+%
+Lines~9 and~10 use the integer variable \texttt{armed(n)}
+to describe for how long the weapon has been loaded at step \texttt{n}.
+Whenever it is unloaded, \texttt{armed(n)} is 0,
+otherwise it is increased by the duration of the last action.
+%
+The following four lines (12--15) encode the conditions and effects of the actions.
+When we load the gun, it becomes loaded; when we shoot, it becomes unloaded.
+If we shoot and the gun was loaded for no longer than 35 minutes (and thus the gun powder is unspoiled),
+the turkey is dead.
+The last line ensures that we cannot shoot if the gun is not loaded.
+Together with the initial situation and the actions from Listing~\ref{encoding:yalebase}
+this encodes the spoiled Yale shooting problem,
+and any solution represents an executable plan.
+% --------------------------------------------------------------------------------
+\lstinputlisting[caption={Query for the spoiled Yale Shooting Scenario.},float=ht,label=encoding:yalequery,basicstyle=\ttfamily\footnotesize]{encodings/query.lps}
+% --------------------------------------------------------------------------------
+Listing~\ref{encoding:yalequery} adds a query to our problem.
+In Line~2 we require that the turkey is dead at step \texttt{n}.
+As this constraint is subject to the external atom \texttt{query(n)},
+it is only active at solving step \texttt{n}.
+The next line ensures that we kill the turkey within 100 minutes.
+And as an additional constraint,
+we added some preparation time such that we are not allowed 
+to shoot in the first 35 minutes.
+%
+It is possible to solve this problem within three steps.
+There exist two solutions at this time point,
+one of them containing
+\texttt{unloaded(0)}, \texttt{do(wait,1)}, \texttt{unloaded(1)},
+\texttt{do(load,2)}, \texttt{loaded(2)},
+\texttt{do(shoot,3)}, \texttt{unloaded(3)}, \texttt{dead(3)}.
+That is, we simply wait before loading and shooting.
+The second solution loads the gun instead of waiting,
+thus loading the gun twice before shooting.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End:

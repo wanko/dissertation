@@ -1,0 +1,210 @@
+
+\section{Experiments}\label{sec:experiments}
+
+We implemented our approach as a dedicated heuristic module within the ASP solver \textit{clasp}
+(2.1; available at \cite{hclasp}).
+We consider \textit{moms} \cite{pretolani96a} as initial heuristic $h_0$ and
+\textit{vsids} \cite{momazhzhma01a} as heuristic function $h_i$.
+Accordingly, the sign heuristic \textsl{s} is set to the one associated with \textit{vsids}.
+As base configuration, we use \textit{clasp} with options \texttt{--heu=vsids} and \texttt{--init-moms}.
+%
+To take effect,
+the heuristic atoms as well as their contained atoms must be made visible to the solver via \texttt{\#show} directives.
+Once the option \texttt{--heu=domain} is passed to \texttt{clasp},
+it extracts the necessary information from the symbol table and applies the heuristic modifications
+when it comes to non-deterministic assignments.
+%
+Our experiments ran under Linux on dual Xeon E5520 quad-core processors with $2.26$~GHz and $48$~GB RAM.
+Each run was restricted to 600 seconds CPU time.
+Timeouts account for 600 seconds and performed choices.
+
+% ------------------------------------------------------------
+\newcommand{\rvsids}[4]{\multicolumn{3}{c|}{#1$s$ (#2)}}
+\newcommand{\cvsids}[4]{\multicolumn{3}{c|}{#4}}
+\newcommand{\domheu}[3]{#1\%&(#2)&#3\%}
+% ------------------------------------------------------------
+\begin{table}[t]
+  \centering\small
+  \begin{tabular}{|@{\,}r@{\,}|@{}r@{}@{}r@{}@{}r@{}|@{}r@{}@{}r@{}@{}r@{}|@{}r@{}@{}r@{}@{}r@{}|}
+    \hline
+    \multicolumn{1}{|c|}{Setting}                    & \multicolumn{3}{@{}c@{}|}{\textit{Labyrinth}}& \multicolumn{3}{@{}c@{}|}{\textit{Sokoban}}   & \multicolumn{3}{@{}c@{}|}{\textit{Hanoi Tower}} \\
+    \hline
+    \multicolumn{1}{|@{\;}l@{}|}{\textit{base configuration}} & \rvsids{9,108}{14}{5,908,451}{24,545,667}    & \rvsids{2,844}{3}{13,799,878}{19,371,267}     & \rvsids{9,137}{11}{34,126,406}{41,016,235}      \\   
+                                                     & \cvsids{9,108}{14}{5,908,451}{24,545,667}    & \cvsids{2,844}{3}{13,799,878}{19,371,267}     & \cvsids{9,137}{11}{34,126,406}{41,016,235}      \\
+    \hline
+    \hpre{a}{\texttt{init}}{\texttt{2}}              & \domheu{95}{12}{94}                          & \domheu{91}{\textbf{1}}{84}                   & \domheu{85}{9}{89}                              \\
+    \hpre{a}{\texttt{factor}}{\texttt{4}}            & \domheu{\textbf{78}}{\textbf{8}}{30}         & \domheu{120}{\textbf{1}}{107}                 & \domheu{109}{11}{110}                           \\
+    \hpre{a}{\texttt{factor}}{\texttt{16}}           & \domheu{\textbf{78}}{10}{23}                 & \domheu{120}{\textbf{1}}{107}                 & \domheu{109}{11}{110}                           \\
+    \hpre{a}{\texttt{level}}{\texttt{1}}             & \domheu{90}{12}{\textbf{5}}                  & \domheu{119}{2}{91}                           & \domheu{126}{15}{120}                           \\\cline{1-1}
+    \hpre{f}{\texttt{init}}{\texttt{2}}              & \domheu{103}{14}{123}                        & \domheu{\textbf{74}}{2}{\textbf{71}}          & \domheu{97}{10}{109}                            \\
+    \hpre{f}{\texttt{factor}}{\texttt{2}}            & \domheu{98}{12}{49}                          & \domheu{116}{3}{134}                          & \domheu{\textbf{55}}{\textbf{6}}{\textbf{70}}   \\
+    \hpre{f}{\texttt{sign}}{\texttt{-1}}             & \domheu{94}{13}{89}                          & \domheu{105}{\textbf{1}}{100}                 & \domheu{92}{12}{92}                             \\
+    \hline
+  \end{tabular}
+  \caption{Selection from evaluation of heuristic modifiers}
+  \label{tab:modifiers}
+\end{table}
+% ------------------------------------------------------------
+%
+To begin with,
+we report on a systematic study comparing single heuristic modifications.
+A selection of best results is given in Table~\ref{tab:modifiers};
+full results are available at~\cite{hclasp}.
+We focus on well-known ASP planning benchmarks in order to contrast heuristic modifications on comparable problems:
+\textit{Labyrinth}, \textit{Sokoban}, and \textit{Hanoi Tower}, each comprising 32 instances from the third ASP competition~\cite{contest11a}.%
+\footnote{All instances are satisfiable except for one third in \textit{Sokoban}.}
+We contrast the aforementioned base configuration with 38 heuristic modifications,
+(separately) promoting the choice of actions (\emph{a}) and fluents (\emph{f}) via the heuristic modifiers
+\texttt{factor} (1,2,4,8,16),
+\texttt{init} (2,4,8,16),
+\texttt{level} (1,-1),
+\texttt{sign} (1,-1),
+as well as attributing values to \texttt{factor}, \texttt{init}, and \texttt{level} by ascending and descending time points.
+%
+The first line of Table~\ref{tab:modifiers} gives the sum of times, timeouts, and choices obtained by the base configuration on all 32 instances of each problem class.
+The results of the two configurations using \texttt{factor,1} differ from these figures in the low per mille range, demonstrating that the infrastructure supporting heuristic
+modifications does not lead to a loss in performance.
+The seven configurations in Table~\ref{tab:modifiers} yield best values in at least one category (indicated in boldface).
+We express the accumulated times and choices as percentage wrt the base configuration; timeouts are total.
+We see that the base configuration can always be dominated by a heuristic modification.
+However, the whole spectrum of modifiers is needed to accomplish this.
+In other words, there is no dominating heuristic modifier and each problem class needs a customized heuristic.
+Looking at \textit{Labyrinth}, we observe that a preferred choice of action occurrences ($a$) pays off.
+The stronger this is enforced, the fewer choices are made.
+However, the extremely low number of choices with \texttt{level} does not result in less time or timeouts
+(compared to a ``lighter'' \texttt{factor}-based enforcement).
+While with \texttt{level} \emph{all} choices are made on heuristically modified atoms,
+both \texttt{factor}-based modifications result in only 43\% such choices and thus leave much more room to the solver's heuristic.
+For a complement, \textit{a},\texttt{init},2 as well as the base configuration (with \textit{a},\texttt{factor},1) 
+make 14\% of their choices on heuristically modified atoms
+(though the former produces in total 6\% less choices than the latter).
+Similar yet less extreme behaviors are observed on the two other classes.
+With \textit{Hanoi Tower}, a slight preference of fluents yields a strictly dominating configuration,
+whereas no dominating improvement was observed with \textit{Sokoban}.
+
+% ------------------------------------------------------------
+\newcommand{\data}[2]{&\,\ignorespaces#1$s$&(\ignorespaces#2)\,}
+% ------------------------------------------------------------
+\begin{table}[t]
+  \centering\small
+  \begin{tabular}{|@{}l@{}|@{}r@{}@{}r@{}|@{}r@{}@{}r@{}|@{}r@{}@{}r@{}@{}r@{}@{}r@{}|}
+    \hline
+    \multicolumn{1}{|@{}c@{}|}{Setting} & \multicolumn{2}{@{}c@{}|}{\textit{Diagnosis}} & \multicolumn{2}{@{}c@{}|}{\textit{Expansion}} & \multicolumn{2}{@{}c@{}}{\textit{Repair (H)}} & \multicolumn{2}{@{}c@{}|}{\textit{Repair (S)}}\\
+    \hline
+    \textit{base config.}            \data{        111.1}{        115}\data{        161.5}{      100}\data{       101.3}{       113}\data{        33.3}{        27}\\
+    \hline
+    \texttt{s,-1}                    \data{        324.5}{        407}\data{         7.6}{         3}\data{         8.4}{         5}\data{         3.1}{\textbf{0}}\\
+    \texttt{s,-1} \, \texttt{f,2}    \data{        310.1}{        387}\data{         7.4}{\textbf{2}}\data{         3.5}{\textbf{0}}\data{         3.2}{         1}\\
+    \texttt{s,-1} \, \texttt{f,8}    \data{        305.9}{        376}\data{         7.7}{\textbf{2}}\data{         3.1}{\textbf{0}}\data{         2.9}{\textbf{0}}\\
+    \texttt{s,-1} \, \texttt{l,1}    \data{\textbf{76.1}}{\textbf{83}}\data{\textbf{6.6}}{\textbf{2}}\data{\textbf{0.8}}{\textbf{0}}\data{         2.2}{         1}\\
+\multicolumn{1}{|r@{}|}{\texttt{l,1}}\data{         77.3}{         86}\data{        12.9}{         5}\data{         3.4}{\textbf{0}}\data{\textbf{2.1}}{\textbf{0}}\\
+    \hline
+  \end{tabular}
+  \caption{Abductive problems with optimization}
+  \label{tab:opt}
+\end{table}
+% ------------------------------------------------------------
+%
+Next, we apply our heuristic approach to problems using abduction in combination with a \texttt{\#minimize} statement
+minimizing the number of abducibles.
+We consider
+Circuit \textit{Diagnosis},
+Metabolic Network \textit{Expansion},
+and
+Transcriptional Network \textit{Repair} (including two distinct experiments, \textit{H} and \textit{S}).
+The first uses the ISCAS-85 benchmark circuits along with test cases generated as in \cite{sidiqqi11a};
+this results in 790 benchmark instances.
+The second one considers the completion of the metabolic network of \emph{E.coli} with reactions from \textit{MetaCyc} in view of generating target from seed metabolites~\cite{schthi09a}.
+We selected the 450 most difficult benchmarks in the suite.
+Finally, we consider repairing the transcriptional network of \emph{E.coli} from \textit{RegulonDB} in view of two distinct experiment series~\cite{geguivscsithve10a}.
+Selecting the most difficult triple repairs provided us with 1000 instances.
+%
+Our results are summarized in Table~\ref{tab:opt}.
+Each entry gives the average runtime and number of timeouts.
+% Otherwise the experimental setting is as above.
+%
+Here, heuristic modifiers apply only to abducibles subject to minimization.
+%
+For supporting minimization,
+we assign false to such abducibles (\texttt{s,-1})%
+\footnote{Assigning \true\ instead leads to a deterioration of performance.}
+and gradually increase the bias of their choice by imposing \texttt{factor} 2 and 8 (\texttt{f})
+or enforce it via a \texttt{level} modifier (\texttt{l,1}).
+%
+The second last setting%
+\footnote{This corresponds to using \hpre{a}{\texttt{false}}{1} for an abducible $a$.}
+in Table~\ref{tab:opt} is the winner, leading to speedups of one to two orders of magnitude over the base configuration.
+Interestingly, merely fixing the sign heuristics to \false\ leads at first to a deterioration of performance on \textit{Diagnosis} problems.
+This is finally overcome by the constant improvement observed by gradually strengthening the bias of choosing abducibles.
+The stronger the preference for abducibles, the faster the solver converges to an optimum solution.
+This limited experiment already illustrates that sometimes the right combination of heuristic
+modifiers yields the best result.
+
+Finally, let us consider true PDDL planning problems.
+For this, we selected 20 instances from the%
+%\footnote{We discard \textit{Schedule'00} due to grounding issues.} % and \textit{Freecell'02} in view of \textit{Freecell'00}.}
+STRIPS domains of the 2000 and 2002 planning competition~\cite{icaps-competition}\footnote{We discard \textit{Schedule'00} due to grounding issues.}.
+In turn, we translated these PDDL instances into facts via \textit{plasp}~\cite{gekaknsc11a}
+and used a simple planning encoding with 15 different plan lengths (\verb+l=5,10,..,75+) to generate 3000 ASP instances.
+%
+Inspired yet different from \cite{rintanen12a}, we devised a dynamic heuristic that aims at propagating fluents' truth values backwards in time.
+Attributing levels via \texttt{l-T+1} aims at proceeding depth-first from the goal fluents.
+\begin{lstlisting}
+_h(holds(F,T-1),true, l-T+1) :- holds(F,T).
+_h(holds(F,T-1),false,l-T+1) :-
+                            not holds(F,T).
+\end{lstlisting}
+%\setlength{\abovecaptionskip}{3pt}
+%\setlength{\belowcaptionskip}{3pt}
+\setlength{\textfloatsep}{5pt plus 1.0pt minus 2.0pt}
+% ------------------------------------------------------------
+\newcommand{\pdata}[3]{&\,\ignorespaces#1$s$&(\ignorespaces#2/\ignorespaces#3)}
+\newcommand{\sdata}[3]{&\,\ignorespaces#1$s$&(\ignorespaces#3)}
+% ------------------------------------------------------------
+\begin{table}[t]
+  \centering\scriptsize
+  \begin{tabular}{|@{}r@{\,}|@{}r@{}@{}r@{}|@{}r@{}@{}r@{}|@{}r@{}@{}r@{}|r@{}@{}r|}
+    \hline
+   \multicolumn{1}{|@{}c@{\,}|}{Problem} & \multicolumn{2}{@{}c@{}|}{\textit{base}} & \multicolumn{2}{@{}c@{}|}{\textit{base}+\texttt{\_h}} & \multicolumn{2}{@{}c@{}|}{\textit{base (SAT)}} & \multicolumn{2}{@{}c@{}|}{\textit{\textit{base}+\texttt{\_h} (SAT)}} \\
+    \hline
+    \textit{Blocks'00}    \pdata{134.4}{ 180}{  61}\pdata{  9.2}{ 239}{  3}\sdata{163.2}{180}{59}\sdata{ 2.6}{239}{0}\\
+    \textit{Elevator'00}  \pdata{  3.1}{ 279}{   0}\pdata{  0.0}{ 279}{  0}\sdata{  3.4}{279}{ 0}\sdata{ 0.0}{279}{0}\\
+    \textit{Freecell'00}  \pdata{288.7}{ 147}{ 115}\pdata{184.2}{ 194}{ 74}\sdata{226.4}{147}{47}\sdata{52.0}{194}{0}\\
+    \textit{Logistics'00} \pdata{145.8}{ 148}{  61}\pdata{115.3}{ 168}{ 52}\sdata{113.9}{148}{23}\sdata{15.5}{168}{3}\\
+    \hline
+    \textit{Depots'02}    \pdata{400.3}{  51}{ 184}\pdata{297.4}{ 115}{135}\sdata{389.0}{ 51}{64}\sdata{61.6}{115}{0}\\
+    \textit{Driverlog'02} \pdata{308.3}{ 108}{ 143}\pdata{189.6}{ 169}{ 92}\sdata{245.8}{108}{61}\sdata{ 6.1}{169}{0}\\
+    \textit{Rovers'02}    \pdata{245.8}{ 138}{ 112}\pdata{165.7}{ 179}{ 79}\sdata{162.9}{138}{41}\sdata{ 5.7}{179}{0}\\
+    \textit{Satellite'02} \pdata{398.4}{  73}{ 186}\pdata{229.9}{ 155}{106}\sdata{364.6}{ 73}{82}\sdata{30.8}{155}{0}\\
+    \textit{Zenotravel'02}\pdata{350.7}{ 101}{ 169}\pdata{239.0}{ 154}{116}\sdata{224.5}{101}{53}\sdata{ 6.3}{154}{0}\\
+    \hline
+    \textit{Total}          \pdata{252.8}{1225}{1031}\pdata{158.9}{1652}{657}\sdata{187.2}{1225}{430}\sdata{17.1}{1652}{3}\\
+    \hline
+  \end{tabular}
+  \caption{Planning Competition Benchmarks '00 and '02}
+  \label{tab:plan}
+\end{table}%
+% ------------------------------------------------------------
+%
+Our results are given in Table~\ref{tab:plan}.
+Each entry gives the average runtime along with the number of (solved satisfiable instances and) timeouts (in columns two and three).
+% Otherwise the experimental setting is as above.
+Our heuristic amendment (\texttt{\_h}) greatly improves over the base configuration in terms of runtime and timeouts.
+On the overall set of benchmarks, it provides us with 427 more plans and 374 less timeouts.
+As already observed by \cite{rintanen12a}, the heuristic effect is stronger on satisfiable instances.
+This is witnessed by the two last columns restricting results to 1655 satisfiable instances solved by either system setup.
+Our heuristic extension allows us to reduce the total number of timeouts from 430 to 3;
+the reduction in solving time would be even more drastic with a longer timeout.
+
+Interestingly, the previous dynamic heuristic has no overwhelming effect on our initial ASP planning problems.
+An improvement was only observed on \textit{Hanoi Tower} problems (being susceptible to choices on fluents),
+viz.\ `{54\%}(7)\,\textbf{57\%}' in terms of the format used in Table~\ref{tab:modifiers}.
+However, restricting the heuristic to positive fluents by only using the first rule gives a substantial
+improvement, namely `\textbf{19\%}(\textbf{2})\,{66\%}', in terms of runtime and timeouts.
+A direct comparison of both heuristics shows that, although the latter performs 15\% more choices, 
+it encounters 75\% fewer conflicts than the former.
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End: 

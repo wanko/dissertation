@@ -1,0 +1,9 @@
+We introduce a comprehensive framework for computing diverse (or similar) solutions to logic programs with preferences.
+Our framework provides a wide spectrum of complete and incomplete methods for solving this task.
+Apart from proposing several new methods, it also accommodates existing ones and generalizes them to programs with preferences.
+Interestingly, this is accomplished by integrating and automating several basic ASP techniques --- being of general interest even beyond diversification.
+The enabling factor of this lies in the recent advance of multi-shot ASP capacities that provide us with fine-grained control over ASP reasoning
+processes and notably abolish the need for solver modifications and wrappers that were indispensable in previous approaches.
+Our framework is implemented as an extension to the ASP-based preference handling system asprin.
+We use the resulting system asprin 2 for an exhausting empirical evaluation of the
+whole spectrum of diversification methods comprised in our framework.

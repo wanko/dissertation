@@ -1,0 +1,171 @@
+Review TPLP fluto
+=================
+
+We thank the reviewers for their remarks and suggestions.
+In the following, we address the comments made by the editors and reviewers point-by-point.
+
+- Review comment
+* Response
+
+Editor
+--------
+
+We added a footnote on the first page:
+"This is an extended version of a paper presented at LPNMR-17, invited as a rapid publication in TPLP.
+  The authors acknowledge the assistance of the conference chairs Tomi Janhunen and Marco Balduccini".
+
+  
+Review 1
+--------
+
+- On page 2 it was not clear to me how active_G(S) is formally defined. In particular: does it need to be defined separately, or can it be extracted from the network? This question becomes relevant if metabolites can have multiple outgoing arcs (or is this disallowed?) as they could then trigger different different alternative reactions (but due to their limited amount only one of them). Only in subsections 2.1, 2.2 and 2.3 it became clear that this is a fixed function depending on the semantics. Please clarify this earlier.
+
+* The formal definition of activation can be found on page 4 in the second paragraph. It cannot be extracted from the network in general since it also needs the seeds as input.
+  The activation function returns the set of all activated reactions, so multiple outgoing arcs are no problem.
+  We added the following sentence to page 3 section 2 paragraph 2: 
+  Metabolites and reactions nodes can both have multiple ingoing and outgoing edges
+
+- On page 5 the law of mass conservation should be better explained. What does the reaction rate mean in biological terms?
+* We agree that the explanation was unclear, and we modified it (page 5 above equation (6)):
+  Reaction stoichiometries are governed by the law of mass conservation under a steady state assumption; in other words, the mass of the system remains constant over the reaction.
+  The input and output fluxes of reactions consuming and producing a metabolite are balanced
+
+Minor part:
+- Page 2: The sentence "In previous work Schaub and Thiele (2009), we introduced a logical approach [...]" is broken.
+* fixed by changing  all \cite to \citep in document
+
+- Page 3: In the second-last paragraph you use "boundary metabolites" and "boundary compounds" for the same concept.
+* fixed by using "boundary compounds" for all instances
+
+- Page 5: one should explain better why equation (6) is always satisfied for boundary metabolites.
+* Added (page 5 below equation (7)) further explanations:
+  Since boundary compounds are produced by at least one reaction without prerequisite,
+  an arbitrary amount might be produced.
+  Therefore, the incoming flux value always balances the sum of the flux values associated to outgoing edges.
+  Intuitively, boundary compounds are nutrients that are expected to be available in the system
+  for the consumption by the metabolic network, thus initiating the reactions within.
+
+- Page 5: "all bold nodes and edges depicted in Fig. 2": there are no bold nodes and edges, I guess you mean solid (non-dashed) ones.
+* fixed by changing bold to non-dashed
+
+- Page 8: "One solution to facilitate this curation task, is to provide,": eliminate first comma
+* fixed
+
+- Page 8: "Notably, the concept of ”union of solutions” is particularly": orientation of first quotation marks is wrong
+* fixed
+
+- Page 8: "the operation of performing union of solutions": should it rather be "performing THE union of solutions"?
+* fixed by adding "the"
+
+- The theory atom example on page 11 should be extended to make it less trivial: e.g. making a guess over two atoms such that for only one of them the theory part is satisfiable.
+* Since this paper focuses on metabolic network completion and this example of the background should give an intuition of the underlying technique for a broad audience,
+  we refer to "Janhunen, T., et al. (2017). Clingo goes linear constraints over reals and integers. TPLP" for a more detailed introduction.
+* Added on page 12 end of paragraph 1: 
+  For a more detailed introduction of ASP extended with linear constraints, illustrated with more complex examples, we refer the interested reader to~\citep{jakaosscscwa17a}.
+
+- Page 15: "invokes the irreducible inconsistent set algorithm Ostrowski and Schaub" --> "invokes the irreducible inconsistent set algorithm BY Ostrowski and Schaub"
+* fixed
+
+- Page 15: The shades of Table 15 can make printouts very dark, and different shades might be difficult to distinguish, depending on the printer. If you think the numbers alone are not sufficient, I suggest to use an alternative way of layout but do not depend on shades.
+* lightened the shading to improve visibility
+
+
+Review 2
+--------
+- It is stated in the paper that the proposed method demonstrates how the extension of clingo is able handle linear constraints over real numbers in a real-life problem setting.
+  To this end, however, it is unclear to me what advantage does an ASP based solution (enhanced with linear constraints) bring compared to a solution that would be encoded purely with linear constraints? It would be good to add some explicit discussion about this, i.e., what is the particular motivation for choosing ASP, what advantages does it bring compared to other constraint reasoning formalisms (e.g., as opposed to encoding the problem directly using mixed integer programming)?
+
+* We elaborate in the introduction of the paper that pure ASP already efficiently solved a related problem,
+  the network completion based on topological activation. Our notion of activation is partially based on this problem therefore ASP was the natural choice. 
+  Reachability can be efficiently and succinctly encoded in ASP but it struggles with variables with large domains. 
+  LP, on the other hand, cannot succinctly represent reachability. The combination remedies the mutual shortcomings.
+
+
+- The experimental evaluation could have been strengthened by considering other metabolic networks in addition to that of Escherichia coli, and considering a more detailed comparison with existing approaches. E.g., results for meneco and gapfill are obtained without time limit, so there is no comparison for run times. However, it is good that the effect of various configurations of clingo (and the fluto tool) are studied in detail.
+
+* The Escherichia coli was used since it represents a real life setting that is well studied and accessible.
+  It is one of the rare models for which a lot of curation has been manually performed and thus we are confident of the quality of this model.
+  While different metabolic networks would broaden the evaluation, we preferred to use a single model for which quality was assured as a gold standard.
+  Furthermore, results for this metabolic network where available for the different tools.
+  Regarding the timed experiments for meneco and gapfill, we only aimed at a qualitative comparison between the tools since they solve slightly different problems and focused primarily on the performance of our tool fluto.
+
+
+Minor comments:
+- Check the latex style how to properly used citations. Most of the citations within text are similar to "In previous work Schaub and Thiele (2009), we .."  which should be "In previous work (Schaub and Thiele, 2009), we .." The current use of citations makes the text quite hard to follow at places.
+* fixed by changing  all \cite to \citep in document
+
+- In Section 3, by definition each a_i is either a regular atom or a linear constraint atom. Further, a linear constraint atom contains again a_i's which (supposedly, by definition, since there is no other interpretation given)  are then either regular atoms or linear constraint atoms...is this kind of nesting allowed? If yes, then a note about this would be helpful, and if not, then please clarify the definition. Further, to help the reader, it might be good to use some other predicate than "a" in the small example that follows the definition.
+* fixed by using w for weights and a_i's are atoms
+* nesting of theory atoms is not possible since conditions consist of regular ASP literals
+
+- The shading in Table 1 and Table 2 is not good in black-and-white print
+* lightened the shading to improve visibility
+
+- In page 17, just after Table 5, it should be "prop-25 and core-25" instead of "prop-25 and prop-25" (furthermore, rewrite this, since "prop-25 and core-75 and prop-25 and core-25" does not do a really good job at describing two pairs of parameters).
+* changed to "prop-25 and core-25" and rewrote the sentence (page 17 paragraph 2)
+
+- In Section 5.2, is clingo used at its default parameters?
+* Yes, default configuration is used for results in Table 4
+
+- Table 6 and Table 7 looked a bit confusing (before thoroughly reading the related discussion) since the entries for fluto and meneco are almost identical. It might help if the distinction between the two cases was made more clear in the captions.
+* We designed the tables in a way that separates the results of fluto and meneco by a vertical line.
+  The first column describes the result category for both systems and the caption explains the experimental setting.
+  We could not find a way to make it clearer without further explanation in the text.
+  Can you elaborate on the problem?
+
+
+Review 3
+--------
+
+- Section 1:
+I think the section provides a good introduction to the problem and previous work. Regarding MetaCyc, it may be better to cite the following paper along with the link:
+Caspi et al. 2016, "The MetaCyc database of metabolic pathways and enzymes and the BioCyc collection of Pathway/Genome Databases," Nucleic Acids Research 44471-D480
+
+* We added the citation.
+
+
+- Section 2.1:
+I think it would be good to include more discussion on the issue of self-activation of cycles with respect to purely stoichiometric approaches. The example discussed in the section involves compounds E, C, D and S3, which is not clear to me. Should it be S2 instead of S3 here? Also, it is not clear why S2 does not provide external activation.
+
+* Indeed, S2 provides the external support. Thank you for noticing this mistake.
+* Explanation changed (page 5 mid of last paragraph) to:
+  The cycle made of compounds $E,C,D$ and the boundary seed $S_2$ is already balanced and notably self-activated.
+  Indeed, initiation of $D$ and $E$ producibility requires the producibility of $C$ (in addition to the presence of the boundary seed $S_2$) that itself depends on $D$ and $E$. 
+  Yet, according the flux conditions, that models steady state conditions, the cycle is activated.
+  Such self-activation of cyclic pathways is an inherent problem of purely stoichiometric approaches to network completion.
+  This is a drawback of the semantics because the effective activation of the cycle requires the additional (and unchecked) condition that at least one of the compounds was present as the initial state of the system. 
+  This could be the case provided there exist another way to enable the production of one or several components of the cycle (here an activable reaction producing $E$ for instance) \citep{Prigent2017}.
+
+
+- Section 2.4:
+I think presenting the union of solutions to the problem is an interesting idea. As the authors mentioned in the paper, it appears that the union of solutions could be useful when the individual solutions do not satisfy stoichiometric activation conditions but the union does. On the other hand, it is not clear how useful the union would be if it does not satisfy the stoichiometric activation conditions. It appears that it would be interesting to consider the union of a subset of solutions where the union satisfies the activation conditions.
+
+* It can happen that the union does not satisfy the stoichiometric activation conditions if it provides from the solving of the topological gap-filling problem, not the hybrid one. 
+  In this case it can still be valuable to compute and analyze it as it will give information about the variety and number of reactions involved in the topological problem.
+  Union of subsets of solutions are not in the scope of our paper but it is an interesting question for future work.
+
+
+- Section 5:
+The section describes the system fluto and presents a comprehensive evaluation of the system on the metabolic network completion task by considering several degradations of the metabolic network of Escherichia coli. It is interesting to see the performance of the system with different configurations and optimization strategies. It is also interesting to see the performance of fluto with different configuration options for clingo. From the results presented, it appears that fluto benefits from the configuration options of clingo. Overall, the results appear to be significant considering the number of verified solutions found by fluto when compared to meneco and gapfill.
+
+It would be good to clarify the following:
+1. Does Table 3 correspond to the same problem instances as Tables 1 and 2?
+2. What is the clingo configuration option used for experiments related to Table 4?
+
+* 1. Yes, the same instances were used for Table 3
+* 2. Default setting of fluto includes the default configuration of clingo
+     We changed the text accordingly (page 17 section 5.2 mid of first paragraph).
+
+
+
+
+
+
+
+
+
+
+
+
+
+

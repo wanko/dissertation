@@ -1,0 +1,60 @@
+\documentclass[a4paper,10pt]{article}
+
+\usepackage{ucs}
+\usepackage[utf8x]{inputenc}
+\usepackage{fontenc}
+\usepackage{graphicx}
+
+\date{23.11.2015}
+
+\begin{document}
+  \section{Setup}
+  \begin{itemize}
+   \item on zuse, 2 cores exclusively, not core 1
+   \item Timeout:600s, Memout: 20 GB
+   \item 4 Solutions
+   \item classes:
+   \begin{itemize}
+   \item all asprin\_benchmarks with pareto that had more than 1 solution in some preference:
+    \begin{itemize}
+     \item Timetabling
+     \item 15-puzzle (aspComp09)
+     \item crossing minimization (aspComp13)
+     \item iscas85
+     \item design space exploration
+     \item Curriculum based timetabling
+    \end{itemize}
+    \item pareto with 4/8 cardinality and subset minimization for all classes
+    \item design space exploration: rounting, loadbalancing, energy consumption
+    \item ctt: penalties for room capacity, number of days for course, isolated lectures
+    \item all similarity heuristics with externals and from within asprin for time reasons
+    \item complete methods time out all the time so why benchmark
+   \end{itemize}
+
+
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+\hline 
+Problem class & \multicolumn{2}{|c|}{qq} & \multicolumn{2}{|c|}{qq optnotq} & \multicolumn{2}{|c|}{qnotq optq} & \multicolumn{2}{|c|}{qnotq optqnotq} & \multicolumn{2}{|c|}{enum opt} & \multicolumn{2}{|c|}{enum nonopt} \\ 
+ & Time & Iter & Time & Iter & Time & Iter & Time & Iter & Time & Iter & Time & Iter \\ 
+\hline 
+CTT & 453.29 & \textbf{44} & 452.38 & 58.2 & \textbf{450.56} & 58.2 & 451.93 & 58.2 & 455.30 & 58 & 452.03 & 44 \\ 
+\hline 
+DSE & 211.95 & \textbf{28.16} & 209.19 & 29.83 & \textbf{198.40} & 30.98 & 198.60 & 33.7 & 209.37 & 73.47 & 460.11 & 1600.48 \\ 
+\hline 
+pref04 card & 377.76 & 28.99 & 377.84  & \textbf{26.45} & 374.14 & 30.07 & \textbf{369.36} & 30.95 & 383.47 & 90.84 & 414.62 & 2364.06 \\ 
+\hline 
+pref04 sup & 46.83 & 41.67 & 46.44 & 42.23 & \textbf{45.98} & 41.77 & 46.03 & \textbf{35.29} & 47.00 & 40.03 & 115.27 & 240.36 \\ 
+\hline 
+pref08 card & 261.65 & \textbf{28.07} & 256.53 & 33.65 & 256.42 & 30.55 & \textbf{252.52} & 34.50 & 253.58 & 62.39 & 352.26 & 378.86 \\ 
+\hline 
+pref08 sup & 32.79 & 48.55 & 33.28 & 43.98 & 32.94 & 47.09 & 33.11 & 52.29 & \textbf{29.84} & \textbf{36.10} & 92.12 & 224.28 \\ 
+\hline\hline 
+total & 230.71 & \textbf{36.57} & 229.28 & 39.06 & 226.41 & 39.78 & \textbf{225.26} & 40.82 & 229.76 & 60.14 & 314.40 & 808.67 \\ 
+\hline 
+\end{tabular} 
+
+
+Winner: qq (iter), qnotq optq (time) 
+ 
+ 
+\end{document}

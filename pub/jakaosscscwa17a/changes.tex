@@ -1,0 +1,75 @@
+
+\section{Changes in view of reviewers comments}
+\label{sec:changes}
+
+We are grateful for the helpful comments by the reviewers.
+We describe below how we addressed their comments
+
+\begin{itemize}
+\item 
+We added a paragraph on the usage of strict/non-strict and external/defined lc-atoms, as raised by reviewers 1 and 3,
+at the end of Section~\ref{sec:background}:
+
+\begin{quote}
+Finally, let us comment on the usability of both types of lc-atoms.
+%
+Their \lcatype{external}{strict} interpretation allows for deriving information from the respective theory.
+This generates some overhead since the corresponding propagators have to deal with
+two relations between lc-atoms and their associated constraints.
+%
+This approach is advantageous in our planning example in Section~\ref{sec:multishot}, 
+where \lcatype{external}{strict} lc-atoms allow us 
+to naturally express goal conditions as integrity constraints.
+Conversely, we face the following difficulties.
+First, defined lc-atoms must also occur in some rule head, which is rarely the case with goal conditions.
+Second, non-strict lc-atoms may be false although the actual constraint is satisfied.
+%
+On the other hand, 
+in the \lcatype{defined}{non-strict} setting,
+the stable model semantics delineates the effective set of constraints that needs to be satisfied.
+False lc-atoms are considered as unknown and can therefore be disregarded by the corresponding propagators.
+We draw on this in our scheduling encodings where it halves the number of constraints and helps with faster propagation via the program's completion.
+The impact of this is investigated in Section~\ref{sec:experiments}.
+%
+As a rule of thumb,
+the choice between both settings depends on who should be in charge of delineating the set of constraints in focus.
+If this is the theory propagator, an \lcatype{external}{strict} setting is preferable,
+since the strict correspondence induces the relevant lc-atoms without any interference with derivable lc-atoms.
+If this is the actual ASP system, a \lcatype{defined}{non-strict} setting is favorable,
+in which derivable lc-atoms delineate the set of constraints checked by the constraint propagator.
+\end{quote}
+\item Reviewer 1 raised the question \texttt{why clingcon could only use certain solvers}.
+
+This is a misunderstanding. 
+Indeed, \clingcon{} series 1 and 2 comprise the off-the-shelf CP solver \gecode.
+Unlike this, \clingcon{} 3 relies on constraint propagators implemented by us.
+
+We tried to make this more explicit by rewriting the introductory sentence to clingcon in Section~\ref{sec:system}:
+\begin{quote}
+\textbf{\clingcon} series~3 offers a \clingo-based ASP system with handcrafted propagators for constraints over integers~\cite{bakaossc16a}.  
+\end{quote}
+
+\item Reviewer 1 asked for {\tt more explanation of the benchmark programs and expe\-riments}.
+
+Although due to lacking space,
+we refrained from adding the actual encodings to the paper,
+we make all encodings and instances available online at
+\url{https://potassco.org/labs/{clingoDL,clingoLP}}.
+
+\item Reviewer 2 remarks that
+{\tt from a KR perspective, it would be better to avoid a special treatment of fluent dead} \
+to formalize that {\tt "the turkey stays dead"} on page 7.
+
+We agree that this would be a more uniform encoding.
+
+However, we would like to leave it as is, since 
+(1) fluent \textit{dead} persists once satisfied, and
+(2) it avoids the introduction of another fluent \textit{alive}
+(and thus keeps things smaller).
+\item 
+We addressed the specific suggestions by Reviewer 2 and changed the indicated phrases accordingly. 
+\end{itemize}
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End:

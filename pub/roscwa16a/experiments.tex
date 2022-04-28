@@ -1,0 +1,218 @@
+\section{Experiments}\label{sec:experiments}
+%
+\begin{table}[t]
+\caption{Comparison of approximation techniques by 
+(a) runtime and timeouts,
+(b) diversification quality, and
+(c) minimum distance}
+\small
+\parbox{.32\linewidth}{\centering
+\begin{tabular}{|l||r|r|}
+
+\hline
+Class & \textit{T} & \textit{TO}  \\ 
+\hline
+\Alabel{3} & \textbf{165} & \textbf{70} \\
+\Alabel{3}-\textit{true} & 200 & 113 \\ 
+\Alabel{3}-\textit{all} & 202 & 118 \\ 
+\Alabel{3}-\textit{rd} & 277 & 280 \\ 
+\Alabel{3}-\textit{pg} & 317 & 351\\
+\Alabel{3}-\textit{pg-l-rd} & 354 & 442\\
+\Alabel{3}-\textit{false} & 351 & 443 \\ 
+\Alabel{3}-\textit{pg-l} & 351 & 443\\
+\Alabel{2}-\textit{true} & 482 & 618\\
+\Alabel{2}-\textit{rd} & 474 & 648\\
+\Alabel{1} & 482 & 672\\
+\Alabel{2}-\textit{dist-to} & 528 & 689\\
+\Alabel{2}-\textit{all} & 515 & 696\\
+\Alabel{2}-\textit{false} & 532 & 696\\
+\Alabel{2}-\textit{pg} & 542 & 708\\
+\Alabel{2}-\textit{dist} & 572 & 773\\
+\hline
+\end{tabular} 
+}
+\parbox{.32\linewidth}{\centering
+\begin{tabular}{|l||r|r|}
+
+\hline
+Class & \textit{S} & \textit{avg}\\ 
+\hline
+\Alabel{1} & \textbf{15} & 0.13\\
+\Alabel{2}-\textit{dist-to} & 14 & 0.14\\ 
+\Alabel{2}-\textit{pg} & 13 & \textbf{0.18}\\ 
+\Alabel{3}-\textit{pg-l} & 11 & 0.17\\
+\Alabel{3}-\textit{pg-l-rd} & 10 & 0.16\\
+\Alabel{2}-\textit{all}  & 10 & 0.15\\
+\Alabel{2}-\textit{dist} & 8 & 0.07\\ 
+\Alabel{2}-\textit{false} & 8 & 0.15\\ 
+\Alabel{2}-\textit{true} & 7 & 0.12\\ 
+\Alabel{3}-\textit{false} & 6 & 0.16\\ 
+\Alabel{2}-\textit{rd} & 5 & 0.12\\ 
+\Alabel{3}-\textit{all}  & 5 & 0.08 \\ 
+\Alabel{3}-\textit{true} & 4 & 0.08 \\ 
+\Alabel{3}-\textit{rd} & 2 & 0.09 \\ 
+\Alabel{3}-\textit{pg} & 1 & 0.09\\
+%\Alabel{3}-Hdyn & 1 & 0.09\\ 
+\Alabel{3} & 0 & 0.06\\
+
+\hline
+\end{tabular} 
+}
+\parbox{.32\linewidth}{\centering
+\begin{tabular}{|l||r|r|}
+
+\hline
+Class & \textit{S} & \textit{avg}\\ 
+\hline
+\Alabel{1} & \textbf{15} & 12.25\\
+\Alabel{2}-\textit{dist-to} & 13 & 10.38\\
+\Alabel{3}-\textit{pg-l-rd } & 13 & 11.82 \\
+\Alabel{2}-\textit{dist} & 12 & 5.31\\
+\Alabel{3}-\textit{pg-l} & 12 & 11.10\\
+\Alabel{2}-\textit{pg} & 10 & \textbf{12.86}\\
+\Alabel{2}-\textit{rd} & 9 & 8.77 \\
+\Alabel{3}-\textit{all}  & 7 & 3.99 \\ 
+\Alabel{3}-\textit{true} & 6 & 4.00 \\ 
+\Alabel{3}-\textit{false} & 6 & 7.07 \\ 
+\Alabel{2}-\textit{false} & 6 & 6.80\\
+\Alabel{2}-\textit{all}  & 4 & 6.98\\
+\Alabel{2}-\textit{true} & 3 & 5.31\\
+\Alabel{3}-\textit{rd} & 2 & 6.43\\
+\Alabel{3} & 2 & 4.28\\
+%\Alabel{3}-Hdyn & 1 & 2.90\\ 
+\Alabel{3}-\textit{pg} & 0 & 2.79\\
+\hline
+\end{tabular} 
+}
+\label{tab:time_comparison_small}
+\label{tab:diverse_comparison_small}
+\label{tab:min_dist_comparison_small}
+\end{table}
+%
+In this section, we present experiments focusing on the \emph{approximation} techniques of the \asprin\ system for obtaining most dissimilar optimal
+solutions. 
+%
+While \emph{enumeration} and \emph{replication} provide exact results, they need to calculate and store a possibly exponential number of optimal
+models or deal with a large search space, respectively.
+%
+Those techniques are therefore not effective for most practical applications.
+%
+For Algorithm~\Alabel{2}, we considered the variations \textit{rd}, \textit{pg}, \textit{true}, \textit{false}, and \textit{all} .
+%
+In \textit{dist}, we issued no timeout for the computation of the partial interpretation, 
+while in \textit{dist-to}, we set a timeout for this computation of half the total possible runtime.
+%
+For Algorithm~\Alabel{3}, we consider the variations that include no extra ASP computation, namely, 
+\textit{rd}, \textit{pg}, \textit{true}, \textit{false}, and \textit{all} .
+%
+We also evaluated a version without any heuristic modification (named simply \Alabel{3}).
+%
+Furthermore, following \cite{nadel11a}, 
+we considered a variation of \textit{pg}, viz.~\textit{pg-l}, 
+where the atoms of the selected partial interpretation are given a higher priority, 
+and \textit{pg-l-rd}, extending \textit{pg-l} by fixing initially a random sign to all atoms not appearing in the partial interpretation.
+
+We gathered 186 instances from six different classes: \emph{Design Space exploration (DSE)} from~\cite{angeglharesc13a}, \emph{Timetabling (CTT)}
+from~\cite{basotainsc13a}, \emph{Crossing minimization} from the ASP competition 2013, \emph{Metabolic network expansion} from \cite{schthi09a},
+\emph{Biological network repair} from \cite{geguivscsithve10a} and \emph{Circuit Diagnosis} from~\cite{sidiqqi11a}.
+Since we required instances with multiple optimal solutions, we exclusively focused on Pareto optimality. 
+DSE and CTT are inherently multi-objective and therefore we could naturally define a Pareto preference for them. 
+For the other classes, we turned single-objective into multi-objective optimization problems by distributing their optimization statements.
+First, we split the atoms in the optimization statements into four or eight groups evenly. 
+We chose for each group the same preference type, either cardinality or subset minimization, and aggregated them by means of Pareto preference.
+We calculated optimal solutions regarding these Pareto preferences.
+The same was done for CTT and DSE.
+An instance was selected if for some Pareto preference ten optimal solutions could be obtained within 600 seconds by \asprin. 
+This method generated 816 instances in total. 
+We ran the benchmarks on a cluster of Linux machines with dual Xeon E5520 quad-core 2.26 GHz processors and 48 GB RAM. 
+We restricted the runtime to 600 seconds and the memory usage to 20 GB RAM.
+
+Since algorithms~\Alabel{1} and \Alabel{2} involve querying programs over preferences, 
+we started by evaluating the different query techniques. 
+%
+For that, we executed \Alabel{1} with query methods \Qlabel{1} to \Qlabel{4} on all selected instances,
+stopping after the first $\mathit{solveQuery}$ call was finished.
+%
+%We achieved that by first calculating an optimal solution and then finding another optimal solution fulfilling the query that the model has to be dissimilar.
+The performance of query techniques \Qlabel{2}, \Qlabel{3}, and \Qlabel{4} was similar regarding runtime and only \Qlabel{1} was clearly worse.
+We selected \Qlabel{4} for the remaining experiments due to its slightly lower runtime. 
+For more detailed tables, we refer to~\cite{roscwa16b}. % \ref{sec:suptables}.
+
+Next, we approximated four most diverse optimal models with methods \Alabel{1} to \Alabel{3}. 
+%
+We measured runtime and two quality measures.
+The first, called diversification quality~\cite{nadel11a},
+gives the sum of the Hamming distances among all pairs of solutions normalized to values between zero and one.
+The second is the minimum distance among all pairs of solutions of a set in percent.
+%
+The solution set size of four was chosen because~\cite{shimazu01a} 
+claims that three solutions is the optimal amount for a user,
+and considering one additional solution provides further insight into the different quality measures. 
+%
+For all algorithms that do not use heuristics for diversification, 
+we instead enabled heuristics preferring a negative sign for the atoms appearing in preference statements. 
+This was observed in~\cite{brderosc15b} to improve performance.
+
+Table~\ref{tab:time_comparison_small}(a) provides in column \textit{T} the average runtime and in column \textit{TO} the sum of timeouts. 
+The different methods are ordered by the number of timeouts. 
+The best results in a column are shown in bold. 
+We see that \Alabel{3} is by far the fastest with 70 timeouts, solving 91\% of the instances. 
+Heuristic variations of \Alabel{3} perform the best after that. 
+Less invasive heuristics achieve similar runtimes with 113-118 timeouts.
+More sophisticated heuristics perform worse at 349-443 timeouts.
+In a range from 618 to 773 timeouts, non-heuristic methods solve the least instances by a significant margin.
+The results are in tune with the nature of the methods. 
+Heuristics modifying the solving process for diversity decrease the performance 
+in comparison with solving heuristics aimed at performance, 
+but not as much as more complex methods involving preferences over optimal models. 
+
+In particular, non-heuristic methods show many timeouts. 
+If we tried to analyze the quality of the solutions by assuming worst possible values for the instances that timed out,
+the results would be dominated by these instances. 
+To avoid that, we calculated a score independent of the runtime.
+We considered all possible parings of the different methods. 
+For each pair, we compared only instances where both found a solution set.
+The method with better quality value for the majority of instances receives a point. 
+Finally, we ordered the subsequent tables according to that score. 
+ 
+In Table~\ref{tab:diverse_comparison_small}(b), for each method we see the score in column \textit{S}, and 
+the average of the diversification quality (over the instances solved by the method) in column \textit{avg}. 
+This way, we can examine the quality a method has achieved compared to other methods, and also the individual average quality.
+\Alabel{1} has the best quality with a score of 15, followed by \Alabel{2}-\textit{dist-to}, \Alabel{2}-\textit{pg}, \Alabel{3}-\textit{pg-l} and \Alabel{3}-\textit{pg-l-rd}.
+All of those techniques regard the whole previous solution set to calculate the next solution
+and guide the solving strictly to diversity.
+\Alabel{2}-\textit{pg}, \Alabel{3}-\textit{pg-l} and \Alabel{3}-\textit{pg-l-rd } are also the first, second and third place, respectively, for average diversification quality. 
+Next, with scores ranging from 10-7, we see \Alabel{2} methods 
+that do not take into account the whole previous set, 
+or that were simply unable to find many solutions at all, as in the case of \Alabel{2}-\textit{dist}. 
+Finally, we observe that \Alabel{3} variations only regarding the last solution or no previous information 
+perform worst in score and average. 
+In these cases, the heuristic does not seem to be strong enough to steer the solving to high quality solution sets, 
+and \Alabel{3} uses no heuristic or optimization techniques to ensure diverse solutions.
+
+In analogy to Table~\ref{tab:diverse_comparison_small}(b),
+Table~\ref{tab:min_dist_comparison_small}(c) provides information for the minimum distance among the solutions. 
+%
+% The overall grouping of the methods is similar to Table~\ref{tab:diverse_comparison_small}(b). 
+%
+The best methods considering score and average minimum distance, 
+viz.\ \Alabel{1}, \Alabel{2}-\textit{dist-to}, \Alabel{3}-\textit{pg-l-rd}, \Alabel{3}-\textit{pg-l}, \Alabel{2}-\textit{pg}, utilize information from the whole
+previous solution set and have strict diversification techniques. 
+%\comment{I cut the part about the different behavior of min distance and diversification. The data is not that clear and it saves space. Maybe if we have space left in the end...}
+
+Overall, plain heuristic methods perform better in regards to runtime 
+while more complex methods, depending on all previous solutions, lead to better quality. 
+%
+Furthermore, \Alabel{3}-\textit{pg-l-rd } and \Alabel{3}-\textit{pg-l} provide the best trade-off between performance and quality. 
+%
+While \Alabel{1}, \Alabel{2}-\textit{dist-to} and \Alabel{2}-\textit{pg} achieve higher quality, they could solve only 18\%, 16\% and 13\% of the instances. 
+%
+On the other hand, \Alabel{3}-\textit{pg-l-rd } and \Alabel{3}-\textit{pg-l} provide good diversification quality and minimum distance while solving 46\% of the instances. 
+%
+%\comment{this section is enough for general conclusion: plain heuristic: fast but bad, maxmin: slow but good, more complex heuristic: tradeoff}
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End: 

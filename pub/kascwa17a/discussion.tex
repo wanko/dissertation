@@ -1,0 +1,32 @@
+
+\section{Discussion}\label{sec:discussion}
+
+We described two essential techniques, viz.\ multi-shot and theory solving, for enhancing ASP solving
+by different forms of hybridization.
+While multi-shot solving allows for fine-grained control of ASP reasoning processes,
+theory solving allows for refining basic ASP solving by incorporating foreign types of constraints.
+%
+Since ASP follows a model, ground, and solve methodology both techniques pervade the whole work-flow of ASP,
+starting with extensions to the input language, over means for incremental and theory-enhanced grounding,
+to stateful and theory-enhanced solving.
+Multi-shot solving even adds a fourth dimension to control ASP reasoning processes.
+
+Our focus on \clingo\ should not conceal other approaches to hybrid ASP solving.
+Foremost,
+\dlvhex~\cite{redl16a} builds upon \clingo's infrastructure to provide a higher level of hybridization via higher-order logic programs.
+As well, \clingcon~\cite{bakaossc16a} and \lctocasp~\cite{cakaossc16a} rely on \clingo{} for extending ASP with linear constraints over integers.
+Similar yet customized approaches include \adsolver~\cite{megezh08a}, \inca~\cite{drewal10a}, and \ezcsp~\cite{ballie17a}.
+Another category of ASP systems,
+such us \ezsmt~\cite{liesus16a}, \dingo~\cite{jalini11a}, and \aspmt~\cite{barlee14b}
+translate ASP with constraints to SAT Modulo Theories (SMT~\cite{niolti06a}) and use appropriate back-ends.
+Similarly, \mingo~\cite{lijani12a} translates to Mixed Integer Linear Programming (MILP)
+and \aspartame~\cite{bageinospescsotawe15a} back to ASP using the order encoding~\cite{crabak94a,tatakiba09a}.
+
+Theory propagators have recently also been added to the ASP solver \wasp~\cite{dorisc16a};
+these can be made accessible via the theory language of Section~\ref{sec:language} along with the intermediate format described in
+Appendix~\ref{sec:aspif}.
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End: 

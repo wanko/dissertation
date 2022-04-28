@@ -1,0 +1,187 @@
+\com{RELATED WORK}
+\begin{itemize}
+\item 
+A first step towards a more flexible ASP infrastructure,
+was done with \clingo~4~\cite{gekakasc14b} by introducing APIs for \lua\ and \python\ for multi-shot solving.
+
+Although this allows for fine-grained control of complex ASP reasoning processes,
+its functionality provided no access to \clasp's propagation and was restricted to inspecting stable models.
+\item several systems extended ASP with theories and can benefit from an uniform intermediate language
+and easy to access propagation techniques
+\item boosting development of \dlvhex{}
+\item currently, \dlvhex~\cite{eifikrre12a} is build upon \clasp's internal interface 
+\item the new interface can help to generalize and extend the propagation techniques of the \dlvhex{}~\cite{eifikrre12a} system
+\item by having watches on non-theory atoms and also having an interface which is similar to a standard SMT solver interface
+using the propagate and undo method
+%\item currently it only implements a theory check on a complete assignment
+%\item this is similar to our check method, while not having undo and propagate
+\item our new interface can also be used to give access to thread local propagation techniques
+%%%\item relation to \DLVHEX{}/CLINGCON
+%%%  \begin{itemize}
+%%%  \item provides the infrastructure for advanced hybrid solvers, like ...
+%%%  \item hinders progress as witnessed by the fact that the newest \dlvhex{} version is based on clingo-3.0.4\comment{BK: NOT TRUE!!! Uses clasp-3.1.4 and gringo-4.5.4}
+%%%	\begin{itemize}
+%%%	\item \Dlvhex{}
+%%%	\item following~\cite{eifikrre12a} \Dlvhex{} implements only theory check on a complete assignment
+%%%	\item theory checking is therefore not thread local but global
+%%%	\item one theory check regardless of number of threads, our interface supports multi-threading natively 
+%%%	\item this is similar to our check method, while not having undo and propagate
+%%%	\item it therefore does not allow for stateful propagators or theory propagation
+%%%	\item uses \clasp's internal interface
+%%%	\item has C++ and python interface
+%%%	\item release 2.4.0  on 24. Sep 2014, gringo 4.4.0 clasp 3.1.0
+%%%	\item following the webpage, since 12 of April new \Dlvhex{} has support for propagation on partial assignments,
+%%%	uses gringo-4.5.4 and clasp 3.1.4
+%%%	\item this has the functionality of our propagate method + check method
+%%%	\item no equivalent to our undo method, which allows for stateful propagators
+%%%	\item gives an easy to use interface to a small part of the internal clasp external propagator interface
+%%%	\item no support for multishot solving
+%%%	\end{itemize}
+%%%  \item rely upon internal interfaces and inter-communication between developers
+%%%  \item now: C- and Python interfaces
+%%%  \item more efficient since use C++ interface
+%%%  \item Python rapid prototyping
+%%%  \item semantically well founded approach abstracting away from the implementation level
+%%%  \item unlike this, we put forward a simple low-level interface
+%%%  \item boost \DLVHEX{}
+%%%  \end{itemize}
+\item Our new intermediate language \aspif{} can be used to generalize several approaches
+\item Default Reasoning with Constraints~\cite{bakakaossc16a} uses new \aspif{} format and translates from \aspif{} to \aspif,
+which can be read by the \clingcon{} system
+\item \clingcon
+  \begin{itemize}
+	\item new version of \clingcon{} already uses the \aspif{} format to separate the grounding from the solving process
+	and to remove the necessity to extend the parsing frontend of \gringo
+	\item grounding of the theory is now completely decoupled from \clingcon{} and actually independent of the theory
+%	\item uses internal interface for complex propagator
+%	\item comprehensive preprocessing library in C++
+%	\item tight coupling with the solver to introduce new solver variables on the fly (this is not yet possible with our new \python\ interface) (future work)
+	\end{itemize}
+\item \sysfont{inca}~\cite{drewal12a} currently uses the internal interface of \clasp{} and could be updated to
+use \aspif{} to separate the grounding and solving process,
+which is currently interleaved in a \clingo{} like fashion
+\item also, all features available in \sysfont{inca} can be captured using our propagator interface
+\item tools like \sysfont{dingo}~\cite{jalini11a} which translates ASP to SMT,
+and allow an easy incorporation of other constraints,
+benefit from the use of a standardized (intermediate) language which is able to handle theories natively
+\item ASPMT~\cite{barlee14b}\comment{crossref does not work} develops an approach combining ASP with theories,
+while the intermediate format could be used to represent the grounded version of these programs,
+the propagator interface could be used to complement existing implementations
+\begin{itemize}
+  \item future work:
+  \begin{itemize}
+   \item propagators for multiple theories might be used in conjunction like CSP and \DL{} to efficiently handle heterogeneous problems and benefit from the strength of both approaches
+   \item optimization on the theory itself might also be realized using propagators, e.g. Pareto optimality for Design Space Exploration or minimization of latency for shop scheduling
+   \item advantage of this method is avoiding the grounding bottleneck of a direct representation of the preference functions
+   \item propagator interface might be extended to apply domain specific heuristics to the solving process
+   \item extending propagator interface to dynamically add new atoms during the solving process
+  \end{itemize}
+  \item mining uses propagator? \comment{roland?}
+\item 
+The new interface structure cannot yet cater to all needs but it is a step into an ASP service architecture. Ho ho ho!
+\end{itemize}
+
+\end{itemize}
+
+\com{EXPERIMENTS}
+\begin{itemize}
+ \item generality of interface with example Difference Logic (\DL)
+ \item compare features inherent to ASP with \emph{defined} and \emph{external} theory atoms
+ \item Difference Logic:
+    \begin{itemize}
+     \item we define a \DL\ problem $C$ as a set of constraints of the form $x_1 - x_2 \leq k$,
+           where $x_1$ and $x_2$ are variables over $\mathbb{N}$ and $k\in \mathbb{N}$
+     \item let $G(C)$ define the directed, weighted constraint graph, 
+           where the nodes of the graph are all variables contained in $C$
+           and for every $x_1 - x_2\leq k \in C$ there exists an edge from $x_1$ to $x_2$ with weight $k$ 
+     \item $C$ is consistent in \DL\ iff $G(C)$ contains no negative cycles
+     \item we identify \DL\ atoms in $\mathcal{T}^{\DL}$ with constraints in $C$ via a function $\gamma:\mathcal{T}^{\DL}\rightarrow C$ 
+     \item a set of theory atoms $S^\DL\ \subseteq \mathcal{T}^{\DL}$ is \DL\ consistent 
+           iff $G(\{\gamma(a) \mid a \in S^\DL\})$ has no negative cycle, \DL\ inconsistent otherwise
+     \item we define the set of nogoods $\Delta_\DL=\{\{\Tsign{a}\mid a\in S\}\mid\ S \subseteq 2^{\mathcal{T}^{\DL}}, 
+                S\text{ is \DL\ inconsistent, }\nexists S'\subset S.S'\text{ is \DL\ inconsistent} \}$
+     \item given a (partial) assignment $A$, $\gamma(\{a \mid \Tsign{a} \in A\})$ is \DL\ consistent iff $A$ does not violate any nogood in $\Delta_\DL$
+     \item this definition implies that we use a \emph{non-strict} semantics
+     \item we use a conflict optimal propagator $\Pi_{\Delta_\DL}$ as defined in~\cite{drewal12a}
+     \item \clingo~5's theory interface allows for stateful and stateless propagators:
+     \begin{itemize}
+	\item stateless
+	\begin{itemize}
+	 \item build constraint graph and check for negative cycles with single-source shortest path (SSSP) algorithm Bellman-Ford \cite{be58a,fofu62a}
+	\end{itemize}
+	\item stateful
+	\begin{itemize}
+	 \item add edges iteratively to the constraint graph
+	 \item update potential function for each node/variable and check for negative cycles as proposed in \cite{coma06a}
+	 \item constraint graph is maintained and updated until conflict or solution is found 
+	\end{itemize}
+	\item only literals representing edges/constraints in the negative cycle are returned as conflict clause
+	\item the length of the shortest paths and the potential function values respectively 
+	      represent valid assignments of the variables if constraint graph contains no negative cycle
+     \end{itemize}
+     \item no theory propagation as defined in \cite{niolti06a}
+    \end{itemize}
+
+ \item benchmark set on shop scheduling \cite{ta93a}, specifically created to be challenging and test scheduling algorithms:
+    \begin{itemize}
+     \item flow shop:
+	\begin{itemize}
+	 \item find permutation of $n$ jobs that have to be executed on $m$ machines that minimizes the make-span
+	 \item each job has to be assigned to the machines in order $1\dots m$
+	 \item the job order is the same on all machines
+	\end{itemize}
+     \item job shop:
+	\begin{itemize}
+	 \item $n$ jobs have to be placed on $m$ machines so that the make-span is minimal
+	 \item each job has an assigned sequence in which it has to be scheduled on the machines
+	 \item order of jobs on machines may differ
+	\end{itemize}
+     \item open shop:
+	\begin{itemize}
+	 \item $n$ jobs have to be placed on $m$ machines so that the make-span is minimal
+	 \item same as job shop but sequence of job on different machines may be arbitrary
+	 \item a job cannot be executed on two machines simultaneously 
+	\end{itemize}
+    \end{itemize}
+    
+  \item encodings:
+    \begin{itemize}
+     \item decision variant of the problems: find a valid schedule that assigns the lowest start times possible to each task on each machine given an ordering of the tasks
+     \item ASP: optimized encodings without theory atoms
+     \item ASP modulo \DL\ with theory atoms that are \emph{defined}:
+	  \begin{itemize}
+	    \item atoms over {\tt seq/3} signify order of tasks and execution time in between, decided by the ASP part, 
+	    e.g. {\tt seq(t1,t2,3)} means start time of task t2 needs to be at least 3 time units after start time of task t1
+	    \item {\tt \&diff\{T1-T2\} <= -Time :- seq(T1,T2,Time).}
+	    \item since the theory atoms are strictly defined via the encoding, techniques like theory propagation may not be used
+	    \item avoids symmetries and suboptimal solutions
+	  \end{itemize}
+     \item ASP modulo \DL\ with theory atoms that are \emph{external}:
+	  \begin{itemize}
+	    \item {\tt :- not \&diff\{T1-T2\} <= -Time, seq(T1,T2,Time).}
+	    \item theory propagation is possible
+	    \item introduces symmetric, possibly unwanted solutions
+	  \end{itemize}
+    \end{itemize}
+
+  \item benchmarks on a Intel Xeon E5520 8x2.27GHz CPU and 24GB of memory
+running Debian GNU/Linux 7.9 (wheezy),
+600 seconds timeout and 6GB memory restriction
+  \item Table~\ref{table:bench:encoding_comparisson_detailed} compares average run times, column \emph{T}, and number of timeouts, column \emph{TO}, for different encodings and propagator implementations
+  \begin{itemize}
+    \item the rows are groups of task and machine numbers and the second column shows the number of instances in the group\comment{only relevant if we take second larger table}
+    \item groups are ordered by task number
+    \item groups are partitioned by the timeouts of the different encodings and propagators except for job shop
+    \item all group sizes are multiple of ten because ten instances have the same amount of tasks and machines for each class, 
+          and a combination of encoding and propagation technique is either able to handle all instances of that size or none
+    \item exponential scaling of average run time with increasing task number
+  \end{itemize}
+  \item stateful with \emph{defined} atoms the fastest, most efficient consistency check and no symmetric/unwanted solutions in the search space
+  \item vanilla ASP cannot solve most of the instances since direct representation of numeric variables leads to large grounding
+  \item largest advantage of \emph{defined} theory atoms for flow shop, because its solutions are the most constraint, many unnecessary choices with \emph{external} theory atoms
+  \item advantage gets smaller in job shop and is virtually gone for open shop since more choices are open to place the tasks
+  \item stateless approach leads to all timeout for job shop since even the smallest instances have many variables, 
+        creating constraint graph from scratch and restarting SSSP algorithm at each propagate is inefficient
+  
+
+\end{itemize}

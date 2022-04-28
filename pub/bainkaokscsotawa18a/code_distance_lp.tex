@@ -1,0 +1,4 @@
+penalty("ManhattanDistance",assigned(C,R,D,P),W,Prior) :-
+        legacy(assigned(C,R,D,P)), 
+        not assigned(C,R,D,P),
+        change_constraint("ManhattanDistance",W,Prior).

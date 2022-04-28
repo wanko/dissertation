@@ -1,0 +1,103 @@
+%% $Id: tplp.tex 52479 2016-07-19 10:19:03Z torsten $
+%% $HeadURL: https://svn.cs.uni-potsdam.de/svn/reposWV/Papers/GrinGo/branches/Clingo5/tplp.tex $
+\documentclass[fleqn]{new_tlp}
+
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb}
+\usepackage{times,helvet,courier}
+\usepackage{url}
+\usepackage{wrapfig}
+\usepackage{listings}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xcolor}
+\usepackage{graphicx}
+
+\lstset{xleftmargin=2\parindent,aboveskip=\smallskipamount,belowskip=\smallskipamount,captionpos=b}
+\lstset{numbers=left,numberblanklines=false,basicstyle=\ttfamily}
+\lstset{keywords=[1]{m,n},keywordstyle=[1]\usefont{OT1}{cmtt}{m}{n}}
+
+\lstdefinelanguage{clingo}{
+  keywordstyle=[1]\usefont{OT1}{cmtt}{m}{n},%
+  keywordstyle=[2]\textbf,%
+  keywordstyle=[3]\usefont{OT1}{cmtt}{m}{n},%\textit
+  alsoletter={\#,\&},%
+  keywords=[1]{not,from,import,def,if,else,return,while,break,and,or,for,in,del,and,class},%
+  keywords=[2]{\#const,\#show,\#minimize,\#base,\#theory,\#count,\#external,\#program,\#script,\#end,\#heuristic,\#edge,\#project,\#show},%
+  keywords=[3]{&,&dom,&sum,&diff,&show},%
+  morecomment=[l]{\#\ },%
+  morecomment=[l]{\%\ },%
+  commentstyle={\color{darkgray}}%
+}
+
+\renewcommand{\topfraction}{1}
+\renewcommand{\bottomfraction}{1}
+\renewcommand{\textfraction}{-0.1}
+
+\newcommand{\blockcomment}[1]{}
+
+\newtheorem{proposition}{Proposition}
+
+\input{macro}
+
+% \usepackage{comments} % https://svn.cs.uni-potsdam.de/svn/reposWV/TeXInputs/trunk/comments.sty
+% \def\SVNREVISION{$LastChangedRevision: 52479 $} % <== is automatically inserted by svn
+
+\sloppy
+
+\title[Theory Solving made easy with \textit{Clingo}~5]{Theory Solving made easy with \textit{Clingo}~5\\[4pt]\small{---System Description---}}
+
+\author[M. Gebser, R. Kaminski, B. Kaufmann, M. Ostrowski, T. Schaub, and P. Wanko]{%
+  M. Gebser,
+  R. Kaminski,
+  B. Kaufmann,
+  M. Ostrowski,
+  T. Schaub, %\thanks{Affiliated with the
+                %               School of Computing Science at
+                %               Simon Fraser University,
+                %               Burnaby, Canada,
+                %               and the
+                %               Institute for Integrated and Intelligent Systems
+                %               at
+                %               Griffith University,
+                %               Brisbane, Australia.}
+  and
+  P. Wanko
+  \\
+  University of Potsdam, Germany
+  }
+
+\pdfinfo{
+/Title (Theory Solving made easy with Clingo 5)
+/Author (Martin Gebser, Roland Kaminski, Benjamin Kaufmann, Max Ostrowski, Torsten Schaub, Philipp Wanko) }
+
+\submitted{[n/a]}
+\revised{[n/a]}
+\accepted{[n/a]}
+
+\begin{document}
+
+\maketitle
+
+\input{abstract}
+
+\input{introduction}
+\input{language}
+\input{approach}
+\input{algorithms}
+\input{system}
+% \input{implementation}
+\input{experiments}
+\input{discussion}
+% \input{acknowledgments}
+\bibliographystyle{acmtrans}
+\bibliography{lit,akku,local,procs}
+\clearpage
+\appendix
+\input{aspif}
+\input{proof}
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

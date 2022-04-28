@@ -1,0 +1,42 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb}
+\usepackage{times,helvet,courier}
+\usepackage[graphics,tightpage,active]{preview}
+\PreviewEnvironment{tabular}
+\newlength{\imagewidth}
+\newlength{\imagescale}
+\pagestyle{empty}
+\thispagestyle{empty}
+
+\begin{document}
+
+\begin{table}
+\begin{tabular}{|l||r|r|}
+
+\hline
+Class & T & TO  \\ 
+\hline
+\Alabel{3} & \textbf{165} & \textbf{70} \\
+\Alabel{3}-true & 200 & 113 \\ 
+\Alabel{3}-all & 202 & 118 \\ 
+\Alabel{3}-rd & 277 & 280 \\ 
+%\Alabel{3}-Hdyn & 319 & 349\\ 
+\Alabel{3}-pg & 317 & 351\\
+\Alabel{3}-pg-l-rd & 354 & 442\\
+\Alabel{3}-false & 351 & 443 \\ 
+\Alabel{3}-pg-l & 351 & 443\\
+\Alabel{2}-true & 482 & 618\\
+\Alabel{2}-rd & 474 & 648\\
+\Alabel{1} & 482 & 672\\
+\Alabel{2}-dist-to & 528 & 689\\
+\Alabel{2}-all & 515 & 696\\
+\Alabel{2}-false & 532 & 696\\
+\Alabel{2}-pg & 542 & 708\\
+\Alabel{2}-dist & 572 & 773\\
+\hline
+\end{tabular} 
+\end{table}
+
+\end{document}

@@ -1,0 +1,267 @@
+\section{The {\asap} Approach}\label{sec:approach}
+
+We begin with describing {\asap}'s fact format of CB-CTT instances and
+then present a basic {\asap} encoding for solving the CB-CTT problems
+\footnote{{\asap}: \textbf{T}im\textbf{E}tabling with \textbf{A}nswer \textbf{S}et \textbf{P}r\textbf{O}grammi\textbf{N}g}.
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Fact Format}
+%\textbf{Fact Format.}
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[t]
+\centering
+\begin{minipage}[t]{.45\textwidth}
+\lstinputlisting[caption={A toy instance of the \code{ectt} format},%
+captionpos=b,frame=single,label=ex:toy.ectt,%
+numbers=none,%
+basicstyle=\ttfamily\scriptsize]{code_toy1_ectt.tex}
+\end{minipage}\hfill
+\begin{minipage}[t]{.45\textwidth}
+\lstinputlisting[frame=single,numbers=none,%
+basicstyle=\ttfamily\scriptsize]{code_toy2_ectt.tex}
+\end{minipage}
+\end{figure}
+%
+\lstinputlisting[float=t,caption={ASP facts representing the toy instance of Listing~\ref{ex:toy.ectt}},%
+captionpos=b,frame=single,label=ex:toy.lp,%
+%numbers=none,%
+breaklines=true,%
+columns=fullflexible,keepspaces=true,%
+basicstyle=\ttfamily\scriptsize]{code_toy_lp.tex}
+%
+\lstinputlisting[float=t,caption={Solution (partial answer set) of the toy instance in UD2},%
+captionpos=b,frame=single,label=ex:toy_out.lp,%
+%numbers=none,%
+breaklines=true,%
+columns=fullflexible,keepspaces=true,%
+basicstyle=\ttfamily\scriptsize]{code_toy_sol_lp.tex}
+%%%%%%%%%%%%%%%%%%%%%%%%%
+Listing~\ref{ex:toy.ectt} shows a toy instance of the \code{ectt}
+format, which is a standard input format of CB-CTT 
+instances~\citep{DBLP:journals/anor/BonuttiCGS12}.
+The format has headers that represent basic entities, followed
+by five blocks, 
+\code{COURSES}, 
+\code{ROOMS}, 
+\code{CURRICULA}, 
+\code{UNAVAILABILITY_CONSTRAINTS}, and 
+\code{ROOM_CONSTRAINTS}.
+
+ASP facts representing the toy instance are shown in
+Listing~\ref{ex:toy.lp}.
+There exists a one-to-one correspondence between ASP fact format and
+the \code{ectt} format except for the \code{CURRICULA} block.
+%
+The facts in Line 1--2 correspond to the \code{ectt} headers and
+express that
+the instance named \texttt{Toy} consists of 
+4 courses, 
+3 rooms,
+2 curricula,
+8 unavailability constraints, and 
+3 room constraints.
+The weekly timetable consists of 
+5 days and 4 periods per day, which start from 0.
+The fact \code{min_max_daily_lectures(2,3)} expresses 
+the minimum and maximum numbers of daily lectures 
+for each curriculum, and is used to specify $S_6$.
+
+Each fact of predicate \code{course/6} in Line 4--5
+corresponds to a line of the \code{COURSES} block.
+A fact \texttt{course($C$,$T$,$N$,$MWD$,$M$,$DL$)}
+expresses that a course $C$ taught by a teacher $T$ 
+consists of $N$ lectures, which must be spread into $MWD$ days.  
+The number of students attending the course $C$ is $M$.  
+The course $C$ requires double lectures if $DL=1$.  
+%
+Each fact of predicate \code{room/3} in Line 7 
+corresponds to a line of the \code{ROOMS} block.
+A fact \texttt{room($R$,$CAP$,$BLD$)} expresses that a
+room $R$ in a building $BLD$ has a seating capacity of $CAP$.
+
+A fact \texttt{curricula($CUR$, $C$)} in Line 9--10 expresses that
+a course $C$ belongs to a curriculum $CUR$.
+%
+Each fact of predicate \code{unavailability_constraint/3} in Line
+12--15 corresponds to a line of the 
+\code{UNAVAILABILITY_CONSTRAINTS} block, and is used to specify $H_4$.
+A fact \texttt{unavailability\_constraint($C$,$D$,$P$)}
+expresses that a course $C$ is not available at a period $P$ on a day
+$D$.
+%
+Each fact of predicate \code{room_constraint/2} in Line 17
+corresponds to a line of the \code{ROOM_CONSTRAINTS} block, and
+is used to specify $S_8$.
+A fact \texttt{room\_constraint($C$,$R$)} expresses that a room $R$ is
+not suitable for a course $C$.
+
+Listing~\ref{ex:toy_out.lp} shows an optimal solution with zero penalty
+of the toy instance in the UD2 formulation.
+Each atom \texttt{assigned($C$,$R$,$D$,$P$)} is intended to
+express that a lecture of a course $C$ is assigned to 
+a room $R$ at a period $P$ on a day $D$.
+We can observe from Line 1 that
+the lectures of the course \texttt{SceCosC} are
+assigned to the room \texttt{rB} at
+the first period (\texttt{0}) on Thursday (\texttt{3}),
+the third period (\texttt{2}) on Wednesday (\texttt{2}), and
+the third period (\texttt{2}) on Friday (\texttt{4})
+
+
+\subsection{First-Order Encoding}
+%\textbf{First-Order Encoding.}
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\lstinputlisting[float=t,caption={Encoding of hard constraints},%
+captionpos=b,frame=single,label=en:ctt_hard2.lp4,%
+%numbers=none,%
+breaklines=true,%
+columns=fullflexible,keepspaces=true,%
+basicstyle=\ttfamily\scriptsize]{code_hard_lp.tex}
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\lstinputlisting[float=t,caption={Encoding of soft constraints and objective function},%
+captionpos=b,frame=single,label=en:ctt_soft.lp4,%
+%numbers=none,%
+breaklines=true,%
+columns=fullflexible,keepspaces=true,%
+basicstyle=\ttfamily\scriptsize]{code_soft_lp.tex}
+%%%%%%%%%%%%%%%%%%%%%%%%%
+The {\asap} encoding of hard constraints ($H_1$--$H_4$) is shown in 
+Listing~\ref{en:ctt_hard2.lp4}.
+The expressive power of ASP's modelling language enables us to express
+each hard constraint individually by just one or two ASP rules.
+%
+As mentioned, the atom \texttt{assigned($C$,$R$,$D$,$P$)}
+expresses that a lecture of a course $C$ is assigned to a room $R$ at
+a period $P$ on a day $D$, and a solution is composed of 
+a set of these assignments.
+The atom \texttt{assigned($C$,$D$,$P$)} dropping $R$
+from \texttt{assigned($C$,$R$,$D$,$P$)} is also introduced,
+since we do not always have to take the room information into account 
+to specify the hard constraints except $H_3$.
+
+Given an instance expressed in our fact format,
+the first four rules in Line 1--2 generate 
+\code{c(C)}, 
+\code{t(T)}, 
+\code{r(R)}, and
+\code{cu(Cu)} 
+for each course \code{C}, teacher \code{T}, room \code{R}, and 
+curriculum \code{Cu}.
+%
+The next two rules in Line 3 generate 
+\code{d(0)} $\ldots$ \code{d(D-1)} and
+\code{ppd(0)} $\ldots$ \code{ppd(P-1)} 
+expressing that the days range from \code{0} to \code{D-1}, 
+and the periods per day range from \code{0} to \code{P-1}.
+
+For $H_1$,
+the rule in Line 6,
+for every course \code{C} having \code{N} lectures,
+generates a set of candidate assignments
+subject to the condition that 
+there are exactly \code{N} lectures such that \code{assigned(C,D,P)} holds.
+
+For $H_2$,
+the rule in Line 9 enforces that,
+for every teacher \code{T}, day \code{D}, and period \code{P},
+there is at most one course \code{C} taught by \code{T}
+such that \code{assigned(C,D,P)} holds.
+In detail, 
+if \code{t(T)}, \code{d(D)}, and \code{ppd(P)} hold,
+this integrity constraint tells us that
+the at-most-one constraint represented by 
+`\verb+{ assigned(C,D,P) : course(C,T,_,_,_,_) } 1+'
+must be true as well in order to prevent its body from being satisfied. 
+In the similar way,
+the rule in Line 10 enforces that,
+for every curriculum \code{Cu}, day \code{D}, and period \code{P},
+there is at most one course \code{C} that belongs to \code{Cu}
+such that \code{assigned(C,D,P)} holds.
+
+For $H_3$, 
+if \code{assigned(C,D,P)} holds, 
+the rule in Line 13 generates a solution candidate 
+subject to the condition that there is exactly one room \code{R} such
+that \code{assigned(C,R,D,P)} holds. 
+The rule in Line 14 enforces that,
+for every room \code{R}, day \code{D}, and period \code{P},
+there is at most one course \code{C} such that 
+\code{assigned(C,R,D,P)} holds.
+
+For $H_4$,
+the rule in Line 17 enforces that
+a course \code{C} is not assigned at a period \code{P} on a day \code{D}
+if \code{unavailability_constraint(C,D,P)} holds, since
+the conjunction of literals in its body must not hold. 
+
+The rule in Line 20 expresses that 
+for each timeslot (\code{D} and \code{P})
+the number of lectures assigned must be less than or equal to 
+the number of rooms (\code{N}).
+This rule is an implied constraint and can be omitted, but we keep it
+as an additional rule for performance improvement of some problem
+instances.
+
+The {\asap} encoding of soft constraints ($S_1$--$S_9$) and an
+objective function is shown in Listing~\ref{en:ctt_soft.lp4}.
+We introduce a \textit{penalty atom}
+\texttt{penalty($S_i$,$V$,$C$)}, which is intended to express
+that a constraint $S_i$ is violated by $V$ and its penalty cost is $C$.
+The constants denoted by \code{weight_of_*} indicate
+the weights associated with each soft constraint defined in
+Table~\ref{table:problem_formulations}.
+%
+Once again, each soft constraint $S_i$ is compactly expressed by
+just one or two ASP rules in which the head is of the form
+\texttt{penalty($S_i$,$V$,$C$)}, and a violation $V$ and its penalty
+cost $C$ are detected and calculated respectively in the body.
+That is, for each violation $V$ of $S_i$, 
+an atom \texttt{penalty($S_i$,$V$,$C$)} is generated.
+Optimal solutions can be obtained by
+minimizing the number of penalty atoms in Line 49.
+
+We explain $S_{1}$--$S_{3}$ that compose the basic UD1 formulation.
+%
+For $S_1$, 
+the rule in Line 2--3,
+for every course \code{C} that \code{N} students attend and
+room \code{R} that has a seating capacity of \code{Cap},
+generates a penalty atom with the cost of 
+\code{(N-Cap)*weight_of_s1}
+if a lecture of course \code{C} is assigned to the room \code{R}
+whose seating capacity (\code{Cap}) is less than the number of
+attendees (\code{N}).
+
+For $S_2$,
+the rule in Line 6 generates an auxiliary atom \code{working_day(C,D)}
+which expresses that a course \code{C} is given on a day \code{D}, 
+if \code{assigned(C,D,P)} holds.
+The rule in Line 7--8,
+for every course \code{C} whose lectures 
+must be spread into \code{MWD} days,
+generates a penalty atom with the cost of 
+\code{(MWD-N)*weight_of_s2},
+if the number of days (\code{N}) in which a course \code{C} spread
+is less than \code{MWD}.
+
+For $S_3$, 
+the rule in Line 11 generates an auxiliary atom \code{scheduled_curricula(Cu,D,P)}
+which expresses that 
+a curriculum \code{Cu} is 
+scheduled at a period \code{P} on a day \code{D},
+if \code{assigned(C,D,P)} holds.
+% Note that, by $H_2$,
+% for every curriculum \code{Cu}, day \code{D}, and period \code{P},
+% there must be at most one course \code{C} that belongs to \code{Cu}
+% such that \code{assigned(C,D,P)} holds. 
+The rule in Line 12--14,
+for every curriculum \code{Cu}, day \code{D}, and period \code{P},
+generates a penalty atom with the cost of \code{weight_of_s3},
+if a curriculum \code{Cu} is scheduled at a period \code{P} on a
+day \code{D}, but not at both \code{P-1} and \code{P+1} 
+within the same day \code{D}.
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End:

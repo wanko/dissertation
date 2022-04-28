@@ -1,0 +1,223 @@
+
+\section{Logical Characterization}
+\label{sec:foundations}
+
+The semantics of logic programs modulo theories rests upon
+ground programs~$P$ over two disjoint alphabets, $\mathcal{A}$ and $\mathcal{T}$,
+consisting of regular and \emph{theory atoms}. % , respectively.
+Accordingly, $P$ is a set of rules~$r$ of the form
+$h \leftarrow a_1,\dots,a_m,\naf{a_{m+1}},\dots,\naf{a_n}$,
+where the head $h$ is constant~$\bot$, $a_0$ or $\{a_0\}$
+for an atom $a_0\in\mathcal{A}\cup\mathcal{T}$, and
+$\{a_1,\dots,a_n\}\subseteq\mathcal{A}\cup\mathcal{T}$.
+If $h=\bot$, $r$ is called an \emph{integrity constraint},
+a \emph{normal rule} if $h=a_0$, or
+a \emph{choice rule} if $h=\{a_0\}$;
+as usual, we skip $\bot$ when writing integrity constraints.
+We let $\head{r}=\emptyset$ for an integrity constraint~$r$,
+$\head{r}=\{a_0\}$ for a normal or choice rule~$r$,
+and define $\head{P}=\bigcup_{r\in P}\head{r}$ as the \emph{head atoms} of~$P$.
+In analogy to inputs atoms from
+\lstinline{#external} directives \cite{gekakasc14b},
+we partition $\mathcal{T}$ into
+\emph{defined} theory atoms $\mathcal{T}\cap\head{P}$ and
+\emph{external} theory atoms $\mathcal{T}\setminus\head{P}$.
+
+Given a collection $\mathbb{T}$ of theories,
+we associate each $T\in\mathbb{T}$ with a \emph{scope}
+$\mathcal{T}^T$ of atoms
+relevant to~$T$, and let
+$\mathcal{T}=\bigcup_{T\in\mathbb{T}}\mathcal{T}^T$
+be the corresponding set of theory atoms.
+% In view of
+Reconsidering the input language in Section~\ref{sec:language},
+a natural choice for $\mathcal{T}^T$ consists % of the set
+of all (ground) atoms declared within a
+\lstinline{#theory} directive for~$T$.
+% \comment{BK: Those must be disjoint, right? M: They are syntactically different and therefore disjoint. The idea is that any atom handled by a theory propagator belongs to $\mathcal{T}$, no matter its syntax.}
+However, as we see in Section~\ref{sec:system},
+a scope
+% does not necessarily have to be limited to atoms in a dedicated theory language, i.e,
+% those preceded by \lstinline{&},
+% but rather the set $\mathcal{T}$ of theory atoms
+may in general include atoms written in
+regular as well as extended syntax (the latter preceded by `\lstinline{&}') in the input language.
+% The way logic programs extended by theories are specified still guarantees
+% that $\mathcal{T}=\bigcup_{T\in\mathbb{T}}\mathcal{T}^T$,
+% so that each theory atom belongs to the scope of at least one theory in~$\mathbb{T}$.
+
+In order to reflect different forms of theory propagation,
+we further consider a partition of the scope $\mathcal{T}^T$ of a theory~$T$ into % two subsets,
+\emph{strict} theory atoms $\mathcal{T}^T_e$ and
+\emph{non-strict} theory atoms $\mathcal{T}^T_i$
+such that
+$\mathcal{T}^T_e\cap\mathcal{T}^T_i=\emptyset$ and
+$\mathcal{T}^T_e\cup\mathcal{T}^T_i=\mathcal{T}^T$.
+The strict theory atoms in~$\mathcal{T}^T_e$ resemble equivalences as expressed by the constraint atoms
+of \clingcon\ \cite{ostsch12a}, which must be assigned to true iff their associated
+constraints hold.
+This is complemented by viewing the non-strict theory atoms in~$\mathcal{T}^T_i$ as
+implications similar to the constraint statements of \ezcsp\ \cite{balduccini09a},
+where only statements assigned to true impose requirements, while constraints associated with
+false ones are free to hold or not.
+Given the distinction of respective kinds of theory atoms,
+a combined theory~$T$ may integrate constraints according to the semantics of \clingcon\ and \ezcsp,
+e.g., indicated by dedicated predicates or arguments thereof in $T$'s theory language.
+
+We now turn to mapping the semantics of logic programs modulo theories back to regular stable models.
+% \cite{siniso02a}.
+In the abstract sense, we call any $\mathcal{S}^T\subseteq\mathcal{T}^T$ a \emph{$T$-solution}
+if $T$ is consistent with the conditions expressed by elements of~$\mathcal{S}^T$ as well as the complements of
+conditions associated with the false strict theory atoms in $\mathcal{T}^T_e\setminus \mathcal{S}^T$.%
+\footnote{%
+  Although we omit formal details, atoms in
+  Satisfiability Modulo Theories (SMT; \cite{baseseti09a})
+  belong to first-order predicates interpreted in a theory~$T$,
+  and the ones that hold in some model of~$T$ provide a $T$-solution $\mathcal{S}^T\subseteq\mathcal{T}^T$.}
+Generalizing this concept to a collection $\mathbb{T}$ of theories,
+we say that $\mathcal{S}\subseteq\mathcal{T}$ is a \emph{$\mathbb{T}$-solution} if
+$\mathcal{S}\cap\mathcal{T}^T$ is a $T$-solution for each $T\in\mathbb{T}$.
+Then, we define a set $X\subseteq\mathcal{A}\cup\mathcal{T}$ of (regular and theory) atoms
+as a \emph{$\mathbb{T}$-stable model} of a ground program~$P$ if
+% $X\cap\mathcal{T}$ is a $\mathbb{T}$-solution and
+there is some $\mathbb{T}$-solution $\mathcal{S}$ such that
+$X$ is a (regular) stable model of the program
+%
+\begin{align}%{1}
+% \begin{equation}
+\neghspace
+P
+% &{}\cup
+\cup
+\{{a\leftarrow}       \mid T\in\mathbb{T},a\in (\mathcal{T}^T_e\setminus\head{P})\cap \mathcal{S}\}
+\cup
+\{ {\leftarrow\naf{a}}\mid T\in\mathbb{T},a\in (\mathcal{T}^T_e\cap\head{P})\cap \mathcal{S}\}
+\label{eq:stable:strict}
+\\
+\neghspace
+% &{}\cup
+{}\cup
+\{{\{a\}\leftarrow}   \mid T\in\mathbb{T},a\in (\mathcal{T}^T_i\setminus\head{P})\cap \mathcal{S}\}
+\cup
+\{ {\leftarrow{a}}    \mid T\in\mathbb{T},a\in (\mathcal{T}^T\cap\head{P})\setminus \mathcal{S}\}\rlap{.}
+\label{eq:stable:non-strict}
+\end{align}
+% \label{eq:stable}
+% \end{equation}
+%
+That is, the rules added to~$P$ in~\eqref{eq:stable:strict} and~\eqref{eq:stable:non-strict}
+express conditions aligning $X\cap\mathcal{T}$ with an underlying $\mathbb{T}$-solution~$\mathcal{S}$.
+First, the facts in~\eqref{eq:stable:strict} make sure that external theory atoms
+that are strict, i.e., included in $\mathcal{T}^T_e\setminus\head{P}$ for some $T\in\mathbb{T}$,
+and hold in~$\mathcal{S}$ belong to~$X$ as well.
+Unlike this, the corresponding set of choice rules in~\eqref{eq:stable:non-strict}
+merely says that non-strict external theory atoms from~$\mathcal{S}$ may be included in~$X$,
+thus not insisting on a perfect match between non-strict theory atoms and elements of~$\mathcal{S}$.
+Moreover, the integrity constraints in~\eqref{eq:stable:strict} and~\eqref{eq:stable:non-strict}
+take care of defined theory atoms belonging to~$\head{P}$.
+The respective set in~\eqref{eq:stable:strict} again focuses on strict theory atoms and
+stipulates the ones from~$\mathcal{S}$ to be included in~$X$ as well.
+In addition, for both strict and non-strict defined theory atoms,
+the integrity constraints in~\eqref{eq:stable:non-strict} assert the falsity
+of atoms that do not hold in~$\mathcal{S}$.
+
+For example, consider a program $P=\{a\leftarrow b,\naf{c}\}$ subject to
+some theory~$T$ with the strict and non-strict theory atoms
+$\mathcal{T}^T_e=\{a,b\}$ and $\mathcal{T}^T_i=\{c\}$,
+and let $\mathcal{S}=\{a,b,c\}$ be a $T$-solution.
+Then, the extended program for $\mathcal{S}$ is
+$P\cup\{{b\leftarrow{}}; {\{c\}\leftarrow{}};  \leftarrow\naf{a}\}$,
+whose (only) regular stable model $X=\{a,b\}$ is a $\{T\}$-stable model of~$P$.
+Note that $\mathcal{S}$ assigns the non-strict theory atom $c$ to true,
+while $X$ excludes it to keep
+$a\leftarrow b,\naf{c}$ applicable
+for the (strict) defined theory atom~$a$.
+
+To summarize the main principles of the $\mathbb{T}$-stable model concept,
+strict theory atoms (for some $T\in\mathbb{T}$) must exactly match their
+interpretation in a $\mathbb{T}$-solution $\mathcal{S}$,
+while non-strict ones (not strict for any $T\in\mathbb{T}$) in~$X$ are only required not to exceed~$\mathcal{S}$.
+Second,
+external theory atoms that hold in~$\mathcal{S}$ are mapped to facts or choice rules,
+while conditions on defined ones are enforced by means of integrity constraints.
+As a result, $\mathbb{T}$-stable models are understood as regular stable models,
+% in the sense of \cite{siniso02a}, 
+yet relative to extensions of a given program~$P$
+determined by underlying $\mathbb{T}$-solutions.
+Notably, % since the regular notion of a stable model applies unaltered,
+the concept of $\mathbb{T}$-stable models also carries on to logic programs allowing for
+further constructs, such as weight constraints and disjunction,
+which have not been discussed here for brevity (cf.~\cite{siniso02a}).
+
+% Let $T$ be a theory in $\mathbf{T}$.
+% A solution $S$ of $T$ induces the set of all theory atoms $X_S\subseteq\mathcal{T}$ satisfied by $S$ wrt $T$.
+% Moreover, let $\mathcal{T}_T$ denote the set all theory atoms in~$\mathcal{T}$ that are relevant to~$T$ and thus possibly satisfied by solutions~$S$ of~$T$.
+% \comment{MG: Rather solution $S=S_1\cup\dots\cup S_n$ for theories $\mathbf{T}=\{T_1,\dots,T_n\}$,
+%              as theories may ``communicate'' through rules of $P$.\\
+%              Maybe use $\mathbb{T}$ for set of theories to avoid potential clash with \Tsign\
+%              for literals in assignment.}
+% $X$ is a $\mathbf{T}$-stable model of $P$ and some theory $T\subseteq \mathbf{T}$ if
+% \begin{itemize}
+% \item $X$ is a stable model of
+%   \begin{align}
+% P
+% \cup
+% \{{a\leftarrow}       \mid a\in\mathcal{T}, a\in X_S\setminus\head{P}\}
+% &\cup
+% \{ {\leftarrow\naf{a}}\mid a\in\mathcal{T}, a\in X_S\cap     \head{P}\}
+% \\&\cup
+% %\{{\{a\}\leftarrow}       \mid a\in\mathcal{T}, a\in X_S\setminus\head{P}\}
+% %&\cup
+% \{ {\leftarrow{a}}\mid a\in\mathcal{T}, a\in \head{P}\setminus X_S    \}
+%   \end{align}
+%   \begin{align}
+% P
+% \cup
+% \{{\{a\}\leftarrow}       \mid a\in\mathcal{T}, a\in X_S\setminus\head{P}\}
+% &\cup
+% \{ {\leftarrow{a}}\mid a\in\mathcal{T}, a\in \head{P}\setminus X_S    \}
+%   \end{align}
+% for some set $X_S\subseteq\mathcal{T}$ of induced theory atoms
+% %
+% \item $X$ is a stable model of
+% \comment{MG: Modified definition considering partition $\mathcal{T}=\mathcal{T}_e\uplus\mathcal{T}_i$.}
+% \begin{align}\nonumber
+% P
+% &{}\cup
+% \{{a\leftarrow}       \mid a\in\mathcal{T}_e, a\in X_S\setminus\head{P}\}
+% \cup
+% \{ {\leftarrow\naf{a}}\mid a\in\mathcal{T}_e, a\in X_S\cap     \head{P}\}
+% \\&{}\cup
+% \{{\{a\}\leftarrow}   \mid a\in\mathcal{T}_i, a\in X_S\setminus\head{P}\}
+% \cup
+% \{ {\leftarrow{a}}\mid a\in\mathcal{T}, a\in \head{P}\setminus X_S    \}
+% \label{eq:stable}
+% \end{align}
+% for some set $X_S\subseteq\mathcal{T}$ of induced theory atoms
+% %
+% \item Issues
+% \begin{itemize}
+%
+% \item The above definition has two distinctive features
+%   \begin{itemize}
+%   \item different treatment of theory atoms in heads and bodies
+%   \item strict and non-strict theory atoms
+%     \comment{Clearly, The distinction should be made on a per-atom'' basis and not globally as above.} %
+%
+% distinguishes between strict and
+% non-strict theory atoms. The truth values of strict atoms must be
+% equivalent to their interpretation in the theory. For non-strict ones,
+% the implication from true atoms to a true interpretion in the theory is
+% enough. Whether atoms are strict or non-strict inherently depends on how
+% they are handled by a corresponding theory solver.
+%   \end{itemize}
+% \item What about $\mathcal{T}\setminus X_S$?
+%
+% Are they false by default, or controllable like \verb+#external+s, that is, false, true, free?
+% \end{itemize}
+% \end{itemize}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End:

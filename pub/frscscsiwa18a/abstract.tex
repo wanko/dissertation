@@ -1,0 +1,23 @@
+\begin{abstract}
+Metabolic networks play a crucial role in biology since they capture all chemical reactions in an organism.
+While there are networks of high quality for many model organisms,
+networks for less studied organisms are often of poor quality and suffer from incompleteness.
+%
+To this end, we introduced in previous work an ASP-based approach to metabolic network completion.
+Although this qualitative approach allows for restoring moderately degraded networks,
+it fails to restore highly degraded ones.
+This is because it ignores quantitative constraints capturing reaction rates.
+%
+To address this problem, we propose a hybrid approach to metabolic network completion
+that integrates our qualitative ASP approach with quantitative means for capturing reaction rates.
+We begin by formally reconciling existing stoichiometric and topological approaches to network completion in a unified formalism.
+With it, we develop a hybrid ASP encoding and rely upon the theory reasoning capacities of the ASP system \clingo\
+for solving the resulting logic program with linear constraints over reals.
+We empirically evaluate our approach by means of the metabolic network of \emph{Escherichia coli}.
+Our analysis shows that our novel approach yields greatly superior results than obtainable from purely qualitative or quantitative approaches.
+\end{abstract}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End: 

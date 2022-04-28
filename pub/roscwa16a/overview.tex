@@ -1,0 +1,194 @@
+
+\section{Our Diversification Framework at a Glance}\label{sec:overview}
+
+We begin with an overview over the various techniques integrated in our framework.
+
+%\emph{Basic solving techniques.}
+\subsection{Basic solving techniques}
+%
+We first summarize several basic solving techniques that provide essential pillars of our framework
+and that are also of interest for other application areas.
+
+\emph{Maxmin optimization}
+%
+is a popular strategy in game theory and beyond that is not supported by existing ASP systems.
+%
+We address this issue and consider \emph{maxmin} (and \textit{minmax}) optimization that,
+given a set of sums, aims at maximizing the value of the minimum sum.
+%
+We have implemented both preference types and made them available via \asprin~2's library.
+
+\emph{Guess and Check automation.}
+%
+\cite{eitpol06a} defined a framework for representing and solving $\Sigma^p_2$ problems in ASP.
+%
+Given two normal logic programs $P$ and $Q$ capturing a guess-and-check (\gc) problem, 
+%the role of $P$ is to guess a stable model $X$,  
+%such that 
+$X$ is a solution to $\langle P,Q \rangle$ if $X$ is a stable model of $P$ and $Q \cup X$ is unsatisfiable.
+%
+We \emph{automatize} this by using reification along with the meta-encoding methodology of \metasp~\cite{gekasc11b}.
+In this way, the two normal programs $P$ and $Q$ are transformed into a single disjunctive logic program.
+The resulting mini-system \textit{metagnc} is implemented in \python\ and available at~\cite{asprin}.
+%\comment{T: \cite{metasp}?! \\ JR: Add asprin reference.}
+%
+We build upon this approach
+for computing optimal models of logic programs with preferences, 
+providing an alternative method to the iterative one of~\cite{brderosc15a}.
+%We build upon this approach for dealing with logic programs with preferences.
+%To this end,
+For this, 
+\asprin\ translates a logic program with preferences into a \gc\ problem,
+which is then translated by \textit{metagnc} into a disjunctive logic program
+and solved by an ASP system.
+
+\emph{Querying programs with preferences}
+%
+consists of 
+deciding whether there is an optimal stable model of a program $P$ with preferences that contains a given query atom $q$.
+%
+To this end,
+we elaborate upon four alternatives:% and empirically evaluate them in Section~\ref{sec:experiments}.
+\begin{enumerate}[label={\textcolor{darkgray}{\sffamily\bfseries\mathversion{bold}{Q-\arabic*}}}.]
+\item Enumerate \emph{models} of $P \cup \{ \bot \leftarrow not \ q \}$ until one is an optimal model of $P$.
+\item Enumerate \emph{optimal models} of $P$ until one contains $q$.
+\item Enumerate \emph{optimal models} of $P \cup \{ \bot \leftarrow not \ q \}$ until one is an optimal model of $P$.
+\item Enumerate \emph{optimal models} of $P$ until one contains $q$\\
+  while alternately adding $\{ \bot \leftarrow not \ q \}$ or $\{ \bot \leftarrow q \}$ during model-driven optimization.
+\end{enumerate}
+%
+The first two methods were implemented by~\cite{zhutru13a} in the case of programs with \emph{aso} preferences~\cite{brnitr03a}.
+We generalize both to arbitrary preferences, propose two novel ones, and provide all four methods in \asprin~2.
+%
+Applications of querying programs with preferences are clearly of greater interest and go well beyond diversification.
+
+\emph{Preferences over optimal models}
+%
+allow for further narrowing down the stable models of interest by imposing a selection criterion among the optimal models of a logic program with preferences.
+%
+For one thing, this is different from a lexicographic preference, since the secondary preference takes into account all optimal models wrt the first
+preference, no matter whether they are equal or incomparable.
+For another, it aims at preference combinations whose complexity goes beyond the expressiveness of ASP and thus cannot be addressed via an encoding
+in \asprin.
+Rather we conceived a nested variant of \asprin's optimization algorithm that computes the preferred optimal models.
+Interestingly, this makes use of our querying capacities in posing the ``improvement constraint'' as a query.
+
+%\emph{Advanced diversification techniques.}
+\subsection{Advanced diversification techniques}
+We elaborate upon three ways of diversification, viz.\ enumeration, replication, and approximation,
+for solving the \emph{n Most Diverse Optimal Models} problem. 
+%determine the $n$ most diverse optimal stable models of a logic programs with preferences.
+%While the two former are complete, the latter is not.
+While the two former return an optimal solution, the latter simply approximates it.
+
+\emph{Enumeration} consists of two steps:
+\begin{enumerate}
+\item Enumerate all optimal models of the logic program $P$ with preferences. 
+\item Find among all computed optimal models, the $n$ most diverse ones.
+\end{enumerate}
+While we carry out the first step by means of \asprin's enumeration mode,
+we cast the second one as an optimization problem and express it as a logic program with preferences.
+%
+This method was first used by~\cite{eiererfi13a} for addressing diversity in the context of logic programs without preferences;
+we lift it here to programs with preferences.
+
+\emph{Replication} consists of three steps:
+\begin{enumerate}
+\item Translate a normal logic program $P$ with preferences into a disjunctive logic program $D$
+  by applying the aforementioned guess-and-check method.
+\item Reify $D$ into $\mathcal{R}(D)$, and add a meta-encoding $M$ replicating $D$ 
+  such that each stable model of $M \cup \mathcal{R}(D)$ 
+  corresponds to $n$ optimal models of the original logic program $P$.
+\item Turn the disjunctive logic program $M \cup \mathcal{R}(D)$ into a \emph{maxmin} optimization problem
+  by applying the aforementioned method such that its optimal stable models
+  correspond to $n$ most diverse optimal stable models of the original program $P$ with preferences.
+\end{enumerate}
+%
+This method was outlined for logic programs without preferences in~\cite{eiererfi13a} but not automated.
+We generalize this approach to normal programs with preferences and provide a fully automated approach.
+
+
+%Our approximation techniques can be understood as instances of Algorithm~\ref{overview:algo:solve:opt}.
+%%
+%% ------------------------------------------------------------
+%\begin{algorithm}[t]\caption{$\mathit{iterative}(P,n)$\label{overview:algo:solve:opt}}
+%  \Input{A logic program $P$ with preferences and a positive integer $n$}
+%  \Output{A set of optimal stable model of $P$, or $\{\bot\}$}
+%  \BlankLine
+%  $\mathcal{X} = \{ \mathit{solve}(P,\emptyset) \}$\;
+%  \While{$\mathit{test}(\mathcal{X})$}{%
+%    $\mathcal{X} = \mathcal{X} \cup \mathit{solve}(P,\mathcal{X})$\;
+%  }
+%  \Return $\mathit{solution}(\mathcal{X})$\;
+%\end{algorithm}%
+%% ------------------------------------------------------------
+%%
+
+\emph{Approximation.}
+%
+Our approximation techniques can be understood as instances of the following algorithm,
+whose input is a logic program with preferences $P$:
+%that given a logic program with preferences $P$, returns a set of optimal models of $P$, 
+%or $\bot$ if $\bot$ if $P$ is unsatisfiable:
+%
+\begin{enumerate}%[label=\emph{Step \arabic*}.]
+\item
+Find an optimal model $X$ of  $P$. 
+If $P$ is unsatisfiable then return $\{\bot\}$, else assign $\mathcal{X}=\{X\}$.
+\item
+While $\mathit{test}(\mathcal{X})$ is true, call $\mathit{solve}(P,\mathcal{X})$ and add the solution to $\mathcal{X}$.
+\item
+Return $\mathit{solution}(\mathcal{X})$.
+\end{enumerate}
+%
+In the basic case,
+$\mathit{test}(\mathcal{X})$ returns $\mathit{true}$ until there are $n$ solutions in $\mathcal{X}$, 
+$\mathit{solution}(\mathcal{X})$ returns the set $\mathcal{X}$,
+and the algorithm simply computes $n$ solutions by successively calling $\mathit{solve}(P,\mathcal{X})$.
+More elaborate approaches are obtained, for example, computing $n+k$ solutions 
+and returning the $n$ most diverse among them in $\mathit{solution(\mathcal{X})}$.
+
+%More elaborate approaches are obtained by enhancing procedure 
+The implementation of $\mathit{solve}(P,\mathcal{X})$ leads to different approaches:
+%
+\begin{enumerate}[label={\textcolor{darkgray}{\sffamily\bfseries\mathversion{bold}{A-\arabic*}}}.]
+\item $\mathit{solve}(P,\mathcal{X})$ returns an optimal model of $P$ maximizing the minimum distance to the solutions in 
+    $\mathcal{X}$.
+%
+  We accomplish this by defining a \textit{maxmin} preference, %maximizing the minimum distance to any of the solutions in $\mathcal{X}$,
+  and imposing this on top of the optimal models of $P$ 
+  by applying the two aforementioned approaches to \emph{maxmin} optimization and preferences over optimal models.
+  % 
+  This method was first used by~\cite{eiererfi13a} for addressing diversity in the context of logic programs without preferences;
+  we lift it here to programs with preferences.
+  
+\item $\mathit{solve}(P,\mathcal{X})$ first computes a partial interpretation $I$ of $P$ maximizing the minimum distance to the solutions in  $\mathcal{X}$, 
+  and then returns an optimal model of $P$ closest to $I$:
+  \begin{enumerate}
+  \item Select a partial interpretation $I$ of $P$ in one of the following ways:
+%    \begin{enumerate}
+(i) %  \item
+    a random one,
+(ii) %  \item
+    a heuristically chosen one, %  The best according to $pguide$ heuristic from (A. Nadel, SAT 2011).
+(iii) %  \item
+    one most diverse wrt the solutions in $\mathcal{X}$, or 
+(iv) %  \item
+    one complementary to the last computed optimal model.%, 
+      %taking into account either true, false, or both types of atoms.
+%    \end{enumerate}
+  \item Use a cardinality-based preference minimizing the distance to $I$, and
+    apply the aforementioned approach to preferences over optimal models to enforce this preference among the optimal models of $P$.
+  \end{enumerate}
+  
+\item $\mathit{solve}(P,\mathcal{X})$ approximates \emph{A-2} using heuristics. %, which is similar to \cite{nadel11a} for SAT. 
+  To this end, we select a partial interpretation $I$ as in \emph{A-2}, 
+  and then guide the computation of the optimal model fixing the sign of the atoms to their value in $I$. 
+  The approach is further developed prioritizing the variables in $I$.
+  A similar method was used in \cite{nadel11a} for SAT.
+\end{enumerate}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End: 

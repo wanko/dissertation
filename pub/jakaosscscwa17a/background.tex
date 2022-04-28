@@ -1,0 +1,256 @@
+
+\section{Answer Set Programming with Linear Constraints}\label{sec:background}
+
+Our paper centers upon the theory reasoning capabilities of \clingo{} that allow us to extend ASP with linear constraints,
+also referred to as \ASPm{lc}.
+We focus below on the corresponding syntactic and semantic features, 
+and refer the reader to the literature for an introduction to the basics of ASP. 
+
+We consider (disjunctive) \emph{logic programs with linear constraints}, for short%
+\footnote{We keep using the prefix `\emph{lc-}' throughout as a shorthand for concepts related to linear constraints.}
+\emph{lc-programs},
+over sets $\mathcal{A}$ and $\mathcal{L}$ of ground \emph{regular} and \emph{linear constraint atoms},
+respectively.
+%
+An expression is said to be \emph{ground}, if it contains no ASP variables.
+%
+Accordingly, such programs consist of \emph{rules} of the form
+\begin{lstlisting}[mathescape,numbers=none]
+   a$_1$;...;a$_m$ :- a$_{m+1}$,...,a$_n$,not a$_{n+1}$,...,not a$_o$
+\end{lstlisting}
+where each \lstinline[mathescape]{a$_i$} is either 
+a {regular atom} in $\mathcal{A}$ of form \lstinline[mathescape]{p(t$_1$,...,t$_k$)}
+such that all \lstinline[mathescape]{t$_i$} are ground terms
+or 
+an {lc-atom} in $\mathcal{L}$ of form%
+\footnote{In \clingo, theory atoms are preceded by `\texttt{\&}'.}
+`\lstinline[mathescape]@&sum{a$_1$*x$_1$;$\dots$;a$_l$*x$_l$}<=k@' 
+that stands for the linear constraint
+\(
+a_1\cdot x_1+\dots+a_l\cdot x_l\leq k
+\).
+All \lstinline[mathescape]{a$_i$} and \lstinline[mathescape]{k} are finite sequences of digits with at most one dot%
+\footnote{In the input language of \clingo, sequences containing dots must be quoted to avoid clashes.} 
+and represent real-valued coefficients $a_i$ and $k$.
+Similarly all \lstinline[mathescape]{x$_i$} stand for the real (or integer) valued variables $x_i$.
+%
+As usual, \lstinline[mathescape]{not} denotes (default) \emph{negation}.
+A rule is called a \emph{fact} if ${m,o}=1$,
+\emph{normal} if $m=1$, and 
+an \emph{integrity constraint} if $m=0$.
+%
+A linear constraint of form
+\(
+x_1-x_2\leq k
+\)
+is called a \emph{difference constraint},
+and represented as
+`\lstinline[mathescape]@&sum{x$_1$; -1*x$_2$}<=k@'
+(or `\lstinline[mathescape]@&diff{x$_1$-x$_2$}<=k@' in pure difference logic settings). 
+
+To ease the use of ASP in practice, 
+several extensions have been developed. 
+First of all, rules with ASP variables are viewed as shorthands for the set of their ground instances.
+Further language constructs include
+\emph{conditional literals} and \emph{cardinality constraints} \cite{siniso02a}.
+The former are of the form
+\lstinline[mathescape]{a:b$_1$,...,b$_m$},
+the latter can be written as
+\lstinline[mathescape]+s{d$_1$;...;d$_n$}t+,
+where \lstinline{a} and \lstinline[mathescape]{b$_i$} are possibly default-negated (regular) literals  % for $0\leq i\leq m$,
+and each \lstinline[mathescape]{d$_j$} is a conditional literal; % for $1\leq i\leq n$;
+\lstinline{s} and \lstinline{t} provide optional lower and upper bounds on the number of satisfied literals in the cardinality constraint.
+We refer to \lstinline[mathescape]{b$_1$,...,b$_m$} as a \emph{condition},
+and call it \textit{static} if it is evaluated during grounding, otherwise it is called \textit{dynamic}.
+%
+The practical value of such constructs becomes apparent when used with ASP variables. 
+For instance, a conditional literal like
+\lstinline[mathescape]{a(X):b(X)}
+in a rule's antecedent expands to the conjunction of all instances of \lstinline{a(X)} for which the corresponding instance of \lstinline{b(X)} holds.
+%
+Similarly,
+\lstinline[mathescape]+2{a(X):b(X)}4+
+is true whenever at least two and at most four instances of \lstinline{a(X)} (subject to \lstinline{b(X)}) are true.
+%
+% Finally, objective functions minimizing the sum of weights $w_i$ subject to condition $c_i$ are expressed as
+% \lstinline[mathescape]!#minimize{$w_1$:$c_1$;$\dots$;$w_n$:$c_n$}!.
+% \lstinline[mathescape]!#minimize{$w_1$@$l_1$:$c_1$;$\dots$;$w_n$@$l_n$:$c_n$}!.
+% Lexicographically ordered objective functions are (optionally) distinguished via levels indicated by $l_i$.
+
+Likewise,
+\clingo's syntax of linear constraints offers several convenience features.
+As above,
+elements in linear constraint atoms can be conditioned (and use ASP variables),
+viz.\
+`\lstinline[mathescape]@&sum{a$_1$*x$_1$:c$_1$;...;a$_l$*x$_l$:c$_n$}<=k@'
+where each \lstinline[mathescape]{c$_i$} is a condition.
+As above, the usage of ASP variables allows for forming arbitrarily long expressions
+(cf.\ Listing~\ref{encoding:yale}).
+That is, by using static or dynamic conditions,
+we may formulate linear constraints that are determined relative to a problem instance during grounding
+and even dynamically during solving, respectively. 
+Also, linear constraints can be formed with further relations, viz.\
+\texttt{>=},
+\texttt{<},
+\texttt{>},
+\texttt{=},
+and
+\texttt{!=}.
+Moreover, the theory language for linear constraints offers a domain declaration for real variables,
+`\lstinline[mathescape]@&dom{lb..ub}=x@'
+expressing that all values of \texttt{x} must lie between \texttt{lb} and \texttt{ub}, inclusive.
+And finally the maximization (or minimization) of an objective function can be expressed with
+\lstinline[mathescape]@&maximize{a$_1$*x$_1$:c$_1$;...;a$_l$*x$_l$:c$_n$}@
+(or by \texttt{minimize}).
+The full theory grammar for linear constraints over reals is available at~\url{https://potassco.org/clingo/examples}.
+
+Semantically, a logic program induces a set of \emph{stable models},
+being distinguished models of the program determined by the stable models semantics~\cite{gellif91a}.
+%
+To extend this concept to logic programs with linear constraints,
+we follow the approach of lazy theory solving~\cite{baseseti09a}.
+We abstract from the specific semantics of a theory by considering the lc-atoms representing the underlying linear constraints.
+The idea is that a regular stable model $X$ of a program over $\mathcal{A}\cup\mathcal{L}$ is only valid wrt the theory,
+if the constraints induced by the truth assignment to the lc-atoms in $\mathcal{L}$ are satisfiable in the theory.
+%%
+In our setting, 
+this amounts to finding an assignment of reals (or integers) to all numeric variables that 
+satisfies a set of linear constraints induced by $X\cap\mathcal{L}$.
+%
+Although this can be done in several ways, as detailed below,
+let us illustrate this by a simple example.
+The (non-ground) logic program containing the fact 
+`\lstinline[mathescape]{a("1.5").}'
+along with the rule
+`\lstinline[mathescape]@&sum{R*x}<=7 :- a(R).@'
+has the regular stable model \lstinline[mathescape]@$\{$a("1.5")$,\;$&sum{"1.5"*x}<=7$\}$@.
+Here, we easily find an assignment, e.g.\ $\{x\mapsto 4.2\}$,
+that satisfies the only associated linear constraint `$1.5*x\leq 7$'.
+
+In what follows, we make this precise by instantiating 
+the general framework of logic programs with theories in~\cite{gekakaosscwa16a}
+to the case of linear constraints over reals and integers (and so difference constraints).
+Also, we focus on one theory at a time.
+%
+Thereby,
+our emphasis lies on the elaboration of alternative semantic options for stable models with linear constraints,
+which pave the way for different implementation techniques discussed in Section~\ref{sec:system}.
+
+We use the following notation.
+Given a rule $r$ as above,
+we call $\{\mathtt{a}_1,\dots,\mathtt{a}_m\}$ % and $\{\mathtt{a}_{m+1},\dots,\mathtt{a}_n,\mathtt{not}\,\mathtt{a}_{n+1},\dots,\mathtt{not}\,\mathtt{a}_o\}$
+its \emph{head} % and \emph{body} 
+and denote it % them
+by \head{r}. % and \body{r}.
+Furthermore, we define
+\(
+\head{P}=\bigcup_{r\in P}\head{r}
+\).
+% we let \head{P} stand for all head atoms in program $P$.
+
+First of all,
+we may distinguish whether linear constraints are only determined outside or additionally inside a program.
+%
+Accordingly,
+we partition $\mathcal{L}$ into
+\emph{defined} and \emph{external} lc-atoms,
+namely $\mathcal{L}\cap\head{P}$ and $\mathcal{L}\setminus\head{P}$, 
+respectively.\footnote{This distinction is analogous to that between head and input atoms,
+  defined via rules or \lstinline{#external} directives \cite{gekakasc14b}, respectively.}
+%
+While external lc-atoms must only be satisfied by the respective theory,
+defined ones must additionally be derivable through rules in the program.
+%
+The second distinction is about the logical correspondence between theory atoms and theory constraints.
+%
+To this end,
+we partition $\mathcal{L}$ into
+\emph{strict} and \emph{non-strict} lc-atoms,
+denoted by $\mathcal{L}^\leftrightarrow$ and $\mathcal{L}^\rightarrow$, respectively.
+%
+The strict correspondence requires
+a linear constraint to be satisfied 
+\textit{iff}
+the associated lc-atom in $\mathcal{L}^\leftrightarrow$ is true.
+%
+A weaker condition is imposed in the non-strict case.
+Here, a linear constraint must hold 
+\textit{only if}
+the associated lc-atom in $\mathcal{L}^\rightarrow$ is true.
+%
+Thus, only lc-atoms in $\mathcal{L}^\rightarrow$ assigned true impose requirements, 
+while constraints associated with falsified lc-atoms in $\mathcal{L}^\rightarrow$ are free to hold or not.
+%
+However, by contraposition, a violated constraint leads to a false lc-atom.
+
+Different combinations of such correspondences are possible,
+and we may even treat some constraints differently than others.
+In view of this, we next provide an extended definition of stable models that accommodates all above correspondences.
+%
+Following~\cite{gekakaosscwa16a},
+we accomplish this by mapping the semantics of lc-programs back to regular stable models.
+%
+To this end,
+we abstract from the actual constraints and identify a solution with a set of linear constraint atoms.
+%
+More precisely,
+we call
+\(
+\mathcal{S}\subseteq\mathcal{L}
+\)
+a \emph{linear constraint solution},
+if there is an assignment of reals (or integers) to all real (integer) valued variables represented in $\mathcal{L}$ that 
+\begin{enumerate}
+ \item[(i)]  \label{en:lcsol1} satisfies all linear constraints associated with strict and non-strict lc-atoms in $\mathcal{S}$ and
+ \item[(ii)] \label{en:lcsol2} falsifies all linear constraints associated with strict lc-atoms in $\mathcal{L}^\leftrightarrow\setminus\mathcal{S}$.
+\end{enumerate}
+
+Then, we define a set $X\subseteq\mathcal{A}\cup\mathcal{L}$
+as an \emph{lc-stable model} of an lc-program~$P$,
+if
+there is some lc-solution $\mathcal{S}\subseteq\mathcal{L}$ such that
+$X$ is a (regular) stable model of the logic program
+%
+\newcommand{\code}[1]{\text{\texttt{#1}}}
+%
+\begin{align}
+\hspace{-10pt}
+P
+&{}\cup
+\{\code{a.}       \mid \code{a}\in (\mathcal{L}^\leftrightarrow\setminus\head{P})\cap \mathcal{S}\}
+\cup
+\{\code{:- not a.}\mid \code{a}\in (\mathcal{L}^\leftrightarrow\cap\head{P})\cap \mathcal{S}\}
+\label{eq:stable:strict}
+\\
+ &{}\cup
+\{\code{\{a\}.}   \mid \code{a}\in (\mathcal{L}^\rightarrow\setminus\head{P})\cap \mathcal{S}\}
+\cup
+\{\code{:- a.}    \mid \code{a}\in (\mathcal{L}\cap\head{P})\setminus \mathcal{S}\}\rlap{.}
+\label{eq:stable:non-strict}
+\end{align}
+%
+The rules added to~$P$ % in~\eqref{eq:stable:strict} and~\eqref{eq:stable:non-strict}
+express conditions aligning the lc-atoms in $X\cap\mathcal{L}$ with a corresponding lc-solution~$\mathcal{S}$.
+%
+To begin with, 
+the set of facts on the left in~\eqref{eq:stable:strict} makes sure that 
+all lc-atoms in~$\mathcal{S}$ that are external and strict % , viz.\ in $\mathcal{L}^\leftrightarrow\setminus\head{P}$,
+also belong to~$X$.
+%
+Unlike this, the corresponding set of choice rules in~\eqref{eq:stable:non-strict}
+merely says that non-strict external lc-atoms from~$\mathcal{S}$ may be included in~$X$ or not.
+%
+The integrity constraints in~\eqref{eq:stable:strict} and~\eqref{eq:stable:non-strict}
+take care of defined lc-atoms, viz.\ the ones in~$\head{P}$.
+%
+The set in~\eqref{eq:stable:strict} again focuses on strict lc-atoms and
+stipulates that the ones from~$\mathcal{S}$ are included in~$X$ as well.
+%
+Finally, for both strict and non-strict defined lc-atoms,
+the integrity constraints in~\eqref{eq:stable:non-strict} assert the falsity
+of atoms that are not in~$\mathcal{S}$.
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End: 

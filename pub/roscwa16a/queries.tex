@@ -1,0 +1,99 @@
+
+\emph{Solving queries in \asprin.}
+%
+Given a logic program with preferences $P$ and a query atom \lm{q}, 
+the query problem is to decide whether there is an optimal stable model of $P$ that contains \lm{q}.
+%
+From the point of view of complexity theory, the problem is $\Sigma^p_2$-complete when $P$ is normal.
+%
+Membership holds because for solving this problem, 
+we can use the \gc\ method by
+translating the logic program with preferences into a disjunctive logic program
+and adding the query as a constraint `\lm{:- not q.}'.
+%
+Hardness can be proved by a reduction of the problem of deciding 
+the existence of a stable model of a disjunctive logic program $P$ (see~\cite{roscwa16b}). % \ref{sec:complexity}).
+
+%
+Alternatively to the \gc\ approach, we propose four enumeration-based algorithms for solving this problem.
+%based in enumeration. % based algorithms.
+%
+All of them search for an optimal model containing the query, 
+and their worst case occurs when there is none 
+and they have to enumerate all solutions.
+
+Algorithm \Qlabel{1} enumerates stable models of \lm{$P \cup \{$:- not q.$\}$} and 
+tests them for optimality, until one test succeeds.
+%
+In the worst case, \Qlabel{1} enumerates all stable models of the program, 
+but still it runs in polynomial space given that it enumerates normal stable models.
+
+Algorithm \Qlabel{2} enumerates optimal models of $P$, until one contains $q$.
+%
+In the worst case, \Qlabel{2} enumerates all optimal models of $P$, 
+and this enumeration may need exponential space (see~\cite{brderosc15a}).
+%
+Note that this exponential blow-up may also occur with the other algorithms \Qlabel{3} and \Qlabel{4}.
+%
+In addition, even when \Qlabel{2} succeeds in finding an optimal model containing the query, 
+it may have to enumerate many optimal models without the query. % before reaching the right one.
+
+For alleviating this problem, algorithm \Qlabel{3} enumerates optimal models of 
+\lm{$P \cup \{$:- not q.$\}$}, 
+and tests whether they are also optimal for $P$, until one test succeeds.
+%
+However, \Qlabel{3} may have to enumerate many non optimal models of $P$ containing the query
+before finding an optimal one.
+
+Algorithm \Qlabel{4} follows a different approach, enumerating optimal models of $P$ (as \Qlabel{2}) 
+but modifying the iterative algorithm of \asprin\ \cite{brderosc15a} for computing optimal models.
+%
+The input of \asprin's algorithm is a logic program $P$ and a preference statement $s$ with preference program $Q_s$.
+%
+It follows these steps:
+\begin{enumerate}
+\item
+Solve program $P$ and assign the result to $Y$. Return $Y$ if it is $\bot$.
+\item
+Assign $Y$ to $X$, and solve program $P \cup Q_s \cup R_\mathcal{A} \cup H_{X}'$ assigning the result to $Y$.
+\par
+If $Y$ is $\bot$, return $X$, else repeat this step.
+\end{enumerate}
+%
+Step~2 searches iteratively for better models of $P$ wrt s.
+%
+In Algorithm \Qlabel{3}, it may be the case that first Step 2 is repeated many times computing models of $P$ with the query, 
+and then the test finds a model of $P$ without the query that is better than all those previous models.
+%
+Algorithm \Qlabel{4} tries to find earlier those models of $P$ without the query.
+%
+For this, it adds \lm{$\{$:- not q.$\}$} to $P$ in Step 1 and in the even iterations of Step 2, 
+and it adds \lm{$\{$:- q.$\}$} in the odd iterations of Step 2.
+%
+Whenever an even iteration fails to find a model, no better model with the query exists, 
+and the enumeration algorithm restarts the search at Step 1.
+%
+On the other hand, whenever an odd iteration fails, 
+this shows that there is no better model without the query, 
+proving that the query holds in an optimal model.%
+\footnote{For \emph{finding} an optimal model with the query and not simply \emph{deciding} its existence, 
+Step 2 is repeated with \lm{$\{$:- not q.$\}$} until the search fails, proving that an optimal model has been found.}
+%With Algorithm \Qlabel{3}, it may be the case that many iterations are performed 
+%only to find out afterwards that there was a model better than all of them but without the query.
+%
+%Then, the idea of \Qlabel{4} is to alternatively add \lm{$\{$:- not q.$\}$} and \lm{$\{$:- q.$\}$} 
+%at Step~2 trying to avoid those cases.
+%%
+%When a solve call at Step~2 with \lm{$\{$:- q.$\}$} fails, 
+%we know that the query is true in an optimal model, 
+%and we keep iterating with  \lm{$\{$:- not q.$\}$} until we find such a model.%
+%\footnote{If we are only interested in \emph{deciding} the query problem, 
+%          we can stop without iterating any more and return true.}
+%
+%However, note that in general this gives no guarantee on the average performance of the algorithm. 
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End:

@@ -1,0 +1,6 @@
+soft_constraint("RoomCapacity",      1, 0).  soft_constraint("MinWorkingDays",    1, 0).
+soft_constraint("IsolatedLectures",  1, 0).  soft_constraint("Windows",           1, 0).
+soft_constraint("RoomStability",     1, 0).  soft_constraint("StudentMinMaxLoad", 1, 0).
+soft_constraint("TravelDistance",    1, 0).  soft_constraint("RoomSuitability",   1, 0).
+soft_constraint("DoubleLectures",    1, 0).
+

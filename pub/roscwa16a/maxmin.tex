@@ -1,0 +1,210 @@
+%
+%In this section first we define and implement the preference type \textit{maxmin} (and \textit{minmax}), 
+%and we show how it can be used for \emph{representing} the \emph{Distant Model} problem in \asprin.
+%Next, we specify the method for solving guess and check problems, 
+%and explain how it can be used for \emph{solving} the \emph{Distant Model} problem.
+%The \emph{Distant Optimal Model} problem appears\comment{JR: rephrase} in our approximation algorithms, 
+%For solving it we developed different methods, that we specify here, for solving queries over optimal models, 
+%that are applied in the extension of \asprin\ for handling preferences over optimal models. 
+
+We first show how the \emph{Most Distant (Optimal) Model} problem can be represented in \asprin\ 
+using the new preference type \textit{maxmin}: % (and \textit{minmax}):
+Given a logic program $P$ (with preferences) over $\mathcal{A}$, 
+and a set $\mathcal{X}=\{ X_1, \ldots, X_m \}$ of (optimal) stable models of $P$, 
+find an (optimal) stable model of $P$ that 
+maximizes the minimum distance to the (optimal) stable models in $\mathcal{X}$.
+%\comment{JR: Rephrase}
+%
+The \emph{Most Distant (Optimal) Model} is used by our approximation algorithms in Section~\ref{sec:advanced}.
+
+\emph{Maxmin optimization in \asprin.}
+%
+%Let \lstinline[mathescape=true]!$D_\mathcal{A}=\{$domain($a$).$\mid a \in \mathcal{A}\}$! and 
+Let $H_\mathcal{X}$ be the set of facts \lstinline[mathescape=true]!$\{$holds($a$,$i$).$\mid a \in X_i, X_i\in\mathcal{X} \}$!
+reifying the stable models in $\mathcal{X}$,  
+and let \lstinline!distance! be the following preference statement:
+%
+\begin{lstlisting}[mathescape=true]
+#preference(distance,maxmin){
+  I,1,X : holds(X,0), not holds(X,I), I=1..$m$;
+  I,1,X : not holds(X,0), holds(X,I), I=1..$m$ }.
+\end{lstlisting}
+%
+Then, the \emph{Most Distant Model} problem is solved by the following program with preferences:
+\lstinline[mathescape=true]!$P \cup \{ $holds($a$,0) :- $a$. $\mid a \in \mathcal{A}\} \cup H_\mathcal{X} \cup \; \{$distance$\} \; \cup \{$#optimize(distance).$\}$!.
+%
+$P$ generates stable models that are reified with \lm{holds($a$,0)} for $a \in \mathcal{A}$. 
+%
+The preference statement \lstinline!distance! represents a \lstinline!maxmin! preference over $m$ sums, 
+where the value of each sum \lstinline!I! (with \lstinline[mathescape=true]!I=1..$m$!)
+amounts to the distance between the generated stable model and $X_\mathtt{I}$.
+%
+Finally, the optimize statement selects the optimal stable models wrt $\succ_\mathtt{distance}$.
+
+Formally, the preference elements of preference type \textit{maxmin} have the restricted form
+`\lm{s,w,t:B}'
+%\[ s,w,t : B \]
+where \lm{s}, \lm{w}, \lm{t} are terms, and \lm{B} is a condition.
+%
+Term \lm{s} names different sums,
+whose value is specified by the rest of the element `\lm{w,t:B}'
+(similar to aggregate elements).
+%
+%As usual, preference elements stand for their ground instantiations,
+%and we define the semantics of \textit{maxmin} for a set $E$ of ground preference elements. 
+For defining the semantics of \textit{maxmin}, 
+preference elements stand for their ground instantiations, 
+and we consider a set $E$ of such ground preference elements.
+%
+We say that \lm{s} is (the name of) a sum of $E$ if it is the first term of some preference element.
+Given a stable model $X$ and a sum \lm{s} of $E$, the value of \lm{s} in $X$ is:
+\[\textstyle
+v(\mathtt{s},X)=\sum_{(\mathtt{w},\mathtt{t})\in\{\mathtt{w},\mathtt{t}\mid \mathtt{s,w,t:B}\in E, X\models \mathtt{B}\}}\mathtt{w}
+\]
+For a set $E$ of ground preference elements for preference statement \lm{p}, 
+\textit{maxmin} defines the following preference relation:%
+\footnote{For defining \textit{minmax}, we simply switch $\min$ by $\max$, and $>$ by $<$.}
+\[
+X \succ_\mathtt{p} Y \text{ if } \min \{ v(\mathtt{s},X) \mid \mathtt{s} \ \text{is a sum of } E \} > \min \{ v(\mathtt{s},Y) \mid \mathtt{s} \ \text{is a sum of } E \} 
+\]
+Applying this definition to the preference statement \lm{distance} gives the partial order $\succ_\mathtt{distance}$.
+%Note that when there is only one sum, 
+%\textit{maxmin} reduces to maximization of a sum (and minimization for \textit{minmax}).
+
+%Now let's see how is $\succ_\mathtt{distance}$ specified in \asprin\ using the implementation of \textit{maxmin}.
+%Now let's see how $\succ_\mathtt{distance}$ and \textit{maxmin} are implemented. 
+%and how is it used to specify $\succ_\mathtt{distance}$.
+%
+In \asprin, partial orders $\succ$ are implemented by so-called \emph{preference programs}. 
+%
+For our example, we say that $Q$ is a \emph{preference program} for $\succ_\mathtt{distance}$ if it holds that
+$X \succ_\mathtt{distance} Y$ iff $Q \cup \Holds{X} \cup \Holdsp{Y}$ is satisfiable, 
+where \lm{$\Holds{X}=\{ $holds($a$). $\mid a \in X\}$}
+and   $\Holdsp{Y}$\lm{$=\{ $holds'($a$). $\mid a \in Y\}$}.
+%
+In practice, the preference program $Q$ consists of three parts.
+
+% \begin{itemize}
+First, % \item
+each preference statement is translated into a set of facts, and added to $Q$.
+Our example preference statement \lm{distance} results in
+\lm{preference(distance,maxmin)} 
+and the instantiations of 
+\lm{preference(distance,1,(I,X),for(t$_\mathtt{1}$),(I,1,X))} 
+and 
+\lm{preference(distance,2,(I,X),} \\ \lm{for(t$_\mathtt{2}$),(I,1,X))}
+where \lm{t$_\mathtt{1}$} and \lm{t$_\mathtt{2}$} are terms 
+standing for the conditions of the two non-ground preference elements.
+
+Second, % \item 
+$Q$ contains the implementation of the preference type $\mathtt{p}$,
+consisting of rules defining an atom \lstinline[mathescape]!better($\mathtt{p}$)! 
+that indicates whether $X\succ_{\mathtt{p}}Y$ holds for two stable models $X,Y$.
+The sets $X$ and $Y$ are provided by \asprin\ in reified form via unary predicates \lstinline!holds! and \lstinline!holds'!\!.%
+\footnote{That is, \lstinline[mathescape]!holds($\mathtt{a}$)!\! (or \lstinline!holds'!\!\!\lstinline[mathescape]!($\mathtt{a}$)!\!) is true iff $\mathtt{a}\!\in\!X$ (or $\mathtt{a}\!\in\!Y$).}
+%
+Further rules are added by \asprin\ to define \lstinline!holds! and \lstinline!holds'! for
+the conditions appearing in the preference statement (\lm{t$_\mathtt{1}$} and \lm{t$_\mathtt{2}$} in our example).
+%
+The definition of \lstinline[mathescape]!better($\mathtt{p}$)! then draws upon the instances of both predicates for deciding $X\succ_{\mathtt{p}}Y$.
+%
+For the new preference type $\mathtt{maxmin}$ (being now part of \asprin\ 2's library),
+we get the following rules:
+%
+\begin{lstlisting}
+#program preference(maxmin).
+sum(P,S) :- preference(P,maxmin), preference(P,_,_,_,(S,_,_)).
+
+value(P,S,V) :- preference(P,maxmin), sum(P,S), 
+  V = #sum { W,T : holds'(X), preference(P,_,_,for(X),(S,W,T)).
+
+minvalue(P,V) :- preference(P,maxmin), V = #min { W : value(P,S,W) }.
+
+better(P,S) :- preference(P,maxmin), sum(P,S), minvalue(P,V),
+  V < #sum { W,T : holds(X), preference(P,_,_,for(X),(S,W,T)).
+
+better(P) :- preference(P,maxmin), better(P,S) : sum(P,S).
+\end{lstlisting}
+Predicate \lm{sum/2} stores the sums \lm{S} of the preference statement \lm{P},  
+while \lstinline!value/3! collects the value \lm{V} of every sum for the stable model $Y$, 
+and \lstinline!minvalue/2! stores the minimum of them.
+In the end, \lstinline{better(P)} is obtained if \lstinline{better(P,S)} holds for all sums \lm{S}, 
+and this is the case whenever the value of the sums for the stable model $X$ 
+is greater than the minimum value for the stable model $Y$.
+
+Third, % \item
+the constraint
+`\lm{:- not better(distance).}'
+% \begin{lstlisting}
+% :- not better(distance).
+% \end{lstlisting}
+is added to $Q$, % by \asprin\ after reading the \lm{#optimize} statement: 
+enforcing that 
+the set of rules is satisfiable iff \lm{better(p)} is obtained, 
+which is the case whenever $X \succ_\mathtt{distance} Y$. 
+%\end{itemize}
+
+We can show that for any preference statement \lm{p} of type \lm{maxmin}, 
+the union of the above three sets of rules constitutes a preference program for $\succ_\mathtt{p}$.
+
+%We note that this preference could also be implemented in \clingo\ using $\#minimize$ statements, 
+%but a naive implementation would lead to large groundings:
+%\begin{lstlisting}
+%group(G) :- preference(P,maxmin), preference(P,_,_,_,(G,_,_)).
+%dist(X)  :- group(G), 
+%  X = #sum { W,T : holds(X), preference(P,_,_,for(X),(G,W,T))}.
+% min(X)  :- X = #min { Y: dist(Y) }.
+%#maximize { X : min(X) }.
+%\end{lstlisting}
+%Without going into details, note that the rule defining \lstinline!dist/1! would have a ground instance
+%for every possible value of the sum.
+%We leave as future work the investigation of other possible more compact encodings.
+%
+%
+%%%%Predicate \texttt{valueh'(P,G,V)} collects the value \texttt{V} of group \texttt{G} in the stable model $\mathcal{H}'$, 
+%%%%and \texttt{valueh'(P,V)} takes the minimum among these values. 
+%%%\begin{itemize}
+%%%\item
+%%%The naive implementation of this preference in \clingo\ via $\#minimize$ statements leads to large groundings:
+%%%\begin{lstlisting}
+%%%group(G) :- preference(P,maxmin), preference(P,_,_,_,(G,_,_)).
+%%%dist(X)  :- group(G), X = #sum { W,T : holds(X), preference(P,_,_,for(X),(G,W,T))}.
+%%% min(X)  :- X = #min { Y: dist(Y) }.
+%%%#maximize { X : min(X) }.
+%%%\end{lstlisting}
+%%%Let us assume that the \textit{maxmin} preference is specified directly via facts of predicates \texttt{preference/2} and \texttt{preference/5}, 
+%%%and that \texttt{holds/1} is defined as in \asprin.
+%%%Then the first line defines the groups of the \textit{maxmin} preference (with predicate \texttt{group/1}), 
+%%%the second line stablishes when the distance to any group is \texttt{X} (with predicate \texttt{dist/1}), 
+%%%and this is used in the third line to determine the minimum distance of any of the groups (with predicate \texttt{min/1}), 
+%%%which is finally maximized in the last line.
+%%%The large grounding is due to the second rule, 
+%%%leading to a ground rule for every group 
+%%%and for every possible value of the distance to that group.
+%%%In the longer version of this paper we investigate other possible encodings, 
+%%%and compare them with the \asprin\ implementation.
+%%%\end{itemize}
+%
+%\emph{Maxmin Stable Models}:
+%given a set $\mathcal{X}=\{ X_1, \ldots, X_m \}$ of stable models,
+%find a subset $\mathcal{Y} \subseteq \mathcal{X}$ of size $n$ 
+%such that the minimum distance among the stable models of $\mathcal{Y}$ is maximized.
+%\begin{lstlisting}[mathescape=true]
+%$n$ { sol(1..$m$) } $n$.
+%#preference(p,maxmin) { 
+%  (I,J),1,X : holds(X,I), not holds(X,J), sol(I), sol(J), I < J; 
+%  (I,J),1,X : not holds(X,I), holds(X,J), sol(I), sol(J), I < J 
+%  (I,J),#sup,X : not sol(I), sol(J), I=1..$m$, I < J; 
+%  (I,J),#sup,X : sol(I), not sol(J), J=1..$m$, I < J; 
+%}.
+%#optimize(p).
+%\end{lstlisting}
+%The optimal stable models of $P \cup H_\mathcal{X}$ correspond to 
+%the solutions of the \emph{Maxmin Stable Models} problem.
+%While the choice rule guesses a set of \lstinline!n! solutions from $\mathcal{X}$,
+%the preference statement \lstinline!p! selects the optimal ones.
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End: 

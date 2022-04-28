@@ -1,0 +1,115 @@
+%% $Id: paper.tex 34912 2013-04-03 06:39:05Z torsten $
+%% $HeadURL: https://svn.cs.uni-potsdam.de/svn/reposWV/Papers/ASPDomHeu/trunk/paper.tex $
+\documentclass[letterpaper]{article}
+\usepackage{aaai}
+\usepackage{times,helvet,courier}
+\usepackage{amsmath,amssymb}
+
+% ADDED THIS
+\setlength{\pdfpagewidth}{8.5in}
+\setlength{\pdfpageheight}{11in}
+
+\usepackage{verbatim}
+
+
+%%%%%%% ADDED THIS PDFINFO
+\pdfinfo{
+/Title (Domain-specific Heuristics in Answer Set Programming)
+/Author (M. Gebser, B. Kaufmann, R. Otero, J. Romero, T. Schaub, P. Wanko)
+/Keywords(answer set programming, answer set solving, heuristics, conflict-driven clause learning) 
+} 
+
+\usepackage{listings}
+\lstset{aboveskip=\smallskipamount,belowskip=\smallskipamount}
+\lstset{basicstyle=\ttfamily\small}
+\input{macro} 
+
+% \usepackage{xcolor,comments} % https://svn.cs.uni-potsdam.de/svn/reposWV/TeXInputs/trunk/comments.sty
+\def\SVNREVISION{$LastChangedRevision: 34912 $} % <== is automatically inserted by svn
+
+% COMMENTED
+% \usepackage{patch}
+%\sloppy
+
+\title{Domain-specific Heuristics in Answer Set Programming}
+
+
+%\begin{comment}
+\author%
+{%
+  M.~Gebser$^*$
+  \and
+  B.~Kaufmann$^*$
+  \and
+  R.~Otero$^\star$
+  \and 
+  J.~Romero$^{*,\star}$
+  \and 	
+  T.~Schaub$^*$
+  \and
+  P.~Wanko$^*$
+  \\
+	\\
+	\begin{tabular}{ccc}
+    Department of Computer Science$^*$  & & Department of Computer Science$^\star$\\
+		University of Potsdam & & University of Corunna\\
+		14482 Potsdam, Brandenburg	& & 15071 Corunna, Galicia\\
+		Germany & & Spain\\
+		\{gebser,kaufmann,schaub,wanko\}@cs.uni-potsdam.de & & \{javier.romero,otero\}@udc.es
+  \end{tabular}
+}
+%		\\
+	%	\email{\{gebser,kaufmann,schaub,wanko\}@cs.uni-potsdam.de} & & \email{\{javier.romero,otero\}@udc.es}
+
+
+
+
+
+%\end{comment}
+
+\begin{comment}
+\author%
+{%
+  M.~Gebser$^*$
+  \and
+  B.~Kaufmann$^*$
+  \and
+  R.~Otero$^\star$
+  \and 
+  J.~Romero$^{*,\star}$
+  \and 
+  T.~Schaub$^*$
+  \and
+  P.~Wanko$^*$
+  \\
+  Department of Computer Science, University of Potsdam$^*$
+  \\
+  Department of Computer Science, University of Corunna$^\star$
+	\\
+	\{gebser,kaufmann,schaub,wanko\}@cs.uni-potsdam.de, 
+	\{javier.romero,otero\}@udc.es
+  }
+\end{comment}
+
+%\date{}
+
+\frenchspacing
+
+\begin{document}
+
+\maketitle
+\input{abstract}
+
+\input{introduction-send}
+\input{background}
+\input{cdcl-send}
+\input{approach}
+\input{experiments-send}
+\input{discussion-send}
+
+\input{acknowledgments}
+
+%\bibliographystyle{aaai}
+%\bibliography{lit,akku,procs,local} % https://svn.cs.uni-potsdam.de/svn/reposWV/Papers/bibfiles/trunk
+\input{bbl}
+\end{document}

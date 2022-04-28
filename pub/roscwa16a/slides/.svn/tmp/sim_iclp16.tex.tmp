@@ -1,0 +1,457 @@
+\documentclass[11pt]{beamer}
+\usetheme{Warsaw}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{tcolorbox}
+\usepackage{listings}
+\usepackage{adjustbox}
+\usepackage{makecell}
+\usepackage{algpseudocode}
+\usetikzlibrary{arrows,chains,matrix,positioning,scopes,shapes.geometric}
+\definecolor{myblue}{HTML}{004A99}
+\defbeamertemplate*{footline}{shadow theme}{%
+\leavevmode%
+\hbox{\begin{beamercolorbox}[wd=.5\paperwidth,ht=2.5ex,dp=1.125ex,leftskip=.3cm plus1fil,rightskip=.3cm]{author in head/foot}%
+    \usebeamerfont{author in head/foot}\hfill\insertshortauthor
+\end{beamercolorbox}%
+
+\begin{beamercolorbox}[wd=.5\paperwidth,ht=2.5ex,dp=1.125ex,leftskip=.3cm,rightskip=.3cm plus1fil]{title in head/foot}%
+    \usebeamerfont{title in head/foot}\insertshorttitle\hfill%
+\insertframenumber\,/\,\inserttotalframenumber
+\end{beamercolorbox}}%
+\vskip0pt%
+}
+
+\newcommand{\outline}{
+		\begin{frame}{Outline}
+			\tableofcontents[currentsection]
+		\end{frame}
+	}
+\newcommand{\RNum}[1]{\uppercase\expandafter{\romannumeral #1\relax}}
+
+\author{Javier~Romero, Torsten~Schaub, and Philipp~Wanko}
+\title[Computing Diverse Optimal Stable Models]{Computing Diverse Optimal Stable Models}
+\institute{Institute for Computer Science\\University of Potsdam, Germany}
+\logo{\includegraphics[scale=0.03]{potassco_logo_blue.pdf}} 
+\date{TC-ICLP 2016 New York}
+\begin{document}
+
+\begin{frame}
+\maketitle
+\end{frame}
+
+\begin{frame}
+\tableofcontents
+\end{frame}
+
+\section{Introduction and Motivation}
+
+\begin{frame}{Introduction}
+\begin{itemize}
+ \item Answer Set Programming (ASP) is a paradigm for solving combinatorial problems\\
+  $\Rightarrow$ in worst-case exponential number of solutions
+ \pause
+ \item Impose preference relations among solutions to filter out optimal ones
+ \pause
+ \item Certain preference relations and applications exhibit vast numbers of optimal solutions\\
+ 	   eg multi-objective optimization problems in system synthesis, timetabling, configuration, planning
+\pause
+\item[]$\Rightarrow$ Further filtering necessary, eg diverse optimal stable models
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Course timetabling}
+\begin{itemize}
+ \item Courses \emph{a, b} with two lessons each
+ \item One room
+ \item Two days with four periods\pause
+ \item[]
+ \item Assign courses to days and periods 
+\end{itemize}
+
+ \pause
+\begin{center}
+\begin{table}
+\begin{tabular}{|r||c|c|}\hline
+Period & Day 1 & Day 2\\\hline\hline
+1 & a &  \\\hline
+2 &   & a\\\hline
+3 & b & b\\\hline
+4 &   &  \\\hline
+\end{tabular}
+\end{table}
+\end{center}
+\end{frame}
+
+\begin{frame}{Preferences}
+\begin{itemize}
+	\item \alert{Compactness}: Avoid empty periods after a scheduled lesson
+	\pause
+	\item \alert{Spread}: Avoid placing lessons of same course on same day\pause
+ 	\item[]
+ 	\item Combine both preferences in a Pareto preference relation
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Pareto preference}
+    \begin{itemize}
+	\item Multi-objective optimization
+    \item Aggregation of several preference relations
+    \item Generally no single optimal solution
+    \item Set of Pareto optimal solutions (Pareto frontier)
+    \item eg ``better" means $<$ for objectives in $\mathbb{Z}$:
+	    \begin{itemize}
+	     \item $(2,3,1)$ \alert{dominates} $(3,3,1)$
+	     \item $(2,3,1)$ \alert{is incomparable to} $(2,1,3)$
+	    \end{itemize}
+    \item $x$ is Pareto optimal $\iff$ there is no $y$ that dominates $x$
+    \end{itemize} 
+\end{frame}
+
+\begin{frame}{Dominated solution}
+\begin{center}
+\begin{tabular}{|r||c|c|}\hline
+Period & Day 1 & Day 2\\\hline\hline
+1 & a &  \\\hline
+2 &   & a\\\hline
+3 & b & b\\\hline
+4 &   &  \\\hline
+\end{tabular}
+\end{center}
+\bigskip
+\begin{tabular}{ll}
+Compactness violations:& 3\\
+Spread violations:& 0
+\end{tabular}
+\end{frame}
+
+\begin{frame}{Optimal solution}
+\begin{center}
+\begin{tabular}{|r||c|c|}\hline
+Period & Day 1 & Day 2\\\hline\hline
+1 &   &  \\\hline
+2 & a & a\\\hline
+3 & b & b\\\hline
+4 &   &  \\\hline
+\end{tabular}
+\end{center}
+\bigskip
+\begin{tabular}{ll}
+Compactness violations:& 2\\
+Spread violations:& 0
+\end{tabular}
+\end{frame}
+
+\begin{frame}{Optimal solution}
+\begin{center}
+\begin{tabular}{|r||c|c|}\hline
+Period & Day 1 & Day 2\\\hline\hline
+1 &   &  \\\hline
+2 & a & b\\\hline
+3 & b & a\\\hline
+4 &   &  \\\hline
+\end{tabular}
+\end{center}
+\bigskip
+\begin{tabular}{ll}
+Compactness violations:& 2\\
+Spread violations:& 0
+\end{tabular}
+\end{frame}
+
+\begin{frame}{Optimal solution}
+\begin{center}
+\begin{tabular}{|r||c|c|}\hline
+Period & Day 1 & Day 2\\\hline\hline
+1 & b &  \\\hline
+2 & a & \\\hline
+3 & b & \\\hline
+4 & a &  \\\hline
+\end{tabular}
+\end{center}
+\bigskip
+\begin{tabular}{ll}
+Compactness violations:& 1\\
+Spread violations:& 2
+\end{tabular}
+\end{frame}
+
+\begin{frame}{Diverse optimal solution}
+\begin{itemize}
+ \item Many optimal solutions
+ \item Select subset to present to user
+\end{itemize}
+\begin{center}
+\begin{table}
+\begin{tabular}{|r||c|c|}\hline
+Period & Day 1 & Day 2\\\hline\hline
+1 &   &  \\\hline
+2 & {\color<2>{red} a} & a\\\hline
+3 & {\color<2>{red} b} & b\\\hline
+4 &   &  \\\hline
+\end{tabular}\quad
+\begin{tabular}{|r||c|c|}\hline
+Period & Day 1 & Day 2\\\hline\hline
+1 &   &  \\\hline
+2 & {\color<2>{red} a} & b\\\hline
+3 & {\color<2>{red} b} & a\\\hline
+4 &   &  \\\hline
+\end{tabular}\\\vspace{0.2cm}
+\begin{tabular}{|r||c|c|}\hline
+Period & Day 1 & Day 2\\\hline\hline
+1 & b &  \\\hline
+2 & {\color<2>{red} a} & \\\hline
+3 & {\color<2>{red} b} & \\\hline
+4 & a &  \\\hline
+\end{tabular}
+\end{table}
+\end{center}
+\end{frame}
+
+
+\begin{frame}{Diverse optimal solution}
+\begin{itemize}
+ \item Many optimal solutions
+ \item Select \alert{diverse} subset to present to user
+\end{itemize}
+\begin{center}
+\begin{table}
+\begin{tabular}{|r||c|c|}\hline
+Period & Day 1 & Day 2\\\hline\hline
+1 &   &  \\\hline
+2 & a & a \\\hline
+3 & b & b\\\hline
+4 &   &  \\\hline
+\end{tabular}\quad
+\begin{tabular}{|r||c|c|}\hline
+Period & Day 1 & Day 2\\\hline\hline
+1 &   & a \\\hline
+2 &   & b \\\hline
+3 &   & a \\\hline
+4 &   & b \\\hline
+\end{tabular}\\\vspace{0.2cm}
+\begin{tabular}{|r||c|c|}\hline
+Period & Day 1 & Day 2\\\hline\hline
+1 & a  &  \\\hline
+2 & b  &  \\\hline
+3 & a  &  \\\hline
+4 & b  &  \\\hline
+\end{tabular}
+\end{table}
+\end{center}
+\end{frame}
+
+
+\begin{frame}{Overview}
+\begin{itemize}
+ \item Existing work:
+      \begin{itemize}
+        \item T. Eiter, E. Erdem, H. Erdogan, and M. Fink. Finding similar/diverse solutions in answer set programming. 2013. 
+        \item Y. Zhu and M. Truszczy\'{n}ski. On optimal solutions of answer set optimization problems. 2013. 
+      \end{itemize}
+ \pause
+ \item Contributions:
+  \begin{itemize}\normalsize
+   \item Automate existing ASP solving schemes\pause
+   \item Generalize existing diversification techniques to \\logic programs with preferences\pause
+   \item Introduce new diversification techniques for \\logic programs with preferences\pause
+   \item[]$\Rightarrow$ Provide comprehensive framework for computing diverse (or similar) optimal solutions
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\section{ASP Solving Schemes}
+\outline
+\begin{frame}{ASP Solving Schemes}
+\begin{itemize}
+\item Schemes are employed to implement diversification techniques but are readily available for independent usage
+\end{itemize}
+\begin{enumerate}
+ \item Maxmin
+ \item Guess and check
+ \item Querying
+ \item Preferences$^2$
+\end{enumerate}
+
+\end{frame}
+
+\section{Diversification Techniques}
+\outline
+\begin{frame}{Diversification Techniques}
+\begin{enumerate}
+ \item Enumeration
+ \item Replication
+ \item \alert<2>{Approximation}
+ 		\uncover<2>{\begin{itemize}
+ 			\item Iterate optimal solutions distant to a previous set of optimal solutions
+ 			\item Uses \alert{maxmin}, \alert{querying} and \alert{preferences$^2$}	
+ 		\end{itemize}}
+\end{enumerate}
+\end{frame}
+
+\begin{frame}{Approximation}
+\textbf{Input}: Logic program with preferences $P$, set size $n\in \mathbb{N}$\\
+\textbf{Output}: Set $\mathcal{X}$ approximating $n$ most diverse optimal solutions\\\pause
+\begin{itemize}
+	\item[] $\mathcal{X}=\emptyset$
+	\item[] \textbf{while} $|\mathcal{X}|<n$ \textbf{and} $P\cup\mathcal{X}$ is satisfiable
+    \item[] \hspace{1cm}$\mathcal{X}:=\mathcal{X} \cup solve(P,\mathcal{X})$
+	\item[] \textbf{return} $\mathcal{X}$
+\end{itemize} \pause
+\begin{itemize}
+	\item All variants implement different versions of $solve(P,\mathcal{X})$
+	\item With increasing variant number: less exact, more performance
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Algorithm \RNum{1}}
+\begin{itemize}
+ \item $\mathit{solve}(P,\mathcal{X})$ returns optimal model of $P$ most dissimilar to $\mathcal{X}$\pause
+ \item Ensures next optimal solution is most distant to whole previous set $\mathcal{X}$\\
+       by using \alert{maxmin} and \alert{preference$^2$}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Algorithm \RNum{1} example}
+Enumerate three most diverse optimal solutions for timetabling.\\
+\begin{center}
+\begin{table}
+\begin{tabular}{r}
+$\mathcal{X}=$
+\end{tabular}
+\pause
+ \begin{tabular}{|r||c|c|}\hline
+Period & Day 1 & Day 2\\\hline\hline
+1 &   &  \\\hline
+2 & a & a \\\hline
+3 & b & b\\\hline
+4 &   &  \\\hline
+\end{tabular}\pause\quad
+ \begin{tabular}{|r||c|c|}\hline
+Period & Day 1 & Day 2\\\hline\hline
+1 &   & \only<4->{a}\\\hline
+2 & \only<3>{{\color{red}a}}& \only<3>{{\color{red}a}}\only<4->{b} \\\hline
+3 & \only<3>{{\color{red}b}}& \only<3>{{\color{red}b}}\only<4->{a} \\\hline
+4 &   & \only<4->{b} \\\hline
+\end{tabular}\\\uncover<5->{\vspace{0.2cm}\hspace{0.7cm}
+\begin{tabular}{|r||c|c|}\hline
+Period & Day 1 & Day 2\\\hline\hline
+1 & \only<6>{a}  & \only<5>{{\color{red}a}} \\\hline
+2 & \only<5>{{\color{red}a}}\only<6>{b}  & \only<5>{{\color{red}a,b}} \\\hline
+3 & \only<5>{{\color{red}b}}\only<6>{a}  & \only<5>{{\color{red}a,b}} \\\hline
+4 & \only<6>{b}  & \only<5>{{\color{red}a}} \\\hline
+\end{tabular}}
+ \end{table}
+\end{center}
+\end{frame}
+
+\begin{frame}{Algorithm \RNum{2}}
+\begin{itemize}
+ \item $\mathit{solve}(P,\mathcal{X})$ computes partial interpretation $I$ distant to $\mathcal{X}$\pause
+ \item Then returns optimal model of $P$ closest to $I$
+ \pause
+ \item Ensures next optimal solution is as close as possible to $I$\\
+       by using \alert{maxmin} and \alert{preference$^2$}
+ \pause
+ \item Less accuracy but more performance since there is no direct comparison to earlier optimal solutions
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Algorithm \RNum{2}: Distant partial interpretation $I$}
+Given set of previous optimal models $\mathcal{X}$, select $I$
+\begin{enumerate}
+ \item randomly
+ \item heuristically chosen
+ \item most diverse wrt $\mathcal{X}$
+ \item \alert<2>{complementary to last optimal solution}
+\end{enumerate}
+\end{frame}
+
+\begin{frame}{Algorithm \RNum{2}: Example}
+Enumerate three most diverse optimal solutions for timetabling.\\
+\begin{center}
+\begin{table}
+\begin{tabular}{r}
+$\mathcal{X}=$
+\end{tabular}
+\pause
+ \begin{tabular}{|r||c|c|}\hline
+Period & Day 1 & Day 2\\\hline\hline
+1 &   &  \\\hline
+2 & a & a \\\hline
+3 & \color<7>{red}b & b\\\hline
+4 &   &  \\\hline
+\end{tabular}\pause\quad
+ \begin{tabular}{|r||c|c|}\hline
+Period & Day 1 & Day 2\\\hline\hline
+1 & \only<3>{{\color{green}a,b}}  & \only<3>{{\color{green}a,b}}\only<4->{a}\\\hline
+2 & \only<3>{{\color{green}b}}& \only<3>{{\color{green}b}}\only<4->{b} \\\hline
+3 & \only<3>{{\color{green}a}}\only<4->{a}& \only<3>{{\color{green}a}} \\\hline
+4 & \only<3>{{\color{green}a,b}}\only<4->{b} & \only<3>{{\color{green}a,b}} \\\hline
+\end{tabular}\\\uncover<5->{\vspace{0.2cm}\hspace{0.7cm}
+\begin{tabular}{|r||c|c|}\hline
+Period & Day 1 & Day 2\\\hline\hline
+1 & \only<5>{{\color{green}a,b}}\only<6->{a}  & \only<5>{{\color{green}b}} \\\hline
+2 & \only<5>{{\color{green}a,b}}\only<6->{b}  & \only<5>{{\color{green}a}} \\\hline
+3 & \only<5>{{\color{green}b}}\color<7>{red}\only<6->{b}  & \only<5>{{\color{green}a,b}} \\\hline
+4 & \only<5>{{\color{green}a}}\only<6->{a}  & \only<5>{{\color{green}a,b}} \\\hline
+\end{tabular}}
+ \end{table}
+\end{center}
+\end{frame}
+
+\begin{frame}{Algorithm \RNum{3}}
+\begin{itemize}
+ \item $\mathit{solve}(P,\mathcal{X})$ computes partial interpretation $I$ distant to $\mathcal{X}$\pause
+ \item Tries to find optimal model of $P$ closest to $I$ by changing sign heuristic to same values as in $I$
+ \pause
+ \item Approximation of Algorithm \RNum{2}
+ \pause
+ \item Purely heuristic, no guaranteed diversity; no optimization, less complex calculation
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Algorithm \RNum{3}: Distant partial interpretation $I$}
+Given set of previous optimal models $\mathcal{X}$, select $I$
+\begin{enumerate}
+ \item randomly
+ \item heuristically chosen
+ \item most diverse wrt $\mathcal{X}$
+ \item complementary to last optimal solution
+\end{enumerate}
+\end{frame}
+
+
+\section{Conclusion}
+\outline
+
+\begin{frame}{Experiments}
+\begin{center}
+\begin{tabular}{l|lll}
+  & \RNum{3} & \RNum{1} & \RNum{3}*\\\hline
+T/TO & \textbf{165s/70} & 482s/672 & 317s/351\\
+Rank & 16 & \textbf{1} & 4
+\end{tabular}
+\end{center}
+\begin{itemize}
+ \item 816 instances enumerating four Pareto optimal diverse models with 16 Approximation configurations
+ \item Timeout of 600s
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Summary}
+\begin{itemize}
+\item Provide comprehensive framework for computing diverse optimal stable models
+\item Five ASP solving schemes: \alert{maxmin}, \alert{guess and check}, \alert{querying}, \alert{preference$^2$}
+\item Three diversification techniques: \alert{enumeration}, \alert{replication}, \alert{approximation}
+ \item Replication and enumeration inefficient
+ \item Approximation techniques display tradeoff between diversification and performance
+\end{itemize}
+\center Thank You!
+\end{frame}
+\end{document}
