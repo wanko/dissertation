@@ -1,51 +1,60 @@
 \chapter{Introduction}\label{sec:introduction}
+\begin{itemize}
+  \item
+   Answer Set Programming (ASP~\cites{baral02a,lifschitz08b,gekakasc12a}) is a declarative approach to solving knowledge-intensive combinatorial (optimization) problems.
+  \item 
+   Its main draw is a powerful and human-readable first-order language based on rules
+   that is able to express problems up to the second order of the polynomial hierarchy
+   and supports concepts like defaults and reachability naturally.
+  \item
+   That is, ASP is a non-monotonic reasoning framework.
+  \item
+   The modelling language allows for the formulation of uniform problem encodings of even complex problems in but a few lines of code.
+  \item 
+   Those encodings can then be applied to specific problem instances.
+  \item 
+   A uniform problem encoding in the well-defined language of ASP also offers so-called elaboration tolerance,
+   that is, a small change in the requirements of the problem induces a small change in the encoding of said problem.
+  \item
+   Both encoding and instance can then be solved by powerful ASP systems that map them to their answer sets~\cite{gellif88b}.
+  \item
+   The most common approach to ASP solving is a grounding step followed by solving step.
+  \item 
+   That is, the problem encoding is instantiated and transformed into a propositional representation
+   and then processed by a search algorithm based on SAT solving~\cite{baseseti09a}.
+  \item
+   ASP has been applied to a wide variety of problems, among them 
+   systems biology~\cite{kascsivi13a},
+   planning~\cite{gekaknsc11a},
+   package configuration~\cite{gekasc11c},
+   a NASA space shuttle controller~\cite{nobagewaba01a}, or
+   scheduling at the Swiss railway company~\cite{abjoossctowa21a}.
+  \item
+   However, many real-life applications have a heterogeneous nature that requires capabilities beyond ASP.
+  \item
+   Consider for instance,
+   bio-informatics~\cite{frscscsiwa18a},
+   hardware synthesis~\cite{newascha18b},
+   or train scheduling~\cite{abjoossctowa19a}.
+  \item
+   All of the above display aspects suitable to ASP in that topological requirements, like reachability, have to be met,
+   but they also require more fine-grained calculations to address scheduling or biological equilibria.
+  \item
+   The short-comings of plain ASP in this case are two-fold,
+   first, language constructs of ASP do not naturally support these inferences,
+   second, the grounding process leads to an explosion in problem size or is even impossible when considering equations over integers or reals.
+  \item
+   Mixed solving technology has been proposed to accommodate those short-comings inspired by the neighboring field of Satisfiability modulo Theories (SMT;~\cite{niolti06a}).
+  \item
+   For instance, Constraint ASP (CASP;~\cite{lierler14a}) combines ASP with Constraint Processing (CP;~\cite{dechter03a}).
+\end{itemize}
 
 \begin{itemize}
-  \item 
-  Answer Set Programming (ASP) is a popular approach
-  to solve knowledge-intense search and optimization problems in a declarative way~\cites{baral02a,gekakasc12a}.
-  \item
-  It is based on the non-monotonic stable model semantics
-  tailored to support both closed and open world reasoning.
-  \item 
-  This makes ASP applicable to a wide range of reasoning tasks including tasks involving incomplete information.
-  It features a simple yet powerful rule-based language
-  that can express all problems up to the second level of the polynomial hierarchy.
-  \item
-  The language allows us to write uniform problem specifications that can be used to solve specific problem instances.
-  \item
-  Even complex problems can typically be modeled with a small number of generic rules using first order variables.
-  \item
-  Another important aspect of ASP is it's elaboration tolerance.
-  It is often possible to add new rules to a problem specification or modify a few of them
-  to adapt to changing requirements throughout the development of an application.
-  \item 
-  Both problem specification and instance can then be solved by high performance ASP systems.
-  There are numerous applications in various domains that have successfully applied {ASP}.
-  This includes, for example,  systems biology~\cite{kascsivi13a},
-  planning~\cite{gekaknsc11a},
-  package configuration~\cite{gekasc11c},
-  a NASA space shuttle controller~\cite{nobagewaba01a}, or
-  scheduling at the Swiss railway company~\cite{abjoossctowa21a}.
   \item
   \input{flt/asp}
   The ASP solving process can be summarized by the steps depicted in \cref{fig:asp-in-a-nutshell}.
   \item \cite{cafascwa20a}
   \begin{itemize}
-    \item Many real-world applications have a heterogeneous nature.
-    Let it be in
-    bio-informatics~\cite{frscscsiwa18a},
-    hardware synthesis~\cite{newascha18b},
-    or train scheduling~\cite{abjoossctowa19a},
-    all cited ones consist of genuine qualitative and quantitative constraints.
-    While the former often account for topological requirements, like reachability,
-    the latter usually address (fine-grained) time or resource requirements.
-    \item
-    The hybrid nature of such applications has led to mixed solving technology,
-    foremost in the area of Satisfiability modulo Theories (SMT;~\cite{niolti06a}).
-    \item
-    Meanwhile,
-the need for hybridization has also prompted similar approaches in neighboring areas such as Answer Set Programming (ASP;~\cite{lifschitz08b}).
     \item
     When it comes to extending ASP with foreign reasoning methods,
 the design often follows the algorithmic framework of SMT and leaves semantic aspects behind.
@@ -77,6 +86,39 @@ which nicely underlines the need for non-monotonic constraint variables.
     \begin{itemize}
       \item 
       This integration is however often done in system-oriented ways that leave semantic aspects behind.
+    \end{itemize}
+  \item \cite{cafascwa21a}
+    \begin{itemize}
+      \item 
+      However, over the same period, the syntax of logic programs has been continuously enriched,
+      equipping ASP with a highly attractive modeling language.
+      \item
+      This development also brought about much more intricate semantics,
+      as nicely reflected by the mathematical apparatus used in the original definition~\cite{gellif88b} and the one for
+      capturing the input language of the ASP system \clingo~\cite{gehakalisc15a}.
+      \item
+      With the growing range of ASP applications in academia and industry~\cite{fafrsctate18a}, % ergele16a,
+      we also witness the emergence of more and more hybrid ASP systems~\cite{lierler14a,kascwa17a},
+      similar to the raise of SMT solving from plain SAT solving~\cite{baseseti09a}.
+      \item 
+      From a general perspective, the resulting paradigm of ASP modulo theories (\AMT) can be seen as a refinement of ASP,
+      in which an external theory certifies some of a program's stable models.
+      \item
+      This idea has meanwhile been adapted to the setting of ASP in various ways, most prominently in
+      Constraint ASP~\cite{lierler14a} extending ASP with linear equations over integers in various ways
+      \cite{elposo04a,geossc09a,drewal10a,ostsch12a,roeireri15a,bakaossc16a,jakaosscscwa17a}.
+      \item
+      Beyond this, ASP systems like \clingo\ or \dlvhex~\cite{eigeiakarescwe18a} leave the choice of the specific
+      theory largely open.
+      \item 
+      As attractive as this generality may be from an implementation point of view,
+      it complicates the development of generic semantics that are meaningful to existing systems.
+      \item
+      We address this issue and show how the Logic of Here-and-There with constraints (\HTC;~\cite{cakaossc16a})
+      can be used as a semantics for \clingo's theory reasoning framework.
+      \item
+      Thus, just like the plain Logic of Here-and-There (\HT;~\cite{heyting30a,pearce96a}) serves as the logic foundations of ASP,
+      \HTC\ extends this to \AMT.
     \end{itemize}
 \end{itemize}
 
